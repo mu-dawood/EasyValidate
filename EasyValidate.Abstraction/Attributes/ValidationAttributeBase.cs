@@ -1,23 +1,18 @@
 using System;
-using EasyValidate.Abstraction.Rules;
 
 namespace EasyValidate.Abstraction.Attributes
 {
     /// <summary>
     /// Base class for all validation attributes.
-    /// Provides a handler and optional type-checking logic.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public abstract class ValidationAttributeBase : Attribute
     {
         /// <summary>
-        /// Returns the rule handler instance for this attribute.
+        /// Gets the error code associated with the validation attribute.
         /// </summary>
-        public abstract IValidationAttributeHandler Handler { get; }
+        public abstract string ErrorCode { get; }
 
-        /// <summary>
-        /// Checks at compile time (in generator) whether this attribute is valid on a given CLR type.
-        /// Override in derived attributes to enforce type compatibility.
-        /// </summary>
-        public virtual bool IsCompatibleType(Type clrType) => true;
+        // This class is intentionally left empty as a base for validation attributes.
     }
 }

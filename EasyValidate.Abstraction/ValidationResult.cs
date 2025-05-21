@@ -1,0 +1,62 @@
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using EasyValidate.Abstraction.Attributes;
+
+namespace EasyValidate.Abstraction
+{
+    /// <summary>
+    /// Represents the result of a validation operation.
+    /// </summary>
+    public class ValidationResult
+    {
+        public static IFormatter GetDefaultFormatter() => new DefaultFormatter();
+        private readonly IFormatter _formatter;
+        public ValidationResult(IFormatter formatter)
+        {
+            _formatter = formatter;
+        }
+        /// <summary>
+        /// Gets or sets a value indicating whether there are validation errors.
+        /// </summary>
+        public bool HasErrors => Errors.Values.Any(errorList => errorList.Count > 0);
+
+        /// <summary>
+        /// Gets or sets the validation errors.
+        /// </summary>
+        private Dictionary<string, List<ValidationError>> _errors = new Dictionary<string, List<ValidationError>>();
+        public IReadOnlyDictionary<string, IReadOnlyList<ValidationError>> Errors => _errors.ToDictionary(
+            kvp => kvp.Key,
+            kvp => (IReadOnlyList<ValidationError>)kvp.Value.AsReadOnly());
+
+
+        public void TryAddError<T>(string memberName, T validator, AttributeResult attributeResult) where T : ValidationAttributeBase
+        {
+            if (!attributeResult.IsValid)
+            {
+                if (!_errors.ContainsKey(memberName))
+                    _errors[memberName] = new List<ValidationError>();
+                _errors[memberName].Add(new ValidationError
+                {
+                    ErrorCode = validator.ErrorCode,
+                    Message = attributeResult.Message,
+                    Args = attributeResult.MessageArgs,
+                    AttributeName = validator.GetType().Name,
+                    FormattedMessage = _formatter.Format(attributeResult.Message, attributeResult.MessageArgs)
+                });
+            }
+        }
+
+
+        /// <summary>
+        /// Default implementation of the IFormatter interface.
+        /// </summary>
+        private class DefaultFormatter : IFormatter
+        {
+            public string Format(string message, object[] args)
+            {
+                return string.Format(message, args);
+            }
+        }
+    }
+}
