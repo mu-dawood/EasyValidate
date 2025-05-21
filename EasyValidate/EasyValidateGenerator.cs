@@ -9,6 +9,7 @@ using EasyValidate.Abstraction.Rules;
 using System;
 using Microsoft.CodeAnalysis;
 using System.Reflection;
+using EasyValidate.Abstraction;
 
 namespace EasyValidate
 {
@@ -93,12 +94,16 @@ namespace EasyValidate
             sb.AppendLine("using System;");
             sb.AppendLine("using System.Collections.Generic;");
             sb.AppendLine("using System.Text.RegularExpressions;");
+            sb.AppendLine("using EasyValidate.Abstraction;");
             if (ns != "") sb.AppendLine(ns);
             sb.AppendLine($"    public partial class {cls.Name}");
             sb.AppendLine("    {");
-            sb.AppendLine("        public List<string> Validate()");
+            sb.AppendLine("        public List<ValidationError> Validate()");
             sb.AppendLine("        {");
-            sb.AppendLine("            var errors = new List<string>();");
+            sb.AppendLine("            var errors = new List<ValidationError>();");
+
+            // Ensure unique variable names for each attribute applied to a property or field.
+            int errorCounter = 0;
 
             // process properties
             foreach (var prop in cls.GetMembers().OfType<IPropertySymbol>())
@@ -109,10 +114,9 @@ namespace EasyValidate
                 foreach (var attr in prop.GetAttributes())
                 {
                     var attributeName = attr.AttributeClass?.Name;
-                    if (attributeName is null)
+                    if (attributeName is null || !AttributeHandlers.ContainsKey(attributeName))
                         continue;
 
-                    // compatibility check via helper
                     if (!ValidateTarget(
                         attributeName,
                         prop.Type,
@@ -121,7 +125,14 @@ namespace EasyValidate
                         invalidTargetDescriptor))
                         continue;
 
-                    sb.AppendLine(AttributeHandlers[attributeName](prop.Name, attr.ConstructorArguments.Select(a => a.Value).ToArray()));
+                    var errorVarName = $"{prop.Name}Errors{errorCounter++}";
+                    sb.AppendLine($"            var {errorVarName} = new ValidationError");
+                    sb.AppendLine("            {");
+                    sb.AppendLine($"                PropertyName = \"{prop.Name}\"");
+                    sb.AppendLine("            };");
+                    sb.AppendLine(AttributeHandlers[attributeName](prop.Name, attr.ConstructorArguments.Select(a => a.Value).ToArray()).Replace("errors.Add", $"{errorVarName}.ErrorMessages.Add"));
+                    sb.AppendLine($"            if ({errorVarName}.ErrorMessages.Count > 0)");
+                    sb.AppendLine($"                errors.Add({errorVarName});");
                 }
             }
 
@@ -130,13 +141,13 @@ namespace EasyValidate
             {
                 if (field.DeclaredAccessibility != Accessibility.Public || field.IsStatic)
                     continue;
+
                 foreach (var attr in field.GetAttributes())
                 {
                     var attributeName = attr.AttributeClass?.Name;
-                    if (attributeName is null)
+                    if (attributeName is null || !AttributeHandlers.ContainsKey(attributeName))
                         continue;
 
-                    // compatibility check via helper
                     if (!ValidateTarget(
                         attributeName,
                         field.Type,
@@ -145,7 +156,14 @@ namespace EasyValidate
                         invalidTargetDescriptor))
                         continue;
 
-                    sb.AppendLine(AttributeHandlers[attributeName](field.Name, attr.ConstructorArguments.Select(a => a.Value).ToArray()));
+                    var errorVarName = $"{field.Name}Errors{errorCounter++}";
+                    sb.AppendLine($"            var {errorVarName} = new ValidationError");
+                    sb.AppendLine("            {");
+                    sb.AppendLine($"                PropertyName = \"{field.Name}\"");
+                    sb.AppendLine("            };");
+                    sb.AppendLine(AttributeHandlers[attributeName](field.Name, attr.ConstructorArguments.Select(a => a.Value).ToArray()).Replace("errors.Add", $"{errorVarName}.ErrorMessages.Add"));
+                    sb.AppendLine($"            if ({errorVarName}.ErrorMessages.Count > 0)");
+                    sb.AppendLine($"                errors.Add({errorVarName});");
                 }
             }
 

@@ -7,4 +7,10 @@ var user = new Dto { Name = "", Age = 10, Email = "bad-email" };
 var errors = user.Validate();
 
 foreach (var error in errors)
-    Console.WriteLine(error);
+{
+    Console.WriteLine($"Property: {error.PropertyName}");
+    foreach (var message in error.ErrorMessages)
+    {
+        Console.WriteLine($"  Error: {message}");
+    }
+}
