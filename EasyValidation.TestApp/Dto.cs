@@ -1,7 +1,6 @@
 
 
 
-using EasyValidate.Abstraction;
 using EasyValidate.Abstraction.Attributes;
 
 namespace EasyValidate.TestApp
@@ -11,8 +10,8 @@ namespace EasyValidate.TestApp
         [Required]
         public string? Name { get; set; }
 
-        // [Range(18, 99)]
-        public int Age { get; set; }
+        [Range(18, 99)]
+        public byte Age { get; set; }
 
         public string? Email { get; set; }
     }

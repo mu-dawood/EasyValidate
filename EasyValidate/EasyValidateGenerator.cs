@@ -12,20 +12,29 @@ namespace EasyValidate
     {
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
+            LogDebug("Initializing EasyValidateGenerator...");
+
+            var compilationProvider = context.CompilationProvider;
+
             var candidates = context.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: static (node, _) => node is ClassDeclarationSyntax,
                     transform: static (ctx, _) => ctx.SemanticModel.GetDeclaredSymbol((ClassDeclarationSyntax)ctx.Node) as INamedTypeSymbol
                 )
-                .Where(static symbol => symbol != null);
+                .Where(static symbol => symbol != null)
+                .Combine(compilationProvider);
 
-            context.RegisterSourceOutput(candidates, static (spc, symbol) =>
+            context.RegisterSourceOutput(candidates, static (spc, pair) =>
             {
-                if (symbol is not INamedTypeSymbol classSymbol)
+                var (classSymbol, compilation) = pair;
+
+                if (classSymbol is not INamedTypeSymbol classSymbolNonNull)
                     return;
 
-                var source = GenerateValidationClass(classSymbol);
-                spc.AddSource($"{classSymbol.Name}_Validation.g.cs", SourceText.From(source, Encoding.UTF8));
+                ValidateAttributeUsage(classSymbolNonNull, compilation, spc);
+
+                var source = GenerateValidationClass(classSymbolNonNull);
+                spc.AddSource($"{classSymbolNonNull.Name}_Validation.g.cs", SourceText.From(source, Encoding.UTF8));
             });
         }
 
@@ -90,15 +99,120 @@ namespace EasyValidate
                     if (string.IsNullOrEmpty(attributeName))
                         continue;
 
+                    var constructorArguments = string.Join(", ", attr.ConstructorArguments.Select(arg =>
+                    {
+                        return arg.Kind switch
+                        {
+                            TypedConstantKind.Primitive => arg.Value?.ToString() ?? "null",
+                            TypedConstantKind.Enum => $"({arg.Type?.ToDisplayString()}){arg.Value}",
+                            TypedConstantKind.Type => $"typeof({arg.Value})",
+                            TypedConstantKind.Array => $"new[] {{ {string.Join(", ", arg.Values.Select(v => v.Value?.ToString() ?? "null"))} }}",
+                            TypedConstantKind.Error => "null", // Handle error case gracefully
+                            _ => "null"
+                        };
+                    }));
+
                     var memberName = member.Name;
 
-                    sb.AppendLine($"            var validator = new {attributeName}();");
-                    sb.AppendLine($"            result.TryAddError(nameof({memberName}), validator, validator.Validate(nameof({memberName}), {memberName}));");
+                    sb.AppendLine($"            result.TryAddError(nameof({memberName}), new {attributeName}({constructorArguments}), (v) => v.Validate(nameof({memberName}), {memberName}));");
                 }
             }
 
             sb.AppendLine("            return result;");
             sb.AppendLine("        }");
+        }
+
+        private static void ValidateAttributeUsage(INamedTypeSymbol classSymbol, Compilation compilation, SourceProductionContext context)
+        {
+            foreach (var member in classSymbol.GetMembers().OfType<IPropertySymbol>())
+            {
+                foreach (var attr in member.GetAttributes())
+                {
+                    var attributeType = attr.AttributeClass;
+                    if (attributeType == null)
+                        continue;
+
+                    // Dynamically retrieve supported types from Validate method overloads
+                    var supportedTypes = attributeType
+                        .GetMembers()
+                        .OfType<IMethodSymbol>()
+                        .Where(m => m.Name == "Validate" && m.Parameters.Length > 1)
+                        .Select(m => m.Parameters[1].Type as ITypeSymbol) // Explicitly cast to ITypeSymbol
+                        .Where(t => t != null) // Filter out null values
+                        .Distinct(SymbolEqualityComparer.Default) // Use SymbolEqualityComparer.Default for distinct comparison
+                        .ToList();
+
+                    if (!supportedTypes.Any())
+                    {
+                        // If no Validate method overloads are found, allow the attribute to apply to all types
+                        continue;
+                    }
+
+                    // Check if the attribute has a generic Validate<T> method
+                    bool hasGenericValidate = attributeType
+                        .GetMembers()
+                        .OfType<IMethodSymbol>()
+                        .Any(m => m.Name == "Validate" && m.IsGenericMethod);
+
+                    if (hasGenericValidate)
+                    {
+                        // Skip validation errors if the attribute has a generic Validate<T> method
+                        continue;
+                    }
+
+                    bool isCompatible = supportedTypes
+                        .OfType<ITypeSymbol>() // Ensure all elements are ITypeSymbol
+                        .Any(supportedType =>
+                            member.Type.Equals(supportedType, SymbolEqualityComparer.Default) ||
+                            IsAssignableTo(member.Type, supportedType));
+
+                    if (!isCompatible)
+                    {
+                        var diagnostic = Diagnostic.Create(
+                            new DiagnosticDescriptor(
+                                id: "EV001",
+                                title: "Invalid Attribute Usage",
+                                messageFormat: $"{attributeType.Name} can only be applied to types : {string.Join(", ", supportedTypes.Select(t => t.Name))}.",
+                                category: "Usage",
+                                DiagnosticSeverity.Error,
+                                isEnabledByDefault: true
+                            ),
+                            member.Locations.FirstOrDefault()
+                        );
+
+                        context.ReportDiagnostic(diagnostic);
+                    }
+                }
+            }
+        }
+
+        private static bool IsAssignableTo(ITypeSymbol fromType, ITypeSymbol toType)
+        {
+            if (fromType.Equals(toType, SymbolEqualityComparer.Default))
+                return true;
+
+            if (toType.TypeKind == TypeKind.Interface)
+            {
+                return fromType.AllInterfaces.Any(i => i.Equals(toType, SymbolEqualityComparer.Default));
+            }
+
+            var baseType = fromType.BaseType;
+            while (baseType != null)
+            {
+                if (baseType.Equals(toType, SymbolEqualityComparer.Default))
+                    return true;
+
+                baseType = baseType.BaseType;
+            }
+
+            return false;
+        }
+
+        private static void LogDebug(string message)
+        {
+#if DEBUG
+            Debugger.Log(0, "Debug", $"[DEBUG] {message}\n");
+#endif
         }
     }
 }

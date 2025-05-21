@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -30,8 +31,9 @@ namespace EasyValidate.Abstraction
             kvp => (IReadOnlyList<ValidationError>)kvp.Value.AsReadOnly());
 
 
-        public void TryAddError<T>(string memberName, T validator, AttributeResult attributeResult) where T : ValidationAttributeBase
+        public void TryAddError<T>(string memberName, T validator, Func<T,AttributeResult> action) where T : ValidationAttributeBase
         {
+            var attributeResult = action(validator);
             if (!attributeResult.IsValid)
             {
                 if (!_errors.ContainsKey(memberName))
