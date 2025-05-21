@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Text;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Diagnostics;
@@ -9,33 +8,14 @@ using System.Collections.Immutable; // for diagnostics
 using EasyValidate.Abstraction.Rules;
 using System;
 using Microsoft.CodeAnalysis;
+using System.Reflection;
 
 namespace EasyValidate
 {
     [Generator]
     public class EasyValidateGenerator : IIncrementalGenerator
     {
-        private static readonly IValidationAttributeHandler[] _handlers = new IValidationAttributeHandler[]
-        {
-            new RequiredHandler(),
-            new NotNullHandler(),
-            new NotEmptyHandler(),
-            new LengthHandler(),
-            new MinimumLengthHandler(),
-            new MaximumLengthHandler(),
-            new GreaterThanHandler(),
-            new GreaterThanOrEqualToHandler(),
-            new LessThanHandler(),
-            new LessThanOrEqualToHandler(),
-            new InclusiveBetweenHandler(),
-            new MatchesHandler(),
-            new EmailAddressHandler(),
-            new CreditCardHandler(),
-            new PhoneHandler(),
-            new UrlHandler(),
-            new EqualToHandler(),
-            new NotEqualToHandler(),
-        };
+        // Handlers are instantiated at runtime by matching attribute name to handler class
 
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
@@ -58,7 +38,11 @@ namespace EasyValidate
                         bool hasRule = sym.GetMembers()
                             .OfType<IPropertySymbol>().Cast<ISymbol>()
                             .Concat(sym.GetMembers().OfType<IFieldSymbol>())
-                            .Any(m => m.GetAttributes().Any(attr => _handlers.Any(h => h.CanHandle(attr.AttributeClass?.Name))));
+                            .Any(m => m.GetAttributes().Any(attr =>
+                            {
+                                var baseType = attr.AttributeClass?.BaseType;
+                                return baseType != null && baseType.ToDisplayString() == "EasyValidate.Abstraction.Attributes.ValidationAttributeBase";
+                            }));
                         return hasRule ? sym : null;
                     })
                 .Where(s => s != null);
@@ -75,9 +59,18 @@ namespace EasyValidate
                     DiagnosticSeverity.Warning,
                     isEnabledByDefault: true);
 
+                // diagnostic for invalid attribute target types
+                var invalidTargetDescriptor = new DiagnosticDescriptor(
+                    "EVG003", 
+                    "Invalid attribute target", 
+                    "Attribute '{0}' is not compatible with type '{1}'", 
+                    "EasyValidateGenerator", 
+                    DiagnosticSeverity.Error, 
+                    isEnabledByDefault: true);
+
                 foreach (var cls in list)
                 {
-                    var src = GenerateForClass(cls, spc, conflictDescriptor);
+                    var src = GenerateForClass(cls, spc, conflictDescriptor, invalidTargetDescriptor);
                     spc.AddSource($"{cls.Name}_Validation.g.cs", SourceText.From(src, Encoding.UTF8));
                 }
             });
@@ -86,7 +79,8 @@ namespace EasyValidate
         private static string GenerateForClass(
             INamedTypeSymbol cls,
             SourceProductionContext spc,
-            DiagnosticDescriptor conflictDescriptor)
+            DiagnosticDescriptor conflictDescriptor,
+            DiagnosticDescriptor invalidTargetDescriptor)
         {
             // collect unique helper method code by method name
             var helperSnippets = new Dictionary<string, string>();
@@ -106,6 +100,7 @@ namespace EasyValidate
             sb.AppendLine("        {");
             sb.AppendLine("            var errors = new List<string>();");
 
+            // process properties
             foreach (var prop in cls.GetMembers().OfType<IPropertySymbol>())
             {
                 if (prop.DeclaredAccessibility != Accessibility.Public || prop.IsStatic)
@@ -116,36 +111,21 @@ namespace EasyValidate
                     var attributeName = attr.AttributeClass?.Name;
                     if (attributeName is null)
                         continue;
-                    var constructorArgs = attr.ConstructorArguments.Select(a => a.Value).ToArray();
-                    foreach (var h in _handlers)
-                    {
-                        if (h.CanHandle(attributeName))
-                        {
-                            // record helper snippets for this handler
-                            foreach (var snippet in h.RequiredHelpers)
-                            {
-                                // extract method name from first token after return type
-                                var firstLine = snippet.Split(new[] { '\n' }, StringSplitOptions.None)[0].Trim();
-                                var parts = firstLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                                // assume format: private static <type> <name>(...)
-                                var mName = parts.Length >= 4 ? parts[3].Split('(')[0] : firstLine;
-                                if (helperSnippets.TryGetValue(mName, out var existing))
-                                {
-                                    if (existing != snippet)
-                                        spc.ReportDiagnostic(Diagnostic.Create(conflictDescriptor, Location.None, mName));
-                                }
-                                else
-                                {
-                                    helperSnippets[mName] = snippet;
-                                }
-                            }
-                            sb.AppendLine(h.GenerateCheck(prop.Name, constructorArgs));
-                            break;
-                        }
-                    }
+
+                    // compatibility check via helper
+                    if (!ValidateTarget(
+                        attributeName,
+                        prop.Type,
+                        prop.Locations.FirstOrDefault() ?? Location.None,
+                        spc,
+                        invalidTargetDescriptor))
+                        continue;
+
+                    sb.AppendLine(AttributeHandlers[attributeName](prop.Name, attr.ConstructorArguments.Select(a => a.Value).ToArray()));
                 }
             }
-            // also handle fields
+
+            // handle fields similarly
             foreach (var field in cls.GetMembers().OfType<IFieldSymbol>())
             {
                 if (field.DeclaredAccessibility != Accessibility.Public || field.IsStatic)
@@ -155,26 +135,17 @@ namespace EasyValidate
                     var attributeName = attr.AttributeClass?.Name;
                     if (attributeName is null)
                         continue;
-                    var constructorArgs = attr.ConstructorArguments.Select(a => a.Value).ToArray();
-                    foreach (var h in _handlers)
-                    {
-                        if (h.CanHandle(attributeName))
-                        {
-                            // record helper snippets
-                            foreach (var snippet in h.RequiredHelpers)
-                            {
-                                var firstLine = snippet.Split(new[] { '\n' }, StringSplitOptions.None)[0].Trim();
-                                var parts = firstLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                                var mName = parts.Length >= 4 ? parts[3].Split('(')[0] : firstLine;
-                                if (helperSnippets.TryGetValue(mName, out var existing) && existing != snippet)
-                                    spc.ReportDiagnostic(Diagnostic.Create(conflictDescriptor, Location.None, mName));
-                                else
-                                    helperSnippets[mName] = snippet;
-                            }
-                            sb.AppendLine(h.GenerateCheck(field.Name, constructorArgs));
-                            break;
-                        }
-                    }
+
+                    // compatibility check via helper
+                    if (!ValidateTarget(
+                        attributeName,
+                        field.Type,
+                        field.Locations.FirstOrDefault() ?? Location.None,
+                        spc,
+                        invalidTargetDescriptor))
+                        continue;
+
+                    sb.AppendLine(AttributeHandlers[attributeName](field.Name, attr.ConstructorArguments.Select(a => a.Value).ToArray()));
                 }
             }
 
@@ -190,5 +161,70 @@ namespace EasyValidate
 
             return sb.ToString();
         }
+
+        // helper: validate attribute-target compatibility and report diagnostics
+        private static bool ValidateTarget(
+            string attributeName,
+            ITypeSymbol targetType,
+            Location location,
+            SourceProductionContext spc,
+            DiagnosticDescriptor invalidTargetDescriptor)
+        {
+            if (attributeName is null)
+                return false;
+
+            var numericAttrs = new[] { "GreaterThanAttribute", "LessThanAttribute", "GreaterThanOrEqualToAttribute", "LessThanOrEqualToAttribute", "InclusiveBetweenAttribute" };
+            var stringAttrs = new[] { "NotEmptyAttribute", "LengthAttribute", "MinimumLengthAttribute", "MaximumLengthAttribute", "MatchesAttribute", "EmailAddressAttribute", "PhoneAttribute", "UrlAttribute", "CreditCardAttribute" };
+
+            if (numericAttrs.Contains(attributeName) && !IsNumericType(targetType))
+            {
+                spc.ReportDiagnostic(Diagnostic.Create(
+                    invalidTargetDescriptor,
+                    location,
+                    attributeName,
+                    targetType.ToDisplayString()));
+                return false;
+            }
+            if (stringAttrs.Contains(attributeName) && targetType.SpecialType != SpecialType.System_String)
+            {
+                spc.ReportDiagnostic(Diagnostic.Create(
+                    invalidTargetDescriptor,
+                    location,
+                    attributeName,
+                    targetType.ToDisplayString()));
+                return false;
+            }
+            return true;
+        }
+
+        private static bool IsNumericType(ITypeSymbol type)
+        {
+            switch (type.SpecialType)
+            {
+                case SpecialType.System_Byte:
+                case SpecialType.System_SByte:
+                case SpecialType.System_Int16:
+                case SpecialType.System_UInt16:
+                case SpecialType.System_Int32:
+                case SpecialType.System_UInt32:
+                case SpecialType.System_Int64:
+                case SpecialType.System_UInt64:
+                case SpecialType.System_Single:
+                case SpecialType.System_Double:
+                case SpecialType.System_Decimal:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        // Removed dynamic handler instantiation and replaced it with a predefined mapping of attribute names to handler logic.
+        private static readonly Dictionary<string, Func<string, object[], string>> AttributeHandlers = new()
+        {
+            { "RequiredAttribute", (propertyName, args) => $"if (string.IsNullOrWhiteSpace({propertyName})) errors.Add(\"{propertyName} is required.\");" },
+            { "NotNullAttribute", (propertyName, args) => $"if ({propertyName} == null) errors.Add(\"{propertyName} cannot be null.\");" },
+            { "EmailAddressAttribute", (propertyName, args) => $"if (!Regex.IsMatch({propertyName}, \"^[^@\\\\s]+@[^@\\\\s]+\\\\.[^@\\\\s]+$\")) errors.Add(\"{propertyName} is not a valid email address.\");" }
+            // Add more handlers as needed
+        };
     }
 }

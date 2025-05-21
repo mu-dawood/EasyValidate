@@ -9,18 +9,12 @@ namespace EasyValidate.Abstraction.Rules
     public interface IValidationAttributeHandler
     {
         /// <summary>
-        /// True if this handler wants to handle an attribute
-        /// whose class is called <c>attributeName</c>.
-        /// </summary>
-        bool CanHandle(string attributeName);
-
-        /// <summary>
-        /// Emits the indented line (with semicolon) to append to Validate().
+        /// Emits the indented validation check line for the property.
         /// </summary>
         string GenerateCheck(string propertyName, object[] constructorArgs);
 
         /// <summary>
-        /// Code snippets for helper methods required by this handler.
+        /// Code snippets of helper methods required by this handler.
         /// </summary>
         IEnumerable<string> RequiredHelpers { get; }
     }
