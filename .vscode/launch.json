@@ -5,16 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Build TestApp & Debug Generator",
-            "type": "coreclr",
+            "name": "C#: Debug",
+            "type": "dotnet",
             "request": "launch",
-            "program": "dotnet",
-            "args": [
-                "build",
-                "${workspaceFolder}/EasyValidate.TestApp/EasyValidate.TestApp.csproj"
-            ],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false
+            "projectPath": "${workspaceFolder}/EasyValidate/EasyValidate.csproj"
+        },
+        {
+            "name": "C#: Debug Console",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/EasyValidation/EasyValidation.csproj"
+        },
+        {
+            "name": "Attach to Source Generator",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
         }
     ]
 }

@@ -13,7 +13,9 @@ namespace EasyValidate
     {
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            LogDebug("Initializing EasyValidateGenerator...");
+            DebuggerUtil.AttachDebugger();
+            DebuggerUtil.Log("Initializing EasyValidateGenerator...");
+            DebuggerUtil.Log("Starting Initialize method.");
 
             var compilationProvider = context.CompilationProvider;
 
@@ -32,17 +34,24 @@ namespace EasyValidate
                 if (classSymbol is not INamedTypeSymbol classSymbolNonNull)
                     return;
 
+                DebuggerUtil.Log($"Processing class: {classSymbolNonNull.Name}");
                 GenerateValidationClass(classSymbolNonNull, spc);
             });
+
+            DebuggerUtil.Log("Finished setting up syntax provider and compilation provider.");
+            DebuggerUtil.Log("Finished Initialize method.");
         }
 
         private static void GenerateValidationClass(INamedTypeSymbol classSymbol, SourceProductionContext context)
         {
+            DebuggerUtil.Log($"Generating validation class for: {classSymbol.Name}");
+
             // Skip classes that have no properties with validation attributes
-            if (!classSymbol.GetMembers().OfType<Microsoft.CodeAnalysis.IPropertySymbol>()
-                    .Any(p => p.GetAttributes().Any(a => a.AttributeClass != null &&
-                        a.AttributeClass.ContainingNamespace.ToDisplayString().StartsWith("EasyValidate.Abstraction.Attributes"))))
+            // Check if the class has any properties with attributes derived from ValidationAttributeBase
+            if (!classSymbol.GetMembers().OfType<IPropertySymbol>()
+                    .Any(p => p.GetAttributes().Any(a => a.AttributeClass?.BaseType?.ToDisplayString() == "EasyValidate.Abstraction.Attributes.ValidationAttributeBase")))
             {
+                DebuggerUtil.Log($"Skipping class {classSymbol.Name} as it has no properties with validation attributes derived from ValidationAttributeBase.");
                 return;
             }
 
@@ -57,13 +66,9 @@ namespace EasyValidate
 
             chain.Handle(classSymbol, context, sb);
             context.AddSource($"{classSymbol.Name}_Validation.g.cs", SourceText.From(sb.ToString(), Encoding.UTF8));
+
+            DebuggerUtil.Log($"Successfully generated validation class for: {classSymbol.Name}");
         }
 
-        private static void LogDebug(string message)
-        {
-#if DEBUG
-            Debugger.Log(0, "Debug", $"[DEBUG] {message}\n");
-#endif
-        }
     }
 }

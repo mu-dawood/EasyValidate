@@ -9,7 +9,7 @@ namespace EasyValidate.Abstraction
     /// <summary>
     /// Represents the result of a validation operation.
     /// </summary>
-    public class ValidationResult
+    public sealed class ValidationResult
     {
         public static IFormatter GetDefaultFormatter() => new DefaultFormatter();
         private readonly IFormatter _formatter;
@@ -31,7 +31,7 @@ namespace EasyValidate.Abstraction
             kvp => (IReadOnlyList<ValidationError>)kvp.Value.AsReadOnly());
 
 
-        public void TryAddError<T>(string memberName, T validator, Func<T,AttributeResult> action) where T : ValidationAttributeBase
+        public void TryAddError<T>(string memberName, T validator, Func<T, AttributeResult> action) where T : ValidationAttributeBase
         {
             var attributeResult = action(validator);
             if (!attributeResult.IsValid)
@@ -47,6 +47,18 @@ namespace EasyValidate.Abstraction
                     FormattedMessage = _formatter.Format(attributeResult.Message, attributeResult.MessageArgs)
                 });
             }
+        }
+
+        public ValidationResult Merge(string memberName, ValidationResult other)
+        {
+            foreach (var kvp in other.Errors)
+            {
+                var key=$"{memberName}.{kvp.Key}";
+                if (!_errors.ContainsKey(key))
+                    _errors[key] = new List<ValidationError>();
+                _errors[key].AddRange(kvp.Value);
+            }
+            return this;
         }
 
 

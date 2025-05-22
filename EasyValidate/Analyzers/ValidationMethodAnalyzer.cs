@@ -49,7 +49,10 @@ public class ValidationMethodAnalyzer : DiagnosticAnalyzer
 
         bool allHaveTwoParameters = validateMethods.All(m => m.Parameters.Length == 2);
 
-        if (!hasCorrectOverload || !allHaveTwoParameters)
+        bool allReturnCorrectType = validateMethods.All(m =>
+            m.ReturnType.ToDisplayString() == "EasyValidate.Abstraction.AttributeResult");
+
+        if (!hasCorrectOverload || !allHaveTwoParameters || !allReturnCorrectType)
         {
             var diagnostic = Diagnostic.Create(Rule, classSymbol.Locations[0], classSymbol.Name);
             context.ReportDiagnostic(diagnostic);

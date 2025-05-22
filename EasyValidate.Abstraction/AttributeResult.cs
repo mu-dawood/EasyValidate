@@ -3,7 +3,7 @@ namespace EasyValidate.Abstraction
     /// <summary>
     /// Represents the result of an attribute validation operation.
     /// </summary>
-    public class AttributeResult
+    public sealed class AttributeResult
     {
         /// <summary>
         /// Gets or sets a value indicating whether the validation was successful.
