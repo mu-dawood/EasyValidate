@@ -20,7 +20,39 @@ namespace EasyValidate.Abstraction
         /// <summary>
         /// Gets or sets a value indicating whether there are validation errors.
         /// </summary>
-        public bool HasErrors => Errors.Values.Any(errorList => errorList.Count > 0);
+        public bool HasErrors() => Errors.Values.Any(errorList => errorList.Count > 0);
+
+        /// <summary>
+        /// Checks if the validation result is valid.
+        /// </summary>
+        public bool IsValid() => !HasErrors();
+
+        /// <summary>
+        /// Checks if there are validation errors for a specific member.
+        /// </summary>
+        /// <param name="memberName">The name of the member to check.</param>
+        /// <exception cref="ArgumentNullException">Thrown when memberName is null or empty.</exception>
+        public bool HasErrors(string memberName)
+        {
+            if (string.IsNullOrEmpty(memberName))
+                throw new ArgumentNullException(nameof(memberName));
+
+            return Errors.ContainsKey(memberName) && Errors[memberName].Count > 0;
+        }
+
+        /// <summary>
+        /// Checks if the validation result is valid for a specific member.
+        /// </summary>
+        /// <param name="memberName">The name of the member to check.</param>
+        /// <returns>True if the member is valid; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when memberName is null or empty.</exception>
+        public bool IsValid(string memberName)
+        {
+            if (string.IsNullOrEmpty(memberName))
+                throw new ArgumentNullException(nameof(memberName));
+
+            return !HasErrors(memberName);
+        }
 
         /// <summary>
         /// Gets or sets the validation errors.
@@ -53,7 +85,7 @@ namespace EasyValidate.Abstraction
         {
             foreach (var kvp in other.Errors)
             {
-                var key=$"{memberName}.{kvp.Key}";
+                var key = $"{memberName}.{kvp.Key}";
                 if (!_errors.ContainsKey(key))
                     _errors[key] = new List<ValidationError>();
                 _errors[key].AddRange(kvp.Value);

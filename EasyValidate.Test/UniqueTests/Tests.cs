@@ -15,7 +15,7 @@ namespace EasyValidate.Test.UniqueTests
 
             var result = model.Validate();
 
-            Assert.False(result.HasErrors);
+            Assert.True(result.IsValid(nameof(model.StringCollection)));
         }
 
         [Fact]
@@ -28,8 +28,7 @@ namespace EasyValidate.Test.UniqueTests
 
             var result = model.Validate();
 
-            Assert.True(result.HasErrors);
-            Assert.Contains(result.Errors, e => e.Key == nameof(model.StringCollection));
+            Assert.True(result.HasErrors(nameof(model.StringCollection)));
         }
 
         [Fact]
@@ -42,7 +41,7 @@ namespace EasyValidate.Test.UniqueTests
 
             var result = model.Validate();
 
-            Assert.False(result.HasErrors);
+            Assert.True(result.IsValid(nameof(model.IntCollection)));
         }
 
         [Fact]
@@ -50,13 +49,12 @@ namespace EasyValidate.Test.UniqueTests
         {
             var model = new UniqueModel
             {
-                IntCollection = new List<int> { 1, 2, 1 }
+                IntCollection = [10, 2, 10]
             };
 
             var result = model.Validate();
 
-            Assert.True(result.HasErrors);
-            Assert.Contains(result.Errors, e => e.Key == nameof(model.IntCollection));
+            Assert.True(result.HasErrors(nameof(model.IntCollection)));
         }
 
         [Fact]
@@ -69,7 +67,7 @@ namespace EasyValidate.Test.UniqueTests
 
             var result = model.Validate();
 
-            Assert.False(result.HasErrors);
+            Assert.True(result.IsValid(nameof(model.DoubleCollection)));
         }
 
         [Fact]
@@ -77,13 +75,12 @@ namespace EasyValidate.Test.UniqueTests
         {
             var model = new UniqueModel
             {
-                DoubleCollection = new List<double> { 1.1, 2.2, 1.1 }
+                DoubleCollection = [3.14, 2.2, 3.14]
             };
 
             var result = model.Validate();
 
-            Assert.True(result.HasErrors);
-            Assert.Contains(result.Errors, e => e.Key == nameof(model.DoubleCollection));
+            Assert.True(result.HasErrors(nameof(model.DoubleCollection)));
         }
     }
 }

@@ -16,7 +16,7 @@ namespace EasyValidate.Test.NotNullTests
 
             var result = model.Validate();
 
-            Assert.False(result.HasErrors);
+            Assert.True(result.IsValid(nameof(model.NotNullString)));
         }
 
         [Fact]
@@ -29,8 +29,7 @@ namespace EasyValidate.Test.NotNullTests
 
             var result = model.Validate();
 
-            Assert.True(result.HasErrors);
-            Assert.Contains(result.Errors, e => e.Key == nameof(model.NotNullString));
+            Assert.True(result.HasErrors(nameof(model.NotNullString)));
         }
 
         [Fact]
@@ -43,7 +42,7 @@ namespace EasyValidate.Test.NotNullTests
 
             var result = model.Validate();
 
-            Assert.False(result.HasErrors);
+            Assert.True(result.IsValid(nameof(model.NotNullObject)));
         }
 
         [Fact]
@@ -56,8 +55,7 @@ namespace EasyValidate.Test.NotNullTests
 
             var result = model.Validate();
 
-            Assert.True(result.HasErrors);
-            Assert.Contains(result.Errors, e => e.Key == nameof(model.NotNullObject));
+            Assert.True(result.HasErrors(nameof(model.NotNullObject)));
         }
 
         [Fact]
@@ -70,7 +68,7 @@ namespace EasyValidate.Test.NotNullTests
 
             var result = model.Validate();
 
-            Assert.False(result.HasErrors);
+            Assert.True(result.IsValid(nameof(model.NotNullNullableInt)));
         }
 
         [Fact]
@@ -83,8 +81,7 @@ namespace EasyValidate.Test.NotNullTests
 
             var result = model.Validate();
 
-            Assert.True(result.HasErrors);
-            Assert.Contains(result.Errors, e => e.Key == nameof(model.NotNullNullableInt));
+            Assert.True(result.HasErrors(nameof(model.NotNullNullableInt)));
         }
     }
 }

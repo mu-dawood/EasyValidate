@@ -16,7 +16,7 @@ namespace EasyValidate.Test.NotEqualTests
 
             var result = model.Validate();
 
-            Assert.False(result.HasErrors);
+            Assert.True(result.IsValid(nameof(model.NotEqualString)));
         }
 
         [Fact]
@@ -24,13 +24,12 @@ namespace EasyValidate.Test.NotEqualTests
         {
             var model = new Model
             {
-                NotEqualString = "SameValue"
+                NotEqualString = "ForbiddenValue"
             };
 
             var result = model.Validate();
 
-            Assert.True(result.HasErrors);
-            Assert.Contains(result.Errors, e => e.Key == nameof(model.NotEqualString));
+            Assert.True(result.HasErrors(nameof(model.NotEqualString)));
         }
 
         [Fact]
@@ -43,7 +42,7 @@ namespace EasyValidate.Test.NotEqualTests
 
             var result = model.Validate();
 
-            Assert.False(result.HasErrors);
+            Assert.True(result.IsValid(nameof(model.NotEqualInt)));
         }
 
         [Fact]
@@ -56,8 +55,7 @@ namespace EasyValidate.Test.NotEqualTests
 
             var result = model.Validate();
 
-            Assert.True(result.HasErrors);
-            Assert.Contains(result.Errors, e => e.Key == nameof(model.NotEqualInt));
+            Assert.True(result.HasErrors(nameof(model.NotEqualInt)));
         }
 
         [Fact]
@@ -71,22 +69,20 @@ namespace EasyValidate.Test.NotEqualTests
 
             var result = model.Validate();
 
-            Assert.False(result.HasErrors);
+            Assert.True(result.IsValid(nameof(model.NotEqualObject)));
         }
 
         [Fact]
         public void Validate_NotEqualObject_ShouldFail()
         {
-            var forbiddenObject = new object();
             var model = new Model
             {
-                NotEqualObject = forbiddenObject
+                NotEqualObject = null
             };
 
             var result = model.Validate();
 
-            Assert.True(result.HasErrors);
-            Assert.Contains(result.Errors, e => e.Key == nameof(model.NotEqualObject));
+            Assert.True(result.HasErrors(nameof(model.NotEqualObject)));
         }
     }
 }

@@ -16,7 +16,7 @@ namespace EasyValidate.Test.EqualToTests
 
             var result = model.Validate();
 
-            Assert.False(result.HasErrors);
+            Assert.True(result.IsValid(nameof(model.EqualString)));
         }
 
         [Fact]
@@ -29,8 +29,7 @@ namespace EasyValidate.Test.EqualToTests
 
             var result = model.Validate();
 
-            Assert.True(result.HasErrors);
-            Assert.Contains(result.Errors, e => e.Key == nameof(model.EqualString));
+            Assert.True(result.HasErrors(nameof(model.EqualString)));
         }
 
         [Fact]
@@ -43,7 +42,7 @@ namespace EasyValidate.Test.EqualToTests
 
             var result = model.Validate();
 
-            Assert.False(result.HasErrors);
+            Assert.True(result.IsValid(nameof(model.EqualInt)));
         }
 
         [Fact]
@@ -56,8 +55,7 @@ namespace EasyValidate.Test.EqualToTests
 
             var result = model.Validate();
 
-            Assert.True(result.HasErrors);
-            Assert.Contains(result.Errors, e => e.Key == nameof(model.EqualInt));
+            Assert.True(result.HasErrors(nameof(model.EqualInt)));
         }
 
         [Fact]
@@ -70,7 +68,7 @@ namespace EasyValidate.Test.EqualToTests
 
             var result = model.Validate();
 
-            Assert.False(result.HasErrors);
+            Assert.True(result.IsValid(nameof(model.EqualDouble)));
         }
 
         [Fact]
@@ -83,8 +81,7 @@ namespace EasyValidate.Test.EqualToTests
 
             var result = model.Validate();
 
-            Assert.True(result.HasErrors);
-            Assert.Contains(result.Errors, e => e.Key == nameof(model.EqualDouble));
+            Assert.True(result.HasErrors(nameof(model.EqualDouble)));
         }
 
         [Fact]
@@ -97,7 +94,7 @@ namespace EasyValidate.Test.EqualToTests
 
             var result = model.Validate();
 
-            Assert.False(result.HasErrors);
+            Assert.True(result.IsValid(nameof(model.EqualBool)));
         }
 
         [Fact]
@@ -110,8 +107,7 @@ namespace EasyValidate.Test.EqualToTests
 
             var result = model.Validate();
 
-            Assert.True(result.HasErrors);
-            Assert.Contains(result.Errors, e => e.Key == nameof(model.EqualBool));
+            Assert.True(result.HasErrors(nameof(model.EqualBool)));
         }
     }
 }

@@ -38,7 +38,7 @@ namespace EasyValidate.Handlers
                             var arrayValues = new List<string>();
                             foreach (var value in arg.Values)
                             {
-                                arrayValues.Add(value.Value?.ToString() ?? "null");
+                                arrayValues.Add(value.Value is bool b ? (b ? "true" : "false") : value.Value?.ToString() ?? "null");
                             }
                             constructorArguments.Add($"new[] {{ {string.Join(", ", arrayValues)} }}");
                         }
@@ -46,7 +46,7 @@ namespace EasyValidate.Handlers
                         {
                             constructorArguments.Add(arg.Kind switch
                             {
-                                TypedConstantKind.Primitive => arg.Value?.ToString() ?? "null",
+                                TypedConstantKind.Primitive => arg.Value is bool b ? (b ? "true" : "false") : arg.Value is string s ? $"\"{s}\"" : arg.Value?.ToString() ?? "null",
                                 TypedConstantKind.Enum => $"({arg.Type?.ToDisplayString()}){arg.Value}",
                                 TypedConstantKind.Type => $"typeof({arg.Value})",
                                 TypedConstantKind.Error => "null", // Handle error case gracefully

@@ -7,7 +7,7 @@ namespace EasyValidate.Abstraction.Attributes
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class UniqueAttribute<T>(T uniqueValue) : ValidationAttributeBase
     {
-        
+
         private readonly T _uniqueValue = uniqueValue;
 
         public override string ErrorCode => "UniqueValidationError";
@@ -36,4 +36,5 @@ namespace EasyValidate.Abstraction.Attributes
             return new AttributeResult { IsValid = true };
         }
     }
+    
 }
