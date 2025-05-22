@@ -6,87 +6,84 @@ namespace EasyValidate.Test.UniqueTests
     public class UniqueTests
     {
         [Fact]
-        public void Validate_UniqueString_ShouldPass()
+        public void Validate_UniqueStringCollection_ShouldPass()
         {
             var model = new UniqueModel
             {
-                UniqueString = "TestValue",
                 StringCollection = new List<string> { "Value1", "Value2", "Value3" }
             };
 
             var result = model.Validate();
 
-            Assert.True(result.IsValid);
+            Assert.False(result.HasErrors);
         }
 
         [Fact]
-        public void Validate_UniqueString_ShouldFail()
+        public void Validate_UniqueStringCollection_ShouldFail()
         {
             var model = new UniqueModel
             {
-                UniqueString = "TestValue",
-                StringCollection = new List<string> { "TestValue", "Value2", "TestValue" }
+                StringCollection = new List<string> { "Value1", "Value2", "Value1" }
             };
 
             var result = model.Validate();
 
-            Assert.False(result.IsValid);
+            Assert.True(result.HasErrors);
+            Assert.Contains(result.Errors, e => e.Key == nameof(model.StringCollection));
         }
 
         [Fact]
-        public void Validate_UniqueInt_ShouldPass()
+        public void Validate_UniqueIntCollection_ShouldPass()
         {
             var model = new UniqueModel
             {
-                UniqueInt = 42,
                 IntCollection = new List<int> { 1, 2, 3 }
             };
 
             var result = model.Validate();
 
-            Assert.True(result.IsValid);
+            Assert.False(result.HasErrors);
         }
 
         [Fact]
-        public void Validate_UniqueInt_ShouldFail()
+        public void Validate_UniqueIntCollection_ShouldFail()
         {
             var model = new UniqueModel
             {
-                UniqueInt = 42,
-                IntCollection = new List<int> { 42, 2, 42 }
+                IntCollection = new List<int> { 1, 2, 1 }
             };
 
             var result = model.Validate();
 
-            Assert.False(result.IsValid);
+            Assert.True(result.HasErrors);
+            Assert.Contains(result.Errors, e => e.Key == nameof(model.IntCollection));
         }
 
         [Fact]
-        public void Validate_UniqueDouble_ShouldPass()
+        public void Validate_UniqueDoubleCollection_ShouldPass()
         {
             var model = new UniqueModel
             {
-                UniqueDouble = 3.14,
                 DoubleCollection = new List<double> { 1.1, 2.2, 3.3 }
             };
 
             var result = model.Validate();
 
-            Assert.True(result.IsValid);
+            Assert.False(result.HasErrors);
         }
 
         [Fact]
-        public void Validate_UniqueDouble_ShouldFail()
+        public void Validate_UniqueDoubleCollection_ShouldFail()
         {
             var model = new UniqueModel
             {
-                UniqueDouble = 3.14,
-                DoubleCollection = new List<double> { 3.14, 2.2, 3.14 }
+                DoubleCollection = new List<double> { 1.1, 2.2, 1.1 }
             };
 
             var result = model.Validate();
 
-            Assert.False(result.IsValid);
+            Assert.True(result.HasErrors);
+            Assert.Contains(result.Errors, e => e.Key == nameof(model.DoubleCollection));
         }
     }
 }

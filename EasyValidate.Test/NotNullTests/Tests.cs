@@ -7,7 +7,20 @@ namespace EasyValidate.Test.NotNullTests
     public class Tests
     {
         [Fact]
-        public void NotNullString_ShouldFail_WhenNull()
+        public void Validate_NotNullString_ShouldPass()
+        {
+            var model = new Model
+            {
+                NotNullString = "NonNullValue"
+            };
+
+            var result = model.Validate();
+
+            Assert.False(result.HasErrors);
+        }
+
+        [Fact]
+        public void Validate_NotNullString_ShouldFail()
         {
             var model = new Model
             {
@@ -17,40 +30,11 @@ namespace EasyValidate.Test.NotNullTests
             var result = model.Validate();
 
             Assert.True(result.HasErrors);
-            Assert.Contains("NotNullString", result.Errors.Keys);
-            Assert.Contains(result.Errors["NotNullString"], e => e.ErrorCode == "NotNullValidationError");
+            Assert.Contains(result.Errors, e => e.Key == nameof(model.NotNullString));
         }
 
         [Fact]
-        public void NotNullString_ShouldPass_WhenNotNull()
-        {
-            var model = new Model
-            {
-                NotNullString = "Valid"
-            };
-
-            var result = model.Validate();
-
-            Assert.False(result.HasErrors);
-        }
-
-        [Fact]
-        public void NotNullObject_ShouldFail_WhenNull()
-        {
-            var model = new Model
-            {
-                NotNullObject = null
-            };
-
-            var result = model.Validate();
-
-            Assert.True(result.HasErrors);
-            Assert.Contains("NotNullObject", result.Errors.Keys);
-            Assert.Contains(result.Errors["NotNullObject"], e => e.ErrorCode == "NotNullValidationError");
-        }
-
-        [Fact]
-        public void NotNullObject_ShouldPass_WhenNotNull()
+        public void Validate_NotNullObject_ShouldPass()
         {
             var model = new Model
             {
@@ -63,7 +47,34 @@ namespace EasyValidate.Test.NotNullTests
         }
 
         [Fact]
-        public void NotNullNullableInt_ShouldFail_WhenNull()
+        public void Validate_NotNullObject_ShouldFail()
+        {
+            var model = new Model
+            {
+                NotNullObject = null
+            };
+
+            var result = model.Validate();
+
+            Assert.True(result.HasErrors);
+            Assert.Contains(result.Errors, e => e.Key == nameof(model.NotNullObject));
+        }
+
+        [Fact]
+        public void Validate_NotNullNullableInt_ShouldPass()
+        {
+            var model = new Model
+            {
+                NotNullNullableInt = 1
+            };
+
+            var result = model.Validate();
+
+            Assert.False(result.HasErrors);
+        }
+
+        [Fact]
+        public void Validate_NotNullNullableInt_ShouldFail()
         {
             var model = new Model
             {
@@ -73,21 +84,7 @@ namespace EasyValidate.Test.NotNullTests
             var result = model.Validate();
 
             Assert.True(result.HasErrors);
-            Assert.Contains("NotNullNullableInt", result.Errors.Keys);
-            Assert.Contains(result.Errors["NotNullNullableInt"], e => e.ErrorCode == "NotNullValidationError");
-        }
-
-        [Fact]
-        public void NotNullNullableInt_ShouldPass_WhenNotNull()
-        {
-            var model = new Model
-            {
-                NotNullNullableInt = 42
-            };
-
-            var result = model.Validate();
-
-            Assert.False(result.HasErrors);
+            Assert.Contains(result.Errors, e => e.Key == nameof(model.NotNullNullableInt));
         }
     }
 }

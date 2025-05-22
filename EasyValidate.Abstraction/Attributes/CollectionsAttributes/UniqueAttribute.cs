@@ -1,21 +1,18 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace EasyValidate.Abstraction.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class UniqueAttribute : ValidationAttributeBase
+    public class UniqueAttribute<T>(T uniqueValue) : ValidationAttributeBase
     {
-        private readonly object _uniqueValue;
-
-        public UniqueAttribute(object uniqueValue)
-        {
-            _uniqueValue = uniqueValue;
-        }
+        
+        private readonly T _uniqueValue = uniqueValue;
 
         public override string ErrorCode => "UniqueValidationError";
 
-        public AttributeResult Validate(string propertyName, IEnumerable collection)
+        public AttributeResult Validate(string propertyName, IEnumerable<T> collection)
         {
             int count = 0;
 

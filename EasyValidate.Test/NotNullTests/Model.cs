@@ -2,7 +2,7 @@ using EasyValidate.Abstraction.Attributes;
 
 namespace EasyValidate.Test.NotNullTests
 {
-    public class Model
+    public partial class Model
     {
         [NotNull]
         public string? NotNullString { get; set; }
@@ -11,6 +11,6 @@ namespace EasyValidate.Test.NotNullTests
         public object? NotNullObject { get; set; }
 
         [NotNull]
-        public int? NotNullNullableInt { get; set; }
+        public int? NotNullNullableInt { get; set; } = 0;
     }
 }

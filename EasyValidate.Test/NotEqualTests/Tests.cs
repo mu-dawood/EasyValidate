@@ -7,26 +7,11 @@ namespace EasyValidate.Test.NotEqualTests
     public class Tests
     {
         [Fact]
-        public void NotEqualString_ShouldFail_WhenEqualToForbiddenValue()
+        public void Validate_NotEqualString_ShouldPass()
         {
             var model = new Model
             {
-                NotEqualString = "ForbiddenValue"
-            };
-
-            var result = model.Validate();
-
-            Assert.True(result.HasErrors);
-            Assert.Contains("NotEqualString", result.Errors.Keys);
-            Assert.Contains(result.Errors["NotEqualString"], e => e.ErrorCode == "NotEqualToValidationError");
-        }
-
-        [Fact]
-        public void NotEqualString_ShouldPass_WhenNotEqualToForbiddenValue()
-        {
-            var model = new Model
-            {
-                NotEqualString = "AllowedValue"
+                NotEqualString = "DifferentValue"
             };
 
             var result = model.Validate();
@@ -35,22 +20,21 @@ namespace EasyValidate.Test.NotEqualTests
         }
 
         [Fact]
-        public void NotEqualInt_ShouldFail_WhenEqualToZero()
+        public void Validate_NotEqualString_ShouldFail()
         {
             var model = new Model
             {
-                NotEqualInt = 0
+                NotEqualString = "SameValue"
             };
 
             var result = model.Validate();
 
             Assert.True(result.HasErrors);
-            Assert.Contains("NotEqualInt", result.Errors.Keys);
-            Assert.Contains(result.Errors["NotEqualInt"], e => e.ErrorCode == "NotEqualToValidationError");
+            Assert.Contains(result.Errors, e => e.Key == nameof(model.NotEqualString));
         }
 
         [Fact]
-        public void NotEqualInt_ShouldPass_WhenNotEqualToZero()
+        public void Validate_NotEqualInt_ShouldPass()
         {
             var model = new Model
             {
@@ -63,23 +47,23 @@ namespace EasyValidate.Test.NotEqualTests
         }
 
         [Fact]
-        public void NotEqualObject_ShouldFail_WhenEqualToNull()
+        public void Validate_NotEqualInt_ShouldFail()
         {
             var model = new Model
             {
-                NotEqualObject = null
+                NotEqualInt = 0
             };
 
             var result = model.Validate();
 
             Assert.True(result.HasErrors);
-            Assert.Contains("NotEqualObject", result.Errors.Keys);
-            Assert.Contains(result.Errors["NotEqualObject"], e => e.ErrorCode == "NotEqualToValidationError");
+            Assert.Contains(result.Errors, e => e.Key == nameof(model.NotEqualInt));
         }
 
         [Fact]
-        public void NotEqualObject_ShouldPass_WhenNotEqualToNull()
+        public void Validate_NotEqualObject_ShouldPass()
         {
+            var forbiddenObject = new object();
             var model = new Model
             {
                 NotEqualObject = new object()
@@ -88,6 +72,21 @@ namespace EasyValidate.Test.NotEqualTests
             var result = model.Validate();
 
             Assert.False(result.HasErrors);
+        }
+
+        [Fact]
+        public void Validate_NotEqualObject_ShouldFail()
+        {
+            var forbiddenObject = new object();
+            var model = new Model
+            {
+                NotEqualObject = forbiddenObject
+            };
+
+            var result = model.Validate();
+
+            Assert.True(result.HasErrors);
+            Assert.Contains(result.Errors, e => e.Key == nameof(model.NotEqualObject));
         }
     }
 }

@@ -2,21 +2,21 @@ using EasyValidate.Abstraction.Attributes;
 
 namespace EasyValidate.Test.EqualToTests
 {
-    public class Model
+    public partial class Model
     {
-        [EqualTo("ExpectedValue")]
-        public string? EqualString { get; set; }
+        [EqualTo<string>("ExpectedValue")]
+        public string EqualString { get; set; } = string.Empty;
 
-        [EqualTo(42)]
-        public int EqualInt { get; set; }
+        [EqualTo<int>(42)]
+        public int EqualInt { get; set; } = 0;
 
-        [EqualTo(null)]
+        [EqualTo<object>(null)]
         public object? EqualObject { get; set; }
 
-        [EqualTo(3.14)]
-        public double EqualDouble { get; set; }
+        [EqualTo<double>(3.14)]
+        public double EqualDouble { get; set; } = 0.0;
 
-        [EqualTo(true)]
-        public bool EqualBool { get; set; }
+        [EqualTo<bool>(true)]
+        public bool EqualBool { get; set; } = false;
     }
 }

@@ -2,15 +2,15 @@ using EasyValidate.Abstraction.Attributes;
 
 namespace EasyValidate.Test.NotEqualTests
 {
-    public class Model
+    public partial class Model
     {
-        [NotEqualTo("ForbiddenValue")]
-        public string? NotEqualString { get; set; }
+        [NotEqualTo<string>("ForbiddenValue")]
+        public string NotEqualString { get; set; } = string.Empty;
 
-        [NotEqualTo(0)]
-        public int NotEqualInt { get; set; }
+        [NotEqualTo<int>(0)]
+        public int NotEqualInt { get; set; } = 0;
 
-        [NotEqualTo(null)]
+        [NotEqualTo<object>(null)]
         public object? NotEqualObject { get; set; }
     }
 }

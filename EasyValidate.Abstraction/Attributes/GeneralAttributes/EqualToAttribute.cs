@@ -2,19 +2,13 @@ using System;
 
 namespace EasyValidate.Abstraction.Attributes
 {
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class EqualToAttribute : ValidationAttributeBase
+    public class EqualToAttribute<T>(T comparisonValue) : ValidationAttributeBase
     {
-        public object ComparisonValue { get; }
-
-        public EqualToAttribute(object comparisonValue)
-        {
-            ComparisonValue = comparisonValue;
-        }
+        public T ComparisonValue { get; } = comparisonValue;
 
         public override string ErrorCode => "EqualToValidationError";
 
-        public AttributeResult Validate(string propertyName, object value)
+        public AttributeResult Validate(string propertyName, T value)
         {
             if (!Equals(value, ComparisonValue))
             {
@@ -29,4 +23,5 @@ namespace EasyValidate.Abstraction.Attributes
             return new AttributeResult { IsValid = true };
         }
     }
+
 }

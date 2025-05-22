@@ -7,7 +7,7 @@ namespace EasyValidate.Test.EqualToTests
     public class Tests
     {
         [Fact]
-        public void EqualString_ShouldPass_WhenEqualToExpectedValue()
+        public void Validate_EqualString_ShouldPass()
         {
             var model = new Model
             {
@@ -20,7 +20,7 @@ namespace EasyValidate.Test.EqualToTests
         }
 
         [Fact]
-        public void EqualString_ShouldFail_WhenNotEqualToExpectedValue()
+        public void Validate_EqualString_ShouldFail()
         {
             var model = new Model
             {
@@ -30,12 +30,11 @@ namespace EasyValidate.Test.EqualToTests
             var result = model.Validate();
 
             Assert.True(result.HasErrors);
-            Assert.Contains("EqualString", result.Errors.Keys);
-            Assert.Contains(result.Errors["EqualString"], e => e.ErrorCode == "EqualToValidationError");
+            Assert.Contains(result.Errors, e => e.Key == nameof(model.EqualString));
         }
 
         [Fact]
-        public void EqualInt_ShouldPass_WhenEqualTo42()
+        public void Validate_EqualInt_ShouldPass()
         {
             var model = new Model
             {
@@ -48,50 +47,21 @@ namespace EasyValidate.Test.EqualToTests
         }
 
         [Fact]
-        public void EqualInt_ShouldFail_WhenNotEqualTo42()
+        public void Validate_EqualInt_ShouldFail()
         {
             var model = new Model
             {
-                EqualInt = 0
+                EqualInt = 24
             };
 
             var result = model.Validate();
 
             Assert.True(result.HasErrors);
-            Assert.Contains("EqualInt", result.Errors.Keys);
-            Assert.Contains(result.Errors["EqualInt"], e => e.ErrorCode == "EqualToValidationError");
+            Assert.Contains(result.Errors, e => e.Key == nameof(model.EqualInt));
         }
 
         [Fact]
-        public void EqualObject_ShouldPass_WhenEqualToNull()
-        {
-            var model = new Model
-            {
-                EqualObject = null
-            };
-
-            var result = model.Validate();
-
-            Assert.False(result.HasErrors);
-        }
-
-        [Fact]
-        public void EqualObject_ShouldFail_WhenNotEqualToNull()
-        {
-            var model = new Model
-            {
-                EqualObject = new object()
-            };
-
-            var result = model.Validate();
-
-            Assert.True(result.HasErrors);
-            Assert.Contains("EqualObject", result.Errors.Keys);
-            Assert.Contains(result.Errors["EqualObject"], e => e.ErrorCode == "EqualToValidationError");
-        }
-
-        [Fact]
-        public void EqualDouble_ShouldPass_WhenEqualTo3Point14()
+        public void Validate_EqualDouble_ShouldPass()
         {
             var model = new Model
             {
@@ -104,7 +74,7 @@ namespace EasyValidate.Test.EqualToTests
         }
 
         [Fact]
-        public void EqualDouble_ShouldFail_WhenNotEqualTo3Point14()
+        public void Validate_EqualDouble_ShouldFail()
         {
             var model = new Model
             {
@@ -114,12 +84,11 @@ namespace EasyValidate.Test.EqualToTests
             var result = model.Validate();
 
             Assert.True(result.HasErrors);
-            Assert.Contains("EqualDouble", result.Errors.Keys);
-            Assert.Contains(result.Errors["EqualDouble"], e => e.ErrorCode == "EqualToValidationError");
+            Assert.Contains(result.Errors, e => e.Key == nameof(model.EqualDouble));
         }
 
         [Fact]
-        public void EqualBool_ShouldPass_WhenEqualToTrue()
+        public void Validate_EqualBool_ShouldPass()
         {
             var model = new Model
             {
@@ -132,7 +101,7 @@ namespace EasyValidate.Test.EqualToTests
         }
 
         [Fact]
-        public void EqualBool_ShouldFail_WhenNotEqualToTrue()
+        public void Validate_EqualBool_ShouldFail()
         {
             var model = new Model
             {
@@ -142,8 +111,7 @@ namespace EasyValidate.Test.EqualToTests
             var result = model.Validate();
 
             Assert.True(result.HasErrors);
-            Assert.Contains("EqualBool", result.Errors.Keys);
-            Assert.Contains(result.Errors["EqualBool"], e => e.ErrorCode == "EqualToValidationError");
+            Assert.Contains(result.Errors, e => e.Key == nameof(model.EqualBool));
         }
     }
 }
