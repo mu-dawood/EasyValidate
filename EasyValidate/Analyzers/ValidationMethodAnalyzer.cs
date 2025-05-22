@@ -11,7 +11,7 @@ public class ValidationMethodAnalyzer : DiagnosticAnalyzer
     private static readonly DiagnosticDescriptor Rule = new(
         id: DiagnosticId,
         title: "Invalid Validate method in derived class",
-        messageFormat: "Class '{0}' must have at least one 'Validate(string, Type)' method with exactly two parameters, and all 'Validate' methods must have exactly two parameters",
+        messageFormat: "Class '{0}' must have at least one 'Validate(string, Type)' method with exactly two parameters, and all 'Validate' methods must have exactly two parameters. Ensure all 'Validate' methods return 'EasyValidate.Abstraction.AttributeResult'.",
         category: "Design",
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true);

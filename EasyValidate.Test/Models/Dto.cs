@@ -1,6 +1,3 @@
-
-
-
 using EasyValidate.Abstraction;
 using EasyValidate.Abstraction.Attributes;
 
@@ -35,7 +32,7 @@ namespace EasyValidate.Test.Models
     {
         public override string ErrorCode => "IsNotAdmin";
 
-        public AttributeResult Validate(string propertyName, string? value)
+        public AttributeResult Validate(string propertyName, string value)
         {
             throw new NotImplementedException();
         }
