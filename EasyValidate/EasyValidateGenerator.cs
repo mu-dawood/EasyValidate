@@ -38,6 +38,14 @@ namespace EasyValidate
 
         private static void GenerateValidationClass(INamedTypeSymbol classSymbol, SourceProductionContext context)
         {
+            // Skip classes that have no properties with validation attributes
+            if (!classSymbol.GetMembers().OfType<Microsoft.CodeAnalysis.IPropertySymbol>()
+                    .Any(p => p.GetAttributes().Any(a => a.AttributeClass != null &&
+                        a.AttributeClass.ContainingNamespace.ToDisplayString().StartsWith("EasyValidate.Abstraction.Attributes"))))
+            {
+                return;
+            }
+
             var sb = new StringBuilder();
             var chain = new ValidationChain()
                 .Add(new ValidateAttributeUsageHandler())

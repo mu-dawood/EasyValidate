@@ -5,6 +5,7 @@
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <LangVersion>9.0</LangVersion>
+    <IsRoslynAnalyzer>true</IsRoslynAnalyzer>
   </PropertyGroup>
 
   <ItemGroup>
