@@ -25,7 +25,7 @@ namespace EasyValidate.Abstraction
         /// <summary>
         /// Gets or sets the validation errors.
         /// </summary>
-        private Dictionary<string, List<ValidationError>> _errors = new Dictionary<string, List<ValidationError>>();
+        private readonly Dictionary<string, List<ValidationError>> _errors = new Dictionary<string, List<ValidationError>>();
         public IReadOnlyDictionary<string, IReadOnlyList<ValidationError>> Errors => _errors.ToDictionary(
             kvp => kvp.Key,
             kvp => (IReadOnlyList<ValidationError>)kvp.Value.AsReadOnly());

@@ -9,7 +9,7 @@ namespace EasyValidate.Abstraction.Attributes
 
         public AttributeResult Validate(string propertyName, object value)
         {
-            if (value == null || (value is string str && string.IsNullOrWhiteSpace(str)))
+            if (value == null)
             {
                 return new AttributeResult
                 {

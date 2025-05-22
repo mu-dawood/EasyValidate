@@ -23,47 +23,45 @@ namespace EasyValidate.Handlers
                     .OfType<IPropertySymbol>()
                     .Any(subMember => subMember.GetAttributes().Any(attr => attr.AttributeClass?.BaseType?.ToDisplayString() == "EasyValidate.Abstraction.Attributes.ValidationAttributeBase"));
 
+
+                foreach (var attr in member.GetAttributes())
+                {
+                    var attributeClass = attr.AttributeClass;
+                    if (attributeClass?.BaseType?.ToDisplayString() != "EasyValidate.Abstraction.Attributes.ValidationAttributeBase")
+                        continue;
+
+                    var constructorArguments = new List<string>();
+                    foreach (var arg in attr.ConstructorArguments)
+                    {
+                        if (arg.Kind == TypedConstantKind.Array)
+                        {
+                            var arrayValues = new List<string>();
+                            foreach (var value in arg.Values)
+                            {
+                                arrayValues.Add(value.Value?.ToString() ?? "null");
+                            }
+                            constructorArguments.Add($"new[] {{ {string.Join(", ", arrayValues)} }}");
+                        }
+                        else
+                        {
+                            constructorArguments.Add(arg.Kind switch
+                            {
+                                TypedConstantKind.Primitive => arg.Value?.ToString() ?? "null",
+                                TypedConstantKind.Enum => $"({arg.Type?.ToDisplayString()}){arg.Value}",
+                                TypedConstantKind.Type => $"typeof({arg.Value})",
+                                TypedConstantKind.Error => "null", // Handle error case gracefully
+                                _ => "null"
+                            });
+                        }
+                    }
+
+                    var memberName = member.Name;
+
+                    sb.AppendLine($"            result.TryAddError(nameof({memberName}), new {attributeClass.ToDisplayString()}({string.Join(", ", constructorArguments)}), (v) => v.Validate(nameof({memberName}), {memberName}));");
+                }
                 if (hasValidationAttributes)
                 {
                     sb.AppendLine($"            if ({member.Name} != null) result.Merge(nameof({member.Name}), {member.Name}.Validate(formatter));");
-                }
-                else
-                {
-                    foreach (var attr in member.GetAttributes())
-                    {
-                        var attributeClass = attr.AttributeClass;
-                        if (attributeClass?.BaseType?.ToDisplayString() != "EasyValidate.Abstraction.Attributes.ValidationAttributeBase")
-                            continue;
-
-                        var constructorArguments = new List<string>();
-                        foreach (var arg in attr.ConstructorArguments)
-                        {
-                            if (arg.Kind == TypedConstantKind.Array)
-                            {
-                                var arrayValues = new List<string>();
-                                foreach (var value in arg.Values)
-                                {
-                                    arrayValues.Add(value.Value?.ToString() ?? "null");
-                                }
-                                constructorArguments.Add($"new[] {{ {string.Join(", ", arrayValues)} }}");
-                            }
-                            else
-                            {
-                                constructorArguments.Add(arg.Kind switch
-                                {
-                                    TypedConstantKind.Primitive => arg.Value?.ToString() ?? "null",
-                                    TypedConstantKind.Enum => $"({arg.Type?.ToDisplayString()}){arg.Value}",
-                                    TypedConstantKind.Type => $"typeof({arg.Value})",
-                                    TypedConstantKind.Error => "null", // Handle error case gracefully
-                                    _ => "null"
-                                });
-                            }
-                        }
-
-                        var memberName = member.Name;
-
-                        sb.AppendLine($"            result.TryAddError(nameof({memberName}), new {attributeClass.ToDisplayString()}({string.Join(", ", constructorArguments)}), (v) => v.Validate(nameof({memberName}), {memberName}));");
-                    }
                 }
             }
 
