@@ -16,9 +16,9 @@ namespace EasyValidate.Abstraction.Attributes.NumericAttributes
 
         public override string ErrorCode => "RangeValidationError";
 
-        public AttributeResult Validate(string propertyName, double value)
+        public AttributeResult Validate<T>(string propertyName, T value) where T : IComparable<T>
         {
-            if (value < Minimum || value > Maximum)
+            if (value.CompareTo((T)Convert.ChangeType(Minimum, typeof(T))) < 0 || value.CompareTo((T)Convert.ChangeType(Maximum, typeof(T))) > 0)
             {
                 return new AttributeResult
                 {

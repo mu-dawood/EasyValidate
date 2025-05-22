@@ -7,9 +7,9 @@ namespace EasyValidate.Abstraction.Attributes.NumericAttributes
     {
         public override string ErrorCode => "OddNumberValidationError";
 
-        public AttributeResult Validate(string propertyName, int value)
+        public AttributeResult Validate<T>(string propertyName, T value) where T : struct, IComparable<T>
         {
-            if (value % 2 == 0)
+            if (value is int intValue && intValue % 2 == 0)
             {
                 return new AttributeResult
                 {

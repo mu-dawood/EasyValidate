@@ -1,18 +1,20 @@
 using System;
 
-namespace EasyValidate.Abstraction.Attributes.StringAttributes
+namespace EasyValidate.Abstraction.Attributes.GeneralAttributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public abstract class NumericAttribute : ValidationAttributeBase
+    public class NotNullAttribute : ValidationAttributeBase
     {
-        public AttributeResult Validate(string propertyName, string value)
+        public override string ErrorCode => "NotNullValidationError";
+
+        public AttributeResult Validate(string propertyName, object value)
         {
-            if (string.IsNullOrWhiteSpace(value) || !double.TryParse(value, out _))
+            if (value == null)
             {
                 return new AttributeResult
                 {
                     IsValid = false,
-                    Message = "The field {0} must be a valid numeric value.",
+                    Message = "The field {0} cannot be null.",
                     MessageArgs = new object[] { propertyName }
                 };
             }

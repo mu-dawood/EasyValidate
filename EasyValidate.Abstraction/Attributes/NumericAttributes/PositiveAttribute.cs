@@ -7,9 +7,9 @@ namespace EasyValidate.Abstraction.Attributes.NumericAttributes
     {
         public override string ErrorCode => "PositiveValidationError";
 
-        public AttributeResult Validate(string propertyName, double value)
+        public AttributeResult Validate<T>(string propertyName, T value) where T : IComparable<T>
         {
-            if (value <= 0)
+            if (value.CompareTo(default(T)) <= 0)
             {
                 return new AttributeResult
                 {

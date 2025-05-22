@@ -1,0 +1,25 @@
+using System;
+
+namespace EasyValidate.Abstraction.Attributes.StringAttributes
+{
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
+    public class NotEmptyAttribute : ValidationAttributeBase
+    {
+        public override string ErrorCode => "NotEmptyValidationError";
+
+        public AttributeResult Validate(string propertyName, string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return new AttributeResult
+                {
+                    IsValid = false,
+                    Message = "The field {0} cannot be empty.",
+                    MessageArgs = new object[] { propertyName }
+                };
+            }
+
+            return new AttributeResult { IsValid = true };
+        }
+    }
+}
