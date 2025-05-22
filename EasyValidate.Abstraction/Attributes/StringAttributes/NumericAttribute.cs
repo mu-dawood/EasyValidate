@@ -13,7 +13,7 @@ namespace EasyValidate.Abstraction.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must be a valid numeric value.",
-                    MessageArgs = new object[] { propertyName }
+                    MessageArgs = [propertyName]
                 };
             }
 

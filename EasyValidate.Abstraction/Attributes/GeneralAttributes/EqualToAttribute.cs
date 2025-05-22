@@ -16,7 +16,7 @@ namespace EasyValidate.Abstraction.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must be equal to {1}.",
-                    MessageArgs = new object[] { propertyName, ComparisonValue }
+                    MessageArgs = [propertyName, ComparisonValue]
                 };
             }
 

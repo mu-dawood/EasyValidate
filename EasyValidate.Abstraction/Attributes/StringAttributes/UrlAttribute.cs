@@ -26,7 +26,7 @@ namespace EasyValidate.Abstraction.Attributes
             {
                 IsValid = false,
                 Message = "The field {0} must be a valid URL.",
-                MessageArgs = new object[] { propertyName }
+                MessageArgs = [propertyName]
             };
         }
     }

@@ -23,7 +23,7 @@ namespace EasyValidate.Abstraction.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must match the pattern {1}.",
-                    MessageArgs = new object[] { propertyName, Pattern }
+                    MessageArgs = [propertyName, Pattern]
                 };
             }
 

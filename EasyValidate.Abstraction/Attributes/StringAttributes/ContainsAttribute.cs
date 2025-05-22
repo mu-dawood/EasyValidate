@@ -1,32 +1,32 @@
-using System;
+// using System;
 
-namespace EasyValidate.Abstraction.Attributes
-{
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class ContainsAttribute : ValidationAttributeBase
-    {
-        public string Substring { get; }
+// namespace EasyValidate.Abstraction.Attributes
+// {
+//     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
+//     public class ContainsAttribute : ValidationAttributeBase
+//     {
+//         public string Substring { get; }
 
-        public ContainsAttribute(string substring)
-        {
-            Substring = substring;
-        }
+//         public ContainsAttribute(string substring)
+//         {
+//             Substring = substring;
+//         }
 
-        public override string ErrorCode => "ContainsValidationError";
+//         public override string ErrorCode => "ContainsValidationError";
 
-        public AttributeResult Validate(string propertyName, string value)
-        {
-            if (value == null || !value.Contains(Substring))
-            {
-                return new AttributeResult
-                {
-                    IsValid = false,
-                    Message = "The field {0} must contain {1}.",
-                    MessageArgs = new object[] { propertyName, Substring }
-                };
-            }
+//         public AttributeResult Validate(string propertyName, string value)
+//         {
+//             if (value == null || !value.Contains(Substring))
+//             {
+//                 return new AttributeResult
+//                 {
+//                     IsValid = false,
+//                     Message = "The field {0} must contain {1}.",
+//                     MessageArgs = new object[] { propertyName, Substring }
+//                 };
+//             }
 
-            return new AttributeResult { IsValid = true };
-        }
-    }
-}
+//             return new AttributeResult { IsValid = true };
+//         }
+//     }
+// }

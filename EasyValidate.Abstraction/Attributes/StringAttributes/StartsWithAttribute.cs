@@ -22,7 +22,7 @@ namespace EasyValidate.Abstraction.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must start with {1}.",
-                    MessageArgs = new object[] { propertyName, Prefix }
+                    MessageArgs = [propertyName, Prefix]
                 };
             }
 

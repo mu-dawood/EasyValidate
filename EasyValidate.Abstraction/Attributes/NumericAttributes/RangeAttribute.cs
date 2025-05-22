@@ -38,7 +38,7 @@ namespace EasyValidate.Abstraction.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must be a numeric type.",
-                    MessageArgs = new object[] { propertyName }
+                    MessageArgs = [propertyName]
                 };
             }
 
@@ -48,7 +48,7 @@ namespace EasyValidate.Abstraction.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must be between {1} and {2}.",
-                    MessageArgs = new object[] { propertyName, Minimum, Maximum }
+                    MessageArgs = [propertyName, Minimum, Maximum]
                 };
             }
 

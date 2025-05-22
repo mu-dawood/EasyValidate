@@ -15,7 +15,7 @@ namespace EasyValidate.Abstraction.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must be an odd number.",
-                    MessageArgs = new object[] { propertyName }
+                    MessageArgs = [propertyName]
                 };
             }
 
@@ -40,12 +40,12 @@ namespace EasyValidate.Abstraction.Attributes
         {
             if (!NumericHelper.IsNumericType(value))
             {
-                return new AttributeResult { IsValid = false, Message = "The field {0} must be a numeric type.", MessageArgs = new object[] { propertyName } };
+                return new AttributeResult { IsValid = false, Message = "The field {0} must be a numeric type.", MessageArgs = [propertyName] };
             }
             var decimalValue = Convert.ToDecimal(value);
             if (decimalValue % 2 == 0)
             {
-                return new AttributeResult { IsValid = false, Message = "The field {0} must be an odd number.", MessageArgs = new object[] { propertyName } };
+                return new AttributeResult { IsValid = false, Message = "The field {0} must be an odd number.", MessageArgs = [propertyName] };
             }
             return new AttributeResult { IsValid = true };
         }
