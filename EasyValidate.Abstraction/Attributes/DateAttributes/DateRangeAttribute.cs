@@ -1,6 +1,6 @@
 using System;
 
-namespace EasyValidate.Abstraction.Attributes.DateAttributes
+namespace EasyValidate.Abstraction.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class DateRangeAttribute : ValidationAttributeBase
