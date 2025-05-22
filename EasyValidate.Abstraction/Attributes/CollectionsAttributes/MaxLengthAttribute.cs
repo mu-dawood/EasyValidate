@@ -5,14 +5,9 @@ using System.Linq;
 namespace EasyValidate.Abstraction.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class MaxLengthAttribute<T> : ValidationAttributeBase
+    public class MaxLengthAttribute<T>(int maximum) : ValidationAttributeBase
     {
-        public int Maximum { get; }
-
-        public MaxLengthAttribute(int maximum)
-        {
-            Maximum = maximum;
-        }
+        public int Maximum { get; } = maximum;
 
         public override string ErrorCode => "MaxLengthValidationError";
 

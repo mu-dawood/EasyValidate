@@ -5,14 +5,9 @@ using System.Linq;
 namespace EasyValidate.Abstraction.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class MinLengthAttribute<T> : ValidationAttributeBase
+    public class MinLengthAttribute<T>(int minimum) : ValidationAttributeBase
     {
-        public int Minimum { get; }
-
-        public MinLengthAttribute(int minimum)
-        {
-            Minimum = minimum;
-        }
+        public int Minimum { get; } = minimum;
 
         public override string ErrorCode => "MinLengthValidationError";
 

@@ -5,10 +5,9 @@ using System.Linq;
 namespace EasyValidate.Abstraction.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class LengthAttribute<T>(int minimum, int maximum) : ValidationAttributeBase
+    public class LengthAttribute<T>(int length) : ValidationAttributeBase
     {
-        public int Minimum { get; } = minimum;
-        public int Maximum { get; } = maximum;
+        public int Length { get; } = length;
 
         public override string ErrorCode => "LengthValidationError";
 
@@ -25,13 +24,13 @@ namespace EasyValidate.Abstraction.Attributes
             }
 
             int count = value.Count();
-            if (count < Minimum || count > Maximum)
+            if (count != Length)
             {
                 return new AttributeResult
                 {
                     IsValid = false,
-                    Message = "The field {0} must have a length between {1} and {2}.",
-                    MessageArgs = [propertyName, Minimum, Maximum]
+                    Message = "The field {0} must have exactly {1} items.",
+                    MessageArgs = [propertyName, Length]
                 };
             }
 
