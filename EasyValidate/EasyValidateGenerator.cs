@@ -65,7 +65,7 @@ namespace EasyValidate
                 .Add(new CustomValidateMethodHandler());
 
             chain.Handle(classSymbol, context, sb);
-            context.AddSource($"{classSymbol.Name}_Validation.g.cs", SourceText.From(sb.ToString(), Encoding.UTF8));
+            context.AddSource($"{classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Replace('.', '_')}_Validation.g.cs", SourceText.From(sb.ToString(), Encoding.UTF8));
 
             DebuggerUtil.Log($"Successfully generated validation class for: {classSymbol.Name}");
         }
