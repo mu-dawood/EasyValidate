@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyValidate.Abstraction", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyValidate.Test", "EasyValidate.Test\EasyValidate.Test.csproj", "{B0A1D3D6-5C77-46BF-843E-8CE62F01E90A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyValidate.ConsoleTest", "EasyValidate.ConsoleTest\EasyValidate.ConsoleTest.csproj", "{B257C6C6-748A-4FB4-A017-8F8A1FABE6E3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{B0A1D3D6-5C77-46BF-843E-8CE62F01E90A}.Release|x64.Build.0 = Release|Any CPU
 		{B0A1D3D6-5C77-46BF-843E-8CE62F01E90A}.Release|x86.ActiveCfg = Release|Any CPU
 		{B0A1D3D6-5C77-46BF-843E-8CE62F01E90A}.Release|x86.Build.0 = Release|Any CPU
+		{B257C6C6-748A-4FB4-A017-8F8A1FABE6E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B257C6C6-748A-4FB4-A017-8F8A1FABE6E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B257C6C6-748A-4FB4-A017-8F8A1FABE6E3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B257C6C6-748A-4FB4-A017-8F8A1FABE6E3}.Debug|x64.Build.0 = Debug|Any CPU
+		{B257C6C6-748A-4FB4-A017-8F8A1FABE6E3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B257C6C6-748A-4FB4-A017-8F8A1FABE6E3}.Debug|x86.Build.0 = Debug|Any CPU
+		{B257C6C6-748A-4FB4-A017-8F8A1FABE6E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B257C6C6-748A-4FB4-A017-8F8A1FABE6E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B257C6C6-748A-4FB4-A017-8F8A1FABE6E3}.Release|x64.ActiveCfg = Release|Any CPU
+		{B257C6C6-748A-4FB4-A017-8F8A1FABE6E3}.Release|x64.Build.0 = Release|Any CPU
+		{B257C6C6-748A-4FB4-A017-8F8A1FABE6E3}.Release|x86.ActiveCfg = Release|Any CPU
+		{B257C6C6-748A-4FB4-A017-8F8A1FABE6E3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

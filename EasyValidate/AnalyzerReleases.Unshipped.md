@@ -5,4 +5,5 @@
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
-VAL001 | Design | Error | ValidationMethodAnalyzer
+VAL001 | Design | Error | ValidationMethodAnalyzerodAnalyzer
+VAL002 | Usage | Error | ValidateAttributeUsageAnalyzer

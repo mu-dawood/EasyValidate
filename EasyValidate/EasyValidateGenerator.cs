@@ -57,7 +57,6 @@ namespace EasyValidate
 
             var sb = new StringBuilder();
             var chain = new ValidationChain()
-                .Add(new ValidateAttributeUsageHandler())
                 .Add(new UsingImportsHandler())
                 .Add(new NamespaceHandler())
                 .Add(new ClassDeclarationHandler())

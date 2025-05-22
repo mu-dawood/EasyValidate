@@ -55,7 +55,7 @@ public class ValidationMethodAnalyzer : DiagnosticAnalyzer
         if (!hasCorrectOverload || !allHaveTwoParameters || !allReturnCorrectType)
         {
             var diagnostic = Diagnostic.Create(Rule, classSymbol.Locations[0], classSymbol.Name);
-            context.ReportDiagnostic(diagnostic);
+           context.ReportDiagnostic(diagnostic);
         }
     }
 }
