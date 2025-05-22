@@ -43,6 +43,25 @@ namespace EasyValidate.Test.RequiredTests
         }
 
         [Fact]
+        public void RequiredString_ShouldPass_WhenEmpty()
+        {
+            var model = new Model
+            {
+                RequiredString = "",
+                RequiredInt = 1,
+                RequiredDateTime = DateTime.Now,
+                RequiredSubModel = new SubModel
+                {
+                    SubRequiredString = "Valid"
+                }
+            };
+
+            var result = model.Validate();
+
+            Assert.False(result.HasErrors);
+        }
+
+        [Fact]
         public void RequiredSubModel_ShouldFail_WhenNull()
         {
             var model = new Model
@@ -76,6 +95,7 @@ namespace EasyValidate.Test.RequiredTests
             Assert.False(result.HasErrors);
         }
 
+
         [Fact]
         public void SubRequiredString_ShouldFail_WhenNull()
         {
@@ -92,6 +112,44 @@ namespace EasyValidate.Test.RequiredTests
             Assert.True(result.HasErrors);
             Assert.Contains("RequiredSubModel.SubRequiredString", result.Errors.Keys);
             Assert.Contains(result.Errors["RequiredSubModel.SubRequiredString"], e => e.ErrorCode == "RequiredValidationError");
+        }
+
+        [Fact]
+        public void RequiredInt_ShouldPass_WhenDefault()
+        {
+            var model = new Model
+            {
+                RequiredString = "Valid",
+                RequiredInt = 0,
+                RequiredDateTime = DateTime.Now,
+                RequiredSubModel = new SubModel
+                {
+                    SubRequiredString = "Valid"
+                }
+            };
+
+            var result = model.Validate();
+
+            Assert.False(result.HasErrors);
+        }
+
+        [Fact]
+        public void RequiredDateTime_ShouldPass_WhenDefault()
+        {
+            var model = new Model
+            {
+                RequiredString = "Valid",
+                RequiredInt = 1,
+                RequiredDateTime = default,
+                RequiredSubModel = new SubModel
+                {
+                    SubRequiredString = "Valid"
+                }
+            };
+
+            var result = model.Validate();
+
+            Assert.False(result.HasErrors);
         }
     }
 }
