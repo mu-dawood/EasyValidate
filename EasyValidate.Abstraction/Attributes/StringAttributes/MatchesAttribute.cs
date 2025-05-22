@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace EasyValidate.Abstraction.Attributes.StringAttributes
+namespace EasyValidate.Abstraction.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class MatchesAttribute : ValidationAttributeBase

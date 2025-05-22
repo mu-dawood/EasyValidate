@@ -39,15 +39,15 @@ namespace EasyValidate
         private static void GenerateValidationClass(INamedTypeSymbol classSymbol, SourceProductionContext context)
         {
             var sb = new StringBuilder();
+            var chain = new ValidationChain()
+                .Add(new ValidateAttributeUsageHandler())
+                .Add(new UsingImportsHandler())
+                .Add(new NamespaceHandler())
+                .Add(new ClassDeclarationHandler())
+                .Add(new DefaultValidateMethodHandler())
+                .Add(new CustomValidateMethodHandler());
 
-            new ValidateAttributeUsageHandler()
-                .WithNext(new UsingImportsHandler())
-                .WithNext(new NamespaceHandler())
-                .WithNext(new ClassDeclarationHandler())
-                .WithNext(new DefaultValidateMethodHandler())
-                .WithNext(new CustomValidateMethodHandler())
-                .Handle(classSymbol, context, sb);
-
+            chain.Handle(classSymbol, context, sb);
             context.AddSource($"{classSymbol.Name}_Validation.g.cs", SourceText.From(sb.ToString(), Encoding.UTF8));
         }
 
