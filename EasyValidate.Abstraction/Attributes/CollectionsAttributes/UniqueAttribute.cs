@@ -6,20 +6,33 @@ namespace EasyValidate.Abstraction.Attributes
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class UniqueAttribute : ValidationAttributeBase
     {
+        private readonly object _uniqueValue;
+
+        public UniqueAttribute(object uniqueValue)
+        {
+            _uniqueValue = uniqueValue;
+        }
+
         public override string ErrorCode => "UniqueValidationError";
 
-        public AttributeResult Validate(string propertyName, IEnumerable collection, object value)
+        public AttributeResult Validate(string propertyName, IEnumerable collection)
         {
+            int count = 0;
+
             foreach (var item in collection)
             {
-                if (item.Equals(value))
+                if (item.Equals(_uniqueValue))
                 {
-                    return new AttributeResult
+                    count++;
+                    if (count > 1)
                     {
-                        IsValid = false,
-                        Message = "The field {0} must be unique.",
-                        MessageArgs = new object[] { propertyName }
-                    };
+                        return new AttributeResult
+                        {
+                            IsValid = false,
+                            Message = "The field {0} must be unique.",
+                            MessageArgs = new object[] { propertyName }
+                        };
+                    }
                 }
             }
 
