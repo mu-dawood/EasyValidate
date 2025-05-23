@@ -1,0 +1,112 @@
+/* Light-themed inline code snippet styling */
+.inlineSnippet {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  margin: 0.5rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+  position: relative;
+}
+
+/* Light C# syntax highlighting */
+.inlineSnippet pre {
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+}
+
+.inlineSnippet code {
+  color: #24292e;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre;
+  word-wrap: normal;
+  display: block;
+  width: 100%;
+  font-weight: 400;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* C# Specific Syntax Highlighting - Light Theme */
+.inlineSnippet :global(.token.keyword) {
+  color: #0550AE !important;
+  font-weight: 600;
+}
+
+.inlineSnippet :global(.token.class-name) {
+  color: #118D64 !important;
+  font-weight: 500;
+}
+
+.inlineSnippet :global(.token.function) {
+  color: #AA5D00 !important;
+  font-weight: 500;
+}
+
+.inlineSnippet :global(.token.string) {
+  color: #A31515 !important;
+}
+
+.inlineSnippet :global(.token.number) {
+  color: #098658 !important;
+}
+
+.inlineSnippet :global(.token.comment) {
+  color: #6A9955 !important;
+  font-style: italic;
+}
+
+.inlineSnippet :global(.token.punctuation) {
+  color: #24292e !important;
+}
+
+.inlineSnippet :global(.token.operator) {
+  color: #5C6773 !important;
+}
+
+.inlineSnippet :global(.token.boolean) {
+  color: #0550AE !important;
+  font-weight: 600;
+}
+
+.inlineSnippet :global(.token.property) {
+  color: #118D64 !important;
+}
+
+.inlineSnippet :global(.token.namespace) {
+  color: #267F99 !important;
+}
+
+/* Bash/terminal syntax highlighting */
+.inlineSnippet :global(.language-bash) {
+  color: #24292e !important;
+}
+
+.inlineSnippet :global(.language-bash .token.function) {
+  color: #0550AE !important;
+}
+
+.inlineSnippet :global(.language-bash .token.operator) {
+  color: #24292e !important;
+}
+
+.inlineSnippet :global(.language-bash .token.string) {
+  color: #A31515 !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .inlineSnippet {
+    padding: 0.5rem;
+  }
+  
+  .inlineSnippet code {
+    font-size: 0.85rem;
+  }
+}

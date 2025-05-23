@@ -25,42 +25,6 @@ export default {
       },
       "versionPersistence": "localStorage"
     },
-    "footer": {
-      "style": "dark",
-      "links": [
-        {
-          "title": "Docs",
-          "items": [
-            {
-              "label": "Getting Started",
-              "to": "/docs/intro"
-            },
-            {
-              "label": "Attributes",
-              "to": "/docs/attributes"
-            },
-            {
-              "label": "Extending",
-              "to": "/docs/extending"
-            }
-          ]
-        },
-        {
-          "title": "Community",
-          "items": [
-            {
-              "label": "GitHub",
-              "href": "https://github.com/your-org/EasyValidate"
-            },
-            {
-              "label": "NuGet",
-              "href": "https://www.nuget.org/packages/EasyValidate"
-            }
-          ]
-        }
-      ],
-      "copyright": "© 2025 EasyValidate Authors. MIT License."
-    },
     "colorMode": {
       "defaultMode": "light",
       "disableSwitch": true,

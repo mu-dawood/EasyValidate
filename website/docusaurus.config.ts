@@ -21,27 +21,7 @@ const config: Config = {
         // We'll style the sidebar to include the logo at the top
       },
     },
-    footer: {
-      style: 'dark',
-      links: [
-        {
-          title: 'Docs',
-          items: [
-            { label: 'Getting Started', to: '/docs/intro' },
-            { label: 'Attributes', to: '/docs/attributes' },
-            { label: 'Extending', to: '/docs/extending' },
-          ],
-        },
-        {
-          title: 'Community',
-          items: [
-            { label: 'GitHub', href: 'https://github.com/your-org/EasyValidate' },
-            { label: 'NuGet', href: 'https://www.nuget.org/packages/EasyValidate' },
-          ],
-        },
-      ],
-      copyright: `© ${new Date().getFullYear()} EasyValidate Authors. MIT License.`,
-    },
+    footer: undefined,
     colorMode: {
       defaultMode: 'light',
       disableSwitch: true,

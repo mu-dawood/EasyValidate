@@ -1,0 +1,145 @@
+/* VS Code-style dark theme for C# - No import required */
+
+/* C# Themed Code Block Styling - VS Code Dark Style */
+.codeBlock {
+  background: #1e1e1e;
+  border: 2px solid #3c3c3c;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  overflow-x: auto;
+  position: relative;
+  margin: 1rem 0;
+}
+
+.codeBlock::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #007ACC 0%, #68217A 100%);
+  border-radius: 8px 8px 0 0;
+}
+
+.codeBlock pre {
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+}
+
+.codeBlock code {
+  color: #D4D4D4;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  white-space: pre;
+  word-wrap: normal;
+  display: block;
+  width: 100%;
+  font-weight: 400;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* C# Specific Syntax Highlighting - VS Code Dark Theme */
+.codeBlock :global(.token.keyword) {
+  color: #569CD6 !important;
+  font-weight: 600;
+}
+
+.codeBlock :global(.token.class-name) {
+  color: #4EC9B0 !important;
+  font-weight: 600;
+}
+
+.codeBlock :global(.token.function) {
+  color: #DCDCAA !important;
+  font-weight: 500;
+}
+
+.codeBlock :global(.token.string) {
+  color: #CE9178 !important;
+  font-weight: 400;
+}
+
+.codeBlock :global(.token.number) {
+  color: #B5CEA8 !important;
+  font-weight: 400;
+}
+
+.codeBlock :global(.token.comment) {
+  color: #6A9955 !important;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.codeBlock :global(.token.punctuation) {
+  color: #D4D4D4 !important;
+  font-weight: 400;
+}
+
+.codeBlock :global(.token.operator) {
+  color: #D4D4D4 !important;
+  font-weight: 400;
+}
+
+.codeBlock :global(.token.property) {
+  color: #9CDCFE !important;
+  font-weight: 400;
+}
+
+.codeBlock :global(.token.annotation),
+.codeBlock :global(.token.attr-name) {
+  color: #4EC9B0 !important;
+  font-weight: 600;
+}
+
+.codeBlock :global(.token.builtin) {
+  color: #569CD6 !important;
+  font-weight: 600;
+}
+
+.codeBlock :global(.token.namespace) {
+  color: #4EC9B0 !important;
+  font-weight: 600;
+}
+
+/* Language-specific styling for bash/shell - Terminal Dark Theme */
+.codeBlock code[class*="language-bash"] {
+  background: transparent;
+  color: #D4D4D4;
+}
+
+.codeBlock code[class*="language-bash"] :global(.token.function) {
+  color: #4EC9B0 !important;
+  font-weight: 600;
+}
+
+.codeBlock code[class*="language-bash"] :global(.token.string) {
+  color: #CE9178 !important;
+}
+
+/* C# Specific tokens */
+.codeBlock :global(.token.class-name.type) {
+  color: #4EC9B0 !important;
+}
+
+.codeBlock :global(.token.generic-method) {
+  color: #DCDCAA !important;
+}
+
+.codeBlock :global(.token.return-type) {
+  color: #569CD6 !important;
+}
+
+.codeBlock :global(.token.variable) {
+  color: #9CDCFE !important;
+}
+
+.codeBlock :global(.token.parameter) {
+  color: #9CDCFE !important;
+}

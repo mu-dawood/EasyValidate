@@ -1,0 +1,336 @@
+/* CodeWindow Component - Enhanced window design */
+.codeWindow {
+  background: #1e1e1e;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  border: 1px solid #3c3c3c;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Window Header */
+.windowHeader {
+  background: #2d2d2d;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #3c3c3c;
+  position: relative;
+}
+
+/* Window Controls (Traffic Lights) */
+.windowControls {
+  display: flex;
+  gap: 0.5rem;
+  z-index: 2;
+}
+
+.control {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.controlClose {
+  background: #ff5f56;
+}
+
+.controlMinimize {
+  background: #ffbd2e;
+}
+
+.controlMaximize {
+  background: #27ca3f;
+}
+
+.control:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+
+/* Window Title */
+.windowTitle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #d4d4d4;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+}
+
+.fileIcon {
+  font-size: 1rem;
+}
+
+.fileName {
+  color: #d4d4d4;
+}
+
+/* Window Actions */
+.windowActions {
+  display: flex;
+  gap: 0.5rem;
+  z-index: 2;
+}
+
+.copyBtn {
+  background: rgba(30, 30, 30, 0.5);
+  border: 1px solid #3c3c3c;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  min-width: 70px;
+}
+
+.copyBtn:hover {
+  background: #374151;
+  color: #d4d4d4;
+  transform: translateY(-1px);
+}
+
+.copyBtn.copySuccess {
+  background: #2e7d32;
+  border-color: #2e7d32;
+  color: #ffffff;
+}
+
+.btnIcon {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+}
+
+/* Code Content */
+.codeContent {
+  padding: 0;
+  overflow-x: auto;
+  background: #1e1e1e;
+}
+
+.pre {
+  margin: 0;
+  padding: 1.5rem;
+}
+
+.codeContent code {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  white-space: pre;
+  word-wrap: normal;
+  width: 100%;
+  font-weight: 400;
+}
+
+/* Default dark theme syntax highlighting */
+.codeWindow :global(.token.keyword) {
+  color: #569CD6 !important;
+  font-weight: 600;
+}
+
+.codeWindow :global(.token.class-name) {
+  color: #4EC9B0 !important;
+  font-weight: 500;
+}
+
+.codeWindow :global(.token.function) {
+  color: #DCDCAA !important;
+  font-weight: 500;
+}
+
+.codeWindow :global(.token.string) {
+  color: #CE9178 !important;
+}
+
+.codeWindow :global(.token.number) {
+  color: #B5CEA8 !important;
+}
+
+.codeWindow :global(.token.comment) {
+  color: #6A9955 !important;
+  font-style: italic;
+}
+
+/* Light theme syntax highlighting */
+.codeWindow.light :global(.token.keyword) {
+  color: #0550AE !important;
+  font-weight: 600;
+}
+
+.codeWindow.light :global(.token.class-name) {
+  color: #118D64 !important;
+  font-weight: 500;
+}
+
+.codeWindow.light :global(.token.function) {
+  color: #AA5D00 !important;
+  font-weight: 500;
+}
+
+.codeWindow.light :global(.token.string) {
+  color: #A31515 !important;
+}
+
+.codeWindow.light :global(.token.number) {
+  color: #098658 !important;
+}
+
+.codeWindow.light :global(.token.comment) {
+  color: #6A9955 !important;
+  font-style: italic;
+}
+
+.codeWindow.light code {
+  color: #24292e;
+}
+
+/* Hero Variant - Enhanced for landing page */
+.codeWindow.hero {
+  background: rgba(30, 30, 30, 0.95);
+  border: 1px solid #4f46e5;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(79, 70, 229, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.codeWindow.hero .windowHeader {
+  background: linear-gradient(135deg, #2d2d2d 0%, #1e1e1e 100%);
+  border-bottom: 1px solid #4f46e5;
+}
+
+.codeWindow.hero .windowTitle {
+  color: #e5e7eb;
+}
+
+.codeWindow.hero .fileName {
+  color: #c7d2fe;
+  font-weight: 600;
+}
+
+/* Colorful Variant - More vibrant for demos */
+.codeWindow.colorful {
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(99, 102, 241, 0.3);
+}
+
+.codeWindow.colorful .windowHeader {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  border-bottom: none;
+}
+
+.codeWindow.colorful .windowTitle {
+  color: white;
+}
+
+.codeWindow.colorful .fileName {
+  color: #e0e7ff;
+  font-weight: 600;
+}
+
+.codeWindow.colorful .copyBtn {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.codeWindow.colorful .copyBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Light Variant - Clean and bright for better readability */
+.codeWindow.light {
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  box-shadow: 
+    0 12px 24px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
+}
+
+.codeWindow.light .windowHeader {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 1px solid #e9ecef;
+}
+
+.codeWindow.light .windowTitle {
+  color: #333;
+}
+
+.codeWindow.light .fileName {
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.codeWindow.light .copyBtn {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid #e9ecef;
+  color: #333;
+}
+
+.codeWindow.light .copyBtn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: #000;
+}
+
+.codeWindow.light .codeContent {
+  background: #ffffff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .windowHeader {
+    padding: 0.75rem 1rem;
+  }
+  
+  .windowTitle {
+    font-size: 0.8rem;
+  }
+  
+  .copyBtn {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.75rem;
+    min-width: 60px;
+  }
+  
+  .btnIcon {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .windowHeader {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .control {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .copyBtn {
+    padding: 0.2rem 0.3rem;
+    gap: 0.1rem;
+  }
+}
