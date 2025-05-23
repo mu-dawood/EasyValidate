@@ -1,18 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Version>$(EasyValidateVersion)</Version>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <IsRoslynAnalyzer>true</IsRoslynAnalyzer>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-    <Version>1.0.0</Version>
     <Authors>mu-dawood</Authors>
     <Description>EasyValidate Roslyn analyzers for validation attributes.</Description>
     <PackageTags>validation;analyzer;roslyn</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/mu-dawood/EasyValidate</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/mu-dawood/EasyValidate</PackageProjectUrl>
+    <PackageProjectUrl>https://mu-dawood.github.io/EasyValidate/</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageIconUrl>https://mu-dawood.github.io/EasyValidate/icon.png</PackageIconUrl>
+    <PackageReadmeFile>../docs/index.md</PackageReadmeFile>
+    <PackageReleaseNotes>See https://github.com/mu-dawood/EasyValidate/releases</PackageReleaseNotes>
+    <RepositoryType>git</RepositoryType>
+    <PackageSourceUrl>https://github.com/mu-dawood/EasyValidate</PackageSourceUrl>
+    <PackageDocumentationUrl>https://mu-dawood.github.io/EasyValidate/</PackageDocumentationUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,5 +27,9 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../docs/index.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

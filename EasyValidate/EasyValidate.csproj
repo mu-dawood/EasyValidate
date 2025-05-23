@@ -1,19 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Version Condition=" '$(EasyValidateVersion)' == '' ">1.0.0</Version>
+    <EasyValidateVersion Condition=" '$(EasyValidateVersion)' == '' ">$(Version)</EasyValidateVersion>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.0</Version>
-    <Authors>EasyValidate</Authors>
-    <Description>EasyValidate validation library and code generator.</Description>
-    <PackageTags>validation;source-generator</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/your-org/EasyValidate</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/your-org/EasyValidate</PackageProjectUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <LangVersion>latest</LangVersion>
+    <Authors>mu-dawood</Authors>
+    <Description>EasyValidate validation library and source generator for attribute-based validation.</Description>
+    <PackageTags>validation;source-generator;roslyn</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/mu-dawood/EasyValidate</RepositoryUrl>
+    <PackageProjectUrl>https://mu-dawood.github.io/EasyValidate/</PackageProjectUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageIconUrl>https://mu-dawood.github.io/EasyValidate/icon.png</PackageIconUrl>
+    <PackageReadmeFile>../docs/index.md</PackageReadmeFile>
+    <PackageReleaseNotes>See https://github.com/mu-dawood/EasyValidate/releases</PackageReleaseNotes>
+    <RepositoryType>git</RepositoryType>
+    <PackageSourceUrl>https://github.com/mu-dawood/EasyValidate</PackageSourceUrl>
+    <PackageDocumentationUrl>https://mu-dawood.github.io/EasyValidate/</PackageDocumentationUrl>
     <IsRoslynAnalyzer>true</IsRoslynAnalyzer>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
