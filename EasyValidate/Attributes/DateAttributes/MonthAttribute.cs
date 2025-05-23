@@ -4,24 +4,27 @@ using EasyValidate.Abstraction;
 namespace EasyValidate.Attributes
 {
     /// <summary>
-    /// Validates that a date is in the past.
+    /// Validates that a date falls in a specific month.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class PastDateAttribute : DateValidationAttributeBase
+    public class MonthAttribute(int month) : DateValidationAttributeBase
     {
-        /// <inheritdoc/>
-        public override string ErrorCode => "PastDateValidationError";
+        /// <summary>
+        /// The required month (1-12).
+        /// </summary>
+        public int Month { get; } = month;
 
-        /// <inheritdoc/>
+        public override string ErrorCode => "MonthValidationError";
+
         public override AttributeResult Validate(string propertyName, DateTime value)
         {
-            if (value >= DateTime.Now)
+            if (value.Month != Month)
             {
                 return new AttributeResult
                 {
                     IsValid = false,
-                    Message = "The field {0} must be a past date.",
-                    MessageArgs = new object?[] { propertyName }
+                    Message = "The field {0} must be in month {1}.",
+                    MessageArgs = new object?[] { propertyName, Month }
                 };
             }
             return new AttributeResult { IsValid = true };

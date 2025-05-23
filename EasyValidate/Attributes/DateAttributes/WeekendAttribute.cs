@@ -4,23 +4,22 @@ using EasyValidate.Abstraction;
 namespace EasyValidate.Attributes
 {
     /// <summary>
-    /// Validates that a date is in the past.
+    /// Validates that a date falls on a weekend (Saturday or Sunday).
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class PastDateAttribute : DateValidationAttributeBase
+    public class WeekendAttribute : DateValidationAttributeBase
     {
-        /// <inheritdoc/>
-        public override string ErrorCode => "PastDateValidationError";
+        public override string ErrorCode => "WeekendValidationError";
 
-        /// <inheritdoc/>
         public override AttributeResult Validate(string propertyName, DateTime value)
         {
-            if (value >= DateTime.Now)
+            var day = value.DayOfWeek;
+            if (day != DayOfWeek.Saturday && day != DayOfWeek.Sunday)
             {
                 return new AttributeResult
                 {
                     IsValid = false,
-                    Message = "The field {0} must be a past date.",
+                    Message = "The field {0} must fall on a weekend (Saturday or Sunday).",
                     MessageArgs = new object?[] { propertyName }
                 };
             }

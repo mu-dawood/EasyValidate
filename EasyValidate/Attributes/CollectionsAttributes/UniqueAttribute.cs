@@ -4,11 +4,16 @@ using EasyValidate.Abstraction;
 
 namespace EasyValidate.Attributes
 {
+    /// <summary>
+    /// Validates that all values in the collection are unique.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class UniqueAttribute<T> : CollectionValidationAttributeBase<T>
     {
+        /// <inheritdoc/>
         public override string ErrorCode => "UniqueValidationError";
 
+        /// <inheritdoc/>
         protected override AttributeResult ValidateCollection(string propertyName, IEnumerable<T> collection)
         {
             var seen = new HashSet<T>();
@@ -19,7 +24,7 @@ namespace EasyValidate.Attributes
                     return new AttributeResult
                     {
                         IsValid = false,
-                        Message = $"The collection '{{propertyName}}' must contain only unique values.",
+                        Message = "The field {0} must contain only unique values.",
                         MessageArgs = new object?[] { propertyName }
                     };
                 }
@@ -27,5 +32,4 @@ namespace EasyValidate.Attributes
             return new AttributeResult { IsValid = true };
         }
     }
-    
 }

@@ -4,24 +4,23 @@ using EasyValidate.Abstraction;
 namespace EasyValidate.Attributes
 {
     /// <summary>
-    /// Validates that a date is in the past.
+    /// Validates that a date is today (ignoring time).
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class PastDateAttribute : DateValidationAttributeBase
+    public class TodayAttribute : DateValidationAttributeBase
     {
-        /// <inheritdoc/>
-        public override string ErrorCode => "PastDateValidationError";
+        public override string ErrorCode => "TodayValidationError";
 
-        /// <inheritdoc/>
         public override AttributeResult Validate(string propertyName, DateTime value)
         {
-            if (value >= DateTime.Now)
+            var today = DateTime.Today;
+            if (value.Date != today)
             {
                 return new AttributeResult
                 {
                     IsValid = false,
-                    Message = "The field {0} must be a past date.",
-                    MessageArgs = new object?[] { propertyName }
+                    Message = "The field {0} must be today ({1:yyyy-MM-dd}).",
+                    MessageArgs = new object?[] { propertyName, today }
                 };
             }
             return new AttributeResult { IsValid = true };

@@ -4,23 +4,21 @@ using EasyValidate.Abstraction;
 namespace EasyValidate.Attributes
 {
     /// <summary>
-    /// Validates that a date is in the past.
+    /// Validates that a date is today or in the past (not in the future).
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class PastDateAttribute : DateValidationAttributeBase
+    public class NotInFutureAttribute : DateValidationAttributeBase
     {
-        /// <inheritdoc/>
-        public override string ErrorCode => "PastDateValidationError";
+        public override string ErrorCode => "NotInFutureValidationError";
 
-        /// <inheritdoc/>
         public override AttributeResult Validate(string propertyName, DateTime value)
         {
-            if (value >= DateTime.Now)
+            if (value > DateTime.Now)
             {
                 return new AttributeResult
                 {
                     IsValid = false,
-                    Message = "The field {0} must be a past date.",
+                    Message = "The field {0} must not be in the future.",
                     MessageArgs = new object?[] { propertyName }
                 };
             }
