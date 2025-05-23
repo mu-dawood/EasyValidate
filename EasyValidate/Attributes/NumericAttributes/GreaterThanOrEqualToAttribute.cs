@@ -1,11 +1,13 @@
 using System;
-
 using EasyValidate.Abstraction;
 
 namespace EasyValidate.Attributes
 {
+    /// <summary>
+    /// Validates that a numeric value is greater than or equal to a specified comparison value.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class GreaterThanOrEqualToAttribute : ValidationAttributeBase
+    public class GreaterThanOrEqualToAttribute : NumericValidationAttributeBase
     {
         public double ComparisonValue { get; }
 
@@ -16,42 +18,18 @@ namespace EasyValidate.Attributes
 
         public override string ErrorCode => "GreaterThanOrEqualToValidationError";
 
-        // Numeric overloads
-        public AttributeResult Validate(string propertyName, byte value) => ValidateGeneric(propertyName, value);
-        public AttributeResult Validate(string propertyName, sbyte value) => ValidateGeneric(propertyName, value);
-        public AttributeResult Validate(string propertyName, short value) => ValidateGeneric(propertyName, value);
-        public AttributeResult Validate(string propertyName, ushort value) => ValidateGeneric(propertyName, value);
-        public AttributeResult Validate(string propertyName, int value) => ValidateGeneric(propertyName, value);
-        public AttributeResult Validate(string propertyName, uint value) => ValidateGeneric(propertyName, value);
-        public AttributeResult Validate(string propertyName, long value) => ValidateGeneric(propertyName, value);
-        public AttributeResult Validate(string propertyName, ulong value) => ValidateGeneric(propertyName, value);
-        public AttributeResult Validate(string propertyName, float value) => ValidateGeneric(propertyName, value);
-        public AttributeResult Validate(string propertyName, double value) => ValidateGeneric(propertyName, value);
-        public AttributeResult Validate(string propertyName, decimal value) => ValidateGeneric(propertyName, value);
-
-        // Private generic helper
-        private AttributeResult ValidateGeneric<T>(string propertyName, T value) where T : IComparable<T>
+        /// <inheritdoc/>
+        public override AttributeResult ValidateNumber(string propertyName, decimal value)
         {
-            if (!NumericHelper.IsNumericType(value))
-            {
-                return new AttributeResult
-                {
-                    IsValid = false,
-                    Message = "The field {0} must be a numeric type.",
-                    MessageArgs = [propertyName]
-                };
-            }
-
-            if (value.CompareTo((T)Convert.ChangeType(ComparisonValue, typeof(T))) < 0)
+            if (value < (decimal)ComparisonValue)
             {
                 return new AttributeResult
                 {
                     IsValid = false,
                     Message = "The field {0} must be greater than or equal to {1}.",
-                    MessageArgs = [propertyName, ComparisonValue]
+                    MessageArgs = new object?[] { propertyName, ComparisonValue }
                 };
             }
-
             return new AttributeResult { IsValid = true };
         }
     }

@@ -11,14 +11,3 @@ public partial class Dto
     public int Age { get; set; }
 
 }
-
-
-public class CustomAttr : ValidationAttributeBase
-{
-    public override string ErrorCode => throw new NotImplementedException();
-
-    public string Validate(string propertyName, object? value)
-    {
-        throw new NotImplementedException();
-    }
-}
