@@ -1,10 +1,9 @@
 <!-- NuGet Readme for EasyValidate -->
 
 <p align="center">
-  <img src="https://mu-dawood.github.io/EasyValidate/logo.png" alt="EasyValidate Logo" width="120" />
+  <img src="https://mu-dawood.github.io/EasyValidate/logo.png" alt="EasyValidate Logo" width="400" />
 </p>
 
-<h1 align="center">EasyValidate</h1>
 
 <p align="center" style="font-size:1.2em;">
   <b>Attribute-based validation for .NET with source generation and analyzers</b>
