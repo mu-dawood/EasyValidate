@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -30,18 +31,35 @@ public class ValidationMethodAnalyzer : DiagnosticAnalyzer
     {
         var classSymbol = (INamedTypeSymbol)context.Symbol;
 
-        if (classSymbol.TypeKind != TypeKind.Class)
+        if (classSymbol.TypeKind != TypeKind.Class || classSymbol.IsAbstract)
             return;
 
-        var baseType = classSymbol.BaseType;
-        if (baseType == null || baseType.Name != "ValidationAttributeBase")
+        // Check if the class ultimately derives from ValidationAttributeBase (by full name)
+        var currentBase = classSymbol.BaseType;
+        bool isValidationAttribute = false;
+        while (currentBase != null && currentBase.Name != "Object")
+        {
+            if (currentBase.ToDisplayString() == "EasyValidate.Abstraction.Attributes.ValidationAttributeBase")
+            {
+                isValidationAttribute = true;
+                break;
+            }
+            currentBase = currentBase.BaseType;
+        }
+        if (!isValidationAttribute)
             return;
 
-        var validateMethods = classSymbol
-            .GetMembers()
-            .OfType<IMethodSymbol>()
-            .Where(m => m.Name == "Validate" && !m.IsStatic)
-            .ToList();
+        // Search for Validate methods in the class and its base types
+        var validateMethods = new List<IMethodSymbol>();
+        var currentType = classSymbol;
+        while (currentType != null && currentType.Name != "Object")
+        {
+            validateMethods.AddRange(currentType
+                .GetMembers()
+                .OfType<IMethodSymbol>()
+                .Where(m => m.Name == "Validate" && !m.IsStatic));
+            currentType = currentType.BaseType;
+        }
 
         bool hasCorrectOverload = validateMethods.Any(m =>
             m.Parameters.Length == 2 &&

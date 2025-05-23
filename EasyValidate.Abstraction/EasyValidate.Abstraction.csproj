@@ -6,4 +6,8 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../EasyValidate.Analyzers/EasyValidate.Analyzers.csproj" OutputItemType="Analyzer" />
+  </ItemGroup>
+
 </Project>
