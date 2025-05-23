@@ -1,5 +1,7 @@
 import type { Config } from '@docusaurus/types';
 import { themes } from 'prism-react-renderer';
+import sidebarPath from './sidebars';
+import customCss from './src/css/custom.css';
 
 const config: Config = {
   title: 'EasyValidate',
@@ -36,11 +38,12 @@ const config: Config = {
       'classic',
       {
         docs: {
-          sidebarPath: require.resolve('./sidebars.ts'),
+          sidebarPath: sidebarPath,
           editUrl: 'https://github.com/your-org/EasyValidate/edit/main/website/',
         },
+        
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
+          customCss: customCss,
         },
       },
     ],

@@ -6,6 +6,8 @@
   - Responsive and accessible design
 */
 
+@import './docs-enhanced.css';
+
 :root {
   --ev-primary: #667eea;
   --ev-primary-dark: #5a67d8;

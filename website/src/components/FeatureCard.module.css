@@ -1,0 +1,74 @@
+.card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  margin: 1rem 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, var(--card-color, #667eea) 0%, var(--card-color-dark, #5a67d8) 100%);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--card-color, #667eea);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 0.75rem;
+}
+
+.description {
+  color: #718096;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Color variants */
+.primary {
+  --card-color: #667eea;
+  --card-color-dark: #5a67d8;
+}
+
+.secondary {
+  --card-color: #764ba2;
+  --card-color-dark: #6b46c1;
+}
+
+.accent {
+  --card-color: #48bb78;
+  --card-color-dark: #38a169;
+}
+
+.success {
+  --card-color: #38a169;
+  --card-color-dark: #2f855a;
+}
+
+.warning {
+  --card-color: #ed8936;
+  --card-color-dark: #dd6b20;
+}

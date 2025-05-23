@@ -1,7 +1,7 @@
 {
   "id": "localization",
-  "title": "Localization",
-  "description": "All error messages in EasyValidate are localization-ready. Use resource files or custom formatters for multi-language support.",
+  "title": "Localization & Internationalization",
+  "description": "EasyValidate is designed from the ground up to support multiple languages and cultures. All error messages use numbered placeholders and the IFormatter interface, making localization straightforward and flexible.",
   "source": "@site/docs/localization.md",
   "sourceDirName": ".",
   "slug": "/localization",
@@ -11,9 +11,11 @@
   "editUrl": "https://github.com/your-org/EasyValidate/edit/main/website/docs/localization.md",
   "tags": [],
   "version": "current",
+  "sidebarPosition": 6,
   "frontMatter": {
     "id": "localization",
-    "title": "Localization"
+    "title": "Localization & Internationalization",
+    "sidebar_position": 6
   },
   "sidebar": "docs",
   "previous": {

@@ -1,0 +1,60 @@
+.infoBox {
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border-left: 4px solid var(--box-color);
+  background: var(--box-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.icon {
+  font-size: 1.25rem;
+  margin-right: 0.5rem;
+}
+
+.title {
+  font-weight: 600;
+  color: var(--box-color);
+  font-size: 1.1rem;
+}
+
+.content {
+  color: #4a5568;
+  line-height: 1.6;
+}
+
+.content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Type variants */
+.tip {
+  --box-color: #3182ce;
+  --box-bg: #ebf8ff;
+}
+
+.note {
+  --box-color: #718096;
+  --box-bg: #f7fafc;
+}
+
+.warning {
+  --box-color: #ed8936;
+  --box-bg: #fffaf0;
+}
+
+.danger {
+  --box-color: #e53e3e;
+  --box-bg: #fed7d7;
+}
+
+.success {
+  --box-color: #38a169;
+  --box-bg: #f0fff4;
+}

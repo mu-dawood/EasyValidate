@@ -1,7 +1,7 @@
 {
   "id": "installation",
   "title": "Installation",
-  "description": "Install EasyValidate from NuGet:",
+  "description": "<DocSection",
   "source": "@site/docs/installation.md",
   "sourceDirName": ".",
   "slug": "/installation",
@@ -11,9 +11,11 @@
   "editUrl": "https://github.com/your-org/EasyValidate/edit/main/website/docs/installation.md",
   "tags": [],
   "version": "current",
+  "sidebarPosition": 2,
   "frontMatter": {
     "id": "installation",
-    "title": "Installation"
+    "title": "Installation",
+    "sidebar_position": 2
   },
   "sidebar": "docs",
   "previous": {
@@ -21,7 +23,7 @@
     "permalink": "/docs/intro"
   },
   "next": {
-    "title": "Quick Start",
+    "title": "Quick Start Guide",
     "permalink": "/docs/quickstart"
   }
 }

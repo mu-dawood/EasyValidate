@@ -1,7 +1,7 @@
 {
   "id": "quickstart",
-  "title": "Quick Start",
-  "description": "See Attributes Reference for all available validation attributes.",
+  "title": "Quick Start Guide",
+  "description": "<DocSection",
   "source": "@site/docs/quickstart.md",
   "sourceDirName": ".",
   "slug": "/quickstart",
@@ -11,9 +11,11 @@
   "editUrl": "https://github.com/your-org/EasyValidate/edit/main/website/docs/quickstart.md",
   "tags": [],
   "version": "current",
+  "sidebarPosition": 3,
   "frontMatter": {
     "id": "quickstart",
-    "title": "Quick Start"
+    "title": "Quick Start Guide",
+    "sidebar_position": 3
   },
   "sidebar": "docs",
   "previous": {
