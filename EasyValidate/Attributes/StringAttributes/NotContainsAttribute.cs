@@ -19,7 +19,7 @@ namespace EasyValidate.Attributes
         /// <inheritdoc/>
         public override AttributeResult Validate(string propertyName, string? value)
         {
-            if (!string.IsNullOrEmpty(value) && value.Contains(Substring))
+            if (!string.IsNullOrEmpty(value) && value!.Contains(Substring))
             {
                 return new AttributeResult
                 {
