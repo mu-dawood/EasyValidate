@@ -72,12 +72,9 @@
 }
 
 .attributeExample {
-  background: #1e1e1e;
-  border: 1px solid #3c3c3c;
-  border-radius: 8px;
-  padding: 1rem;
-  border-left: 4px solid #007ACC;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  /* Remove background and padding to eliminate the black area */
+  background: none;
+  padding: 0;
 }
 
 .attributeExample code {

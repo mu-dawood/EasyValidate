@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './AttributesSection.module.css';
+import InlineSnippet from './InlineSnippet';
 
 function AttributesSection() {
   const attributeCategories = [
@@ -59,7 +60,7 @@ function AttributesSection() {
               <h3>{category.title}</h3>
               <p>{category.description}</p>
               <div className={styles.attributeExample}>
-                <code>{category.example}</code>
+                <InlineSnippet language="csharp">{category.example}</InlineSnippet>
               </div>
             </div>
           ))}
