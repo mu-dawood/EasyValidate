@@ -1,19 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version Condition=" '$(EasyValidateVersion)' == '' ">1.0.0</Version>
-    <EasyValidateVersion Condition=" '$(EasyValidateVersion)' == '' ">$(Version)</EasyValidateVersion>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Authors>mu-dawood</Authors>
-    <Description>EasyValidate validation library and source generator for attribute-based validation.</Description>
+    <Description>EasyValidate validation library and source generator for attribute-based
+      validation.</Description>
     <PackageTags>validation;source-generator;roslyn</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/mu-dawood/EasyValidate</RepositoryUrl>
     <PackageProjectUrl>https://mu-dawood.github.io/EasyValidate/</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIconUrl>https://mu-dawood.github.io/EasyValidate/icon.png</PackageIconUrl>
-    <PackageReadmeFile>../docs/index.md</PackageReadmeFile>
+    <PackageReadmeFile>nuget-readme.md</PackageReadmeFile>
     <PackageReleaseNotes>See https://github.com/mu-dawood/EasyValidate/releases</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <PackageSourceUrl>https://github.com/mu-dawood/EasyValidate</PackageSourceUrl>
@@ -37,9 +36,12 @@
 
   <ItemGroup>
     <ProjectReference Include="../EasyValidate.Abstraction/EasyValidate.Abstraction.csproj" />
-    <ProjectReference Include="../EasyValidate.Analyzers/EasyValidate.Analyzers.csproj" PrivateAssets="all" />
+    <ProjectReference Include="../EasyValidate.Analyzers/EasyValidate.Analyzers.csproj"
+      PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="../docs/nuget-readme.md" Pack="true" PackagePath="\" />
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs"
+      Visible="false" />
   </ItemGroup>
 </Project>
