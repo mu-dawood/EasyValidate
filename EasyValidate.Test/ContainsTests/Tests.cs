@@ -10,7 +10,7 @@ namespace EasyValidate.Test.ContainsTests
         {
             var model = new ContainsModel
             {
-                Items = new List<int> { 1, 2, 3, 4 }
+                Items = [1, 2, 3, 4]
             };
 
             var result = model.Validate();
@@ -23,7 +23,7 @@ namespace EasyValidate.Test.ContainsTests
         {
             var model = new ContainsModel
             {
-                Items = new List<int> { 5, 6, 7, 8 }
+                Items = [5, 6, 7, 8]
             };
 
             var result = model.Validate();

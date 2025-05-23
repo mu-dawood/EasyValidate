@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace EasyValidate.Handlers
 {
@@ -33,26 +34,7 @@ namespace EasyValidate.Handlers
                     var constructorArguments = new List<string>();
                     foreach (var arg in attr.ConstructorArguments)
                     {
-                        if (arg.Kind == TypedConstantKind.Array)
-                        {
-                            var arrayValues = new List<string>();
-                            foreach (var value in arg.Values)
-                            {
-                                arrayValues.Add(value.Value is bool b ? (b ? "true" : "false") : value.Value?.ToString() ?? "null");
-                            }
-                            constructorArguments.Add($"new[] {{ {string.Join(", ", arrayValues)} }}");
-                        }
-                        else
-                        {
-                            constructorArguments.Add(arg.Kind switch
-                            {
-                                TypedConstantKind.Primitive => arg.Value is bool b ? (b ? "true" : "false") : arg.Value is string s ? $"\"{s}\"" : arg.Value?.ToString() ?? "null",
-                                TypedConstantKind.Enum => $"({arg.Type?.ToDisplayString()}){arg.Value}",
-                                TypedConstantKind.Type => $"typeof({arg.Value})",
-                                TypedConstantKind.Error => "null", // Handle error case gracefully
-                                _ => "null"
-                            });
-                        }
+                        constructorArguments.Add(FormatArgument(arg));
                     }
 
                     var memberName = member.Name;
@@ -69,6 +51,45 @@ namespace EasyValidate.Handlers
             sb.AppendLine("        }");
 
             base.Handle(classSymbol, context, sb);
+        }
+
+        private static readonly Dictionary<Type, Func<object, string>> PrimitiveFormatters = new()
+        {
+            { typeof(bool), value => (bool)value ? "true" : "false" },
+            { typeof(string), value => $"\"{value}\"" },
+            { typeof(char), value => $"\'{value}\'" },
+            { typeof(int), value => value.ToString() },
+            { typeof(double), value => value.ToString() },
+            { typeof(float), value => value.ToString() },
+            { typeof(long), value => value.ToString() },
+            { typeof(short), value => value.ToString() },
+            { typeof(byte), value => value.ToString() },
+            { typeof(decimal), value => value.ToString() },
+            { typeof(uint), value => value.ToString() },
+            { typeof(ulong), value => value.ToString() },
+            { typeof(ushort), value => value.ToString() },
+            { typeof(sbyte), value => value.ToString() }
+        };
+
+        private string FormatArgument(TypedConstant arg)
+        {
+            return arg.Kind switch
+            {
+                TypedConstantKind.Primitive => arg.Value != null && PrimitiveFormatters.TryGetValue(arg.Value.GetType(), out var formatter)
+                    ? formatter(arg.Value)
+                    : arg.Value?.ToString() ?? "null",
+                TypedConstantKind.Enum => $"({arg.Type?.ToDisplayString()}){arg.Value}",
+                TypedConstantKind.Type => $"typeof({arg.Value})",
+                TypedConstantKind.Array => FormatArrayArgument(arg),
+                TypedConstantKind.Error => "null", // Handle error case gracefully
+                _ => "null"
+            };
+        }
+
+        private string FormatArrayArgument(TypedConstant arg)
+        {
+            var arrayValues = arg.Values.Select(FormatArgument).ToList();
+            return $"new[] {{ {string.Join(", ", arrayValues)} }}";
         }
     }
 }

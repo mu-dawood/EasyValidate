@@ -3,14 +3,9 @@ using System;
 namespace EasyValidate.Abstraction.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class DayOfWeekAttribute : ValidationAttributeBase
+    public class DayOfWeekAttribute(DayOfWeek day) : ValidationAttributeBase
     {
-        public DayOfWeek Day { get; }
-
-        public DayOfWeekAttribute(DayOfWeek day)
-        {
-            Day = day;
-        }
+        public DayOfWeek Day { get; } = day;
 
         public override string ErrorCode => "DayOfWeekValidationError";
 

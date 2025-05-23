@@ -3,16 +3,10 @@ using System;
 namespace EasyValidate.Abstraction.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class DateRangeAttribute : ValidationAttributeBase
+    public class DateRangeAttribute(string minimum, string maximum) : ValidationAttributeBase
     {
-        public DateTime Minimum { get; }
-        public DateTime Maximum { get; }
-
-        public DateRangeAttribute(string minimum, string maximum)
-        {
-            Minimum = DateTime.Parse(minimum);
-            Maximum = DateTime.Parse(maximum);
-        }
+        public DateTime Minimum { get; } = DateTime.Parse(minimum);
+        public DateTime Maximum { get; } = DateTime.Parse(maximum);
 
         public override string ErrorCode => "DateRangeValidationError";
 
