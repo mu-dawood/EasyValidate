@@ -4,28 +4,28 @@ using EasyValidate.Abstraction;
 namespace EasyValidate.Attributes
 {
     /// <summary>
-    /// Validates that a string starts with the specified prefix.
+    /// Validates that a string is at least a specified minimum length.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class StartsWithAttribute(string prefix) : StringValidationAttributeBase
+    public class MinLengthAttribute(int minLength) : StringValidationAttributeBase
     {
         /// <summary>
-        /// The required prefix.
+        /// The minimum required length.
         /// </summary>
-        public string Prefix { get; } = prefix;
+        public int MinLength { get; } = minLength;
 
-        public override string ErrorCode => "StartsWithValidationError";
+        public override string ErrorCode => "MinLengthValidationError";
 
         /// <inheritdoc/>
         public override AttributeResult Validate(string propertyName, string? value)
         {
-            if (value == null || !value.StartsWith(Prefix))
+            if (value == null || value.Length < MinLength)
             {
                 return new AttributeResult
                 {
                     IsValid = false,
-                    Message = "The field {0} must start with {1}.",
-                    MessageArgs = new object?[] { propertyName, Prefix }
+                    Message = "The field {0} must be at least {1} characters long.",
+                    MessageArgs = new object?[] { propertyName, MinLength }
                 };
             }
             return new AttributeResult { IsValid = true };
