@@ -60,13 +60,16 @@ public class UserService
         // The Validate() method is auto-generated at compile-time
         ValidationResult result = user.Validate();
 
-        if (!result.IsValid)
+        if (!result.IsValid())
         {
-            Console.WriteLine($"Validation failed with {result.Errors.Count} errors:");
+            Console.WriteLine(\`Validation failed with \${result.Errors.Count} errors:\`);
             
             foreach (var error in result.Errors)
             {
-                Console.WriteLine($"• {error.PropertyName}: {error.ErrorMessage}");
+                foreach (var validationError in error.Value)
+                {
+                    Console.WriteLine(\`• \${error.Key}: \${validationError.Message}\`);
+                }
             }
             
             return false;
@@ -85,6 +88,46 @@ public class UserService
 // • PhoneNumber: The PhoneNumber field is not a valid phone number.`,
       language: "csharp",
       icon: "✅"
+    },
+    {
+      title: "Validate Specific Member",
+      description: "Check if a specific member is valid using the IsValid method.",
+      fileName: "Services/UserService.cs",
+      code: `using EasyValidate.Abstractions;
+
+public class UserService
+{
+    public void ValidateMember(User user, string memberName)
+    {
+        // Check if the specific member is valid
+        if (!user.Validate().IsValid(memberName))
+        {
+            Console.WriteLine($"Validation failed for member: {memberName}");
+        }
+    }
+}`,
+      language: "csharp",
+      icon: "🔍"
+    },
+    {
+      title: "Check Member Errors",
+      description: "Check if there are errors for a specific member using the HasErrors method.",
+      fileName: "Services/UserService.cs",
+      code: `using EasyValidate.Abstractions;
+
+public class UserService
+{
+    public void CheckMemberErrors(User user, string memberName)
+    {
+        // Check if there are errors for a specific member
+        if (user.Validate().HasErrors(memberName))
+        {
+            Console.WriteLine($"Errors found for member: {memberName}");
+        }
+    }
+}`,
+      language: "csharp",
+      icon: "⚠️"
     }
   ];
 
@@ -181,13 +224,25 @@ public class UserService
                 {activeStep === 1 && (
                   <div className={styles.tip}>
                     <span className={styles.tipIcon}>💡</span>
-                    <span>The <code>partial</code> keyword is required for the source generator to add the validation method to your class.</span>
+                    <span>The <InlineSnippet language="csharp">partial</InlineSnippet> keyword is required for the source generator to add the validation method to your class.</span>
                   </div>
                 )}
                 {activeStep === 2 && (
                   <div className={styles.tip}>
                     <span className={styles.tipIcon}>💡</span>
-                    <span>The <code>Validate()</code> method is automatically generated and returns detailed error information for failed validations.</span>
+                    <span>The <InlineSnippet language="csharp">Validate()</InlineSnippet> method is automatically generated and returns detailed error information for failed validations.</span>
+                  </div>
+                )}
+                {activeStep === 3 && (
+                  <div className={styles.tip}>
+                    <span className={styles.tipIcon}>💡</span>
+                    <span>Use the <InlineSnippet language="csharp">IsValid(memberName)</InlineSnippet> method to check the validity of specific members in your model.</span>
+                  </div>
+                )}
+                {activeStep === 4 && (
+                  <div className={styles.tip}>
+                    <span className={styles.tipIcon}>💡</span>
+                    <span>Utilize the <InlineSnippet language="csharp">HasErrors(memberName)</InlineSnippet> method to determine if there are any validation errors for a specific member.</span>
                   </div>
                 )}
               </div>

@@ -169,30 +169,30 @@
 
 /* Light theme syntax highlighting */
 .codeWindow.light :global(.token.keyword) {
-  color: #0550AE !important;
-  font-weight: 600;
+  color: #a626a4 !important; /* Atom Light purple */
+  font-weight: 500;
 }
 
 .codeWindow.light :global(.token.class-name) {
-  color: #118D64 !important;
+  color: #c18401 !important; /* Atom Light yellow/orange */
   font-weight: 500;
 }
 
 .codeWindow.light :global(.token.function) {
-  color: #AA5D00 !important;
+  color: #4078f2 !important; /* Atom Light blue */
   font-weight: 500;
 }
 
 .codeWindow.light :global(.token.string) {
-  color: #A31515 !important;
+  color: #50a14f !important; /* Atom Light green */
 }
 
 .codeWindow.light :global(.token.number) {
-  color: #098658 !important;
+  color: #986801 !important; /* Atom Light brown */
 }
 
 .codeWindow.light :global(.token.comment) {
-  color: #6A9955 !important;
+  color: #a0a1a7 !important; /* Atom Light gray */
   font-style: italic;
 }
 
@@ -259,42 +259,42 @@
   color: white;
 }
 
-/* Light Variant - Clean and bright for better readability */
+/* Light Variant - Atom Light theme style for better readability */
 .codeWindow.light {
-  background: #ffffff;
-  border: 1px solid #e9ecef;
+  background: #fafafa;
+  border: 1px solid #e1e4e8;
   box-shadow: 
     0 12px 24px rgba(0, 0, 0, 0.08),
     0 0 0 1px rgba(0, 0, 0, 0.02);
 }
 
 .codeWindow.light .windowHeader {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-bottom: 1px solid #e9ecef;
+  background: linear-gradient(135deg, #f6f8fa 0%, #eff1f3 100%);
+  border-bottom: 1px solid #e1e4e8;
 }
 
 .codeWindow.light .windowTitle {
-  color: #333;
+  color: #24292e;
 }
 
 .codeWindow.light .fileName {
-  color: #4f46e5;
+  color: #4078f2; /* Atom blue */
   font-weight: 600;
 }
 
 .codeWindow.light .copyBtn {
-  background: rgba(0, 0, 0, 0.03);
-  border: 1px solid #e9ecef;
-  color: #333;
+  background: #e1e4e8;
+  border: 1px solid #d1d5da;
+  color: #24292e;
 }
 
 .codeWindow.light .copyBtn:hover {
-  background: rgba(0, 0, 0, 0.08);
-  color: #000;
+  background: #d1d5da;
+  color: #24292e;
 }
 
 .codeWindow.light .codeContent {
-  background: #ffffff;
+  background: #fafafa; /* Atom Light background */
 }
 
 /* Responsive Design */

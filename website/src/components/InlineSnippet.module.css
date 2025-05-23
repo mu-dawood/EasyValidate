@@ -1,7 +1,7 @@
 /* Light-themed inline code snippet styling */
 .inlineSnippet {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
+  background: #fafafa; /* Atom Light background */
+  border: 1px solid #e1e4e8;
   border-radius: 6px;
   padding: 0.5rem 0.75rem;
   margin: 0.5rem 0;
@@ -35,30 +35,30 @@
 
 /* C# Specific Syntax Highlighting - Light Theme */
 .inlineSnippet :global(.token.keyword) {
-  color: #0550AE !important;
-  font-weight: 600;
+  color: #a626a4 !important; /* Atom Light purple */
+  font-weight: 500;
 }
 
 .inlineSnippet :global(.token.class-name) {
-  color: #118D64 !important;
+  color: #c18401 !important; /* Atom Light yellow/orange */
   font-weight: 500;
 }
 
 .inlineSnippet :global(.token.function) {
-  color: #AA5D00 !important;
+  color: #4078f2 !important; /* Atom Light blue */
   font-weight: 500;
 }
 
 .inlineSnippet :global(.token.string) {
-  color: #A31515 !important;
+  color: #50a14f !important; /* Atom Light green */
 }
 
 .inlineSnippet :global(.token.number) {
-  color: #098658 !important;
+  color: #986801 !important; /* Atom Light brown */
 }
 
 .inlineSnippet :global(.token.comment) {
-  color: #6A9955 !important;
+  color: #a0a1a7 !important; /* Atom Light gray */
   font-style: italic;
 }
 
