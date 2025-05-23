@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using Xunit;
-
 namespace EasyValidate.Test.ContainsTests
 {
     public class ContainsTests

@@ -1,5 +1,5 @@
-using System;
-using EasyValidate.Abstraction.Attributes;
+using EasyValidate.Abstraction;
+using EasyValidate.Attributes;
 
 namespace EasyValidate.ConsoleTest;
 
@@ -13,8 +13,7 @@ public partial class Dto
 }
 
 
-
-public class XXX : ValidationAttributeBase
+public class CustomAttr : ValidationAttributeBase
 {
     public override string ErrorCode => throw new NotImplementedException();
 

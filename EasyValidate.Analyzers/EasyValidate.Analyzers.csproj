@@ -1,22 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <IsRoslynAnalyzer>true</IsRoslynAnalyzer>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-    <Authors>mu-dawood</Authors>
-    <Description>EasyValidate Roslyn analyzers for validation attributes.</Description>
-    <PackageTags>validation;analyzer;roslyn</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/mu-dawood/EasyValidate</RepositoryUrl>
-    <PackageProjectUrl>https://mu-dawood.github.io/EasyValidate/</PackageProjectUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageIconUrl>https://mu-dawood.github.io/EasyValidate/icon.png</PackageIconUrl>
-    <PackageReadmeFile>nuget-readme.md</PackageReadmeFile>
-    <PackageReleaseNotes>See https://github.com/mu-dawood/EasyValidate/releases</PackageReleaseNotes>
-    <RepositoryType>git</RepositoryType>
-    <PackageSourceUrl>https://github.com/mu-dawood/EasyValidate</PackageSourceUrl>
-    <PackageDocumentationUrl>https://mu-dawood.github.io/EasyValidate/</PackageDocumentationUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,8 +15,5 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="../docs/nuget-readme.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 </Project>

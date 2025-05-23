@@ -1,4 +1,4 @@
-using EasyValidate.Abstraction.Attributes;
+using EasyValidate.Attributes;
 
 namespace EasyValidate.Test.MinLengthTests
 {

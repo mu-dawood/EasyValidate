@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Xunit;
-
 namespace EasyValidate.Test.MinLengthTests
 {
     public class MinLengthTests

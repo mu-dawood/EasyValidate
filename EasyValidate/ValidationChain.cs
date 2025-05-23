@@ -1,13 +1,12 @@
 using Microsoft.CodeAnalysis;
-using System.Collections.Generic;
 using System.Text;
 
 namespace EasyValidate
 {
     public class ValidationChain
     {
-        private IValidationHandler _head;
-        private IValidationHandler _tail;
+        private IValidationHandler? _head;
+        private IValidationHandler? _tail;
 
         public ValidationChain Add(IValidationHandler handler)
         {
@@ -16,7 +15,7 @@ namespace EasyValidate
                 _head = handler;
                 _tail = handler;
             }
-            else
+            else if (_tail != null)
             {
                 _tail.WithNext(handler);
                 _tail = handler;

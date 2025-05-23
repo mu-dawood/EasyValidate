@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using Xunit;
-
 namespace EasyValidate.Test.UniqueTests
 {
     public class UniqueTests

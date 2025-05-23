@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -40,7 +39,7 @@ namespace EasyValidate.Analyzers
                 foreach (var attribute in member.GetAttributes())
                 {
                     var attributeClass = attribute.AttributeClass;
-                    if (!IsValidationAttribute(attributeClass))
+                    if (attributeClass == null || !IsValidationAttribute(attributeClass))
                         continue;
 
                     if (!IsCompatibleWithValidateMethods(attributeClass, member.Type))
@@ -59,7 +58,7 @@ namespace EasyValidate.Analyzers
         {
             return attributeClass != null &&
                    attributeClass.BaseType != null &&
-                   attributeClass.BaseType.ToDisplayString() == "EasyValidate.Abstraction.Attributes.ValidationAttributeBase";
+                   attributeClass.BaseType.ToDisplayString() == "EasyValidate.Attributes.ValidationAttributeBase";
         }
 
         private bool IsCompatibleWithValidateMethods(INamedTypeSymbol attributeClass, ITypeSymbol memberType)

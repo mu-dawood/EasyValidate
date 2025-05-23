@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using EasyValidate.Abstraction.Attributes;
+using EasyValidate.Attributes;
 
 namespace EasyValidate.Test.ContainsTests
 {

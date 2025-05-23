@@ -10,7 +10,10 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../EasyValidate.Abstraction/EasyValidate.Abstraction.csproj" />
+    <!-- Reference analyzer as analyzer (for local builds) -->
+    <ProjectReference Include="..\EasyValidate.Analyzers\EasyValidate.Analyzers.csproj"
+      OutputItemType="Analyzer"
+      ReferenceOutputAssembly="false" />
     <ProjectReference Include="../EasyValidate/EasyValidate.csproj" OutputItemType="Analyzer" />
   </ItemGroup>
 </Project>

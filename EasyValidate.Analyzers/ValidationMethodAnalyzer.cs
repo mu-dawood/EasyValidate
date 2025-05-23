@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -39,7 +37,7 @@ public class ValidationMethodAnalyzer : DiagnosticAnalyzer
         bool isValidationAttribute = false;
         while (currentBase != null && currentBase.Name != "Object")
         {
-            if (currentBase.ToDisplayString() == "EasyValidate.Abstraction.Attributes.ValidationAttributeBase")
+            if (currentBase.ToDisplayString() == "EasyValidate.Attributes.ValidationAttributeBase")
             {
                 isValidationAttribute = true;
                 break;

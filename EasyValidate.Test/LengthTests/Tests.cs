@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using EasyValidate.Test.LengthTests;
-
 namespace EasyValidate.Test.LengthTests
 {
     public class LengthTests

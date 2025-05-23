@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using Xunit;
-using EasyValidate.Test.MaxLengthTests;
-
 namespace EasyValidate.Test.MaxLengthTests
 {
     public class MaxLengthTests

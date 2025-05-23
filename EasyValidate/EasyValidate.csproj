@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
     <Authors>mu-dawood</Authors>
     <Description>EasyValidate validation library and source generator for attribute-based
       validation.</Description>
@@ -11,7 +12,6 @@
     <RepositoryUrl>https://github.com/mu-dawood/EasyValidate</RepositoryUrl>
     <PackageProjectUrl>https://mu-dawood.github.io/EasyValidate/</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageIconUrl>https://mu-dawood.github.io/EasyValidate/icon.png</PackageIconUrl>
     <PackageReadmeFile>nuget-readme.md</PackageReadmeFile>
     <PackageReleaseNotes>See https://github.com/mu-dawood/EasyValidate/releases</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
@@ -20,6 +20,8 @@
     <IsRoslynAnalyzer>true</IsRoslynAnalyzer>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
+    <PackageIcon>icon.png</PackageIcon>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,13 +37,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../EasyValidate.Abstraction/EasyValidate.Abstraction.csproj" />
     <ProjectReference Include="../EasyValidate.Analyzers/EasyValidate.Analyzers.csproj"
-      PrivateAssets="all" />
+      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="../EasyValidate.Analyzers/EasyValidate.Analyzers.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Pack analyzer DLL for consumers -->
+    <None Include="..\EasyValidate.Analyzers\bin\$(Configuration)\netstandard2.0\EasyValidate.Analyzers.dll"
+      Pack="true"
+      PackagePath="analyzers/dotnet/cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../docs/nuget-readme.md" Pack="true" PackagePath="\" />
-    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs"
-      Visible="false" />
+    <None Include="../docs/icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
+
 </Project>

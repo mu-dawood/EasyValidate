@@ -1,7 +1,3 @@
-using System;
-using EasyValidate.Abstraction;
-using Xunit;
-
 namespace EasyValidate.Test.NotEqualTests
 {
     public class Tests

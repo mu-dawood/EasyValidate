@@ -2,7 +2,6 @@
 using System.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 using EasyValidate.Handlers;
 
@@ -49,7 +48,7 @@ namespace EasyValidate
             // Skip classes that have no properties with validation attributes
             // Check if the class has any properties with attributes derived from ValidationAttributeBase
             if (!classSymbol.GetMembers().OfType<IPropertySymbol>()
-                    .Any(p => p.GetAttributes().Any(a => a.AttributeClass?.BaseType?.ToDisplayString() == "EasyValidate.Abstraction.Attributes.ValidationAttributeBase")))
+                    .Any(p => p.GetAttributes().Any(a => a.AttributeClass?.BaseType?.ToDisplayString() == "EasyValidate.Attributes.ValidationAttributeBase")))
             {
                 DebuggerUtil.Log($"Skipping class {classSymbol.Name} as it has no properties with validation attributes derived from ValidationAttributeBase.");
                 return;

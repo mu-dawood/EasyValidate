@@ -22,13 +22,13 @@ namespace EasyValidate.Handlers
                 // Check if the property's type has any members with attributes derived from ValidationAttributeBase
                 var hasValidationAttributes = member.Type.GetMembers()
                     .OfType<IPropertySymbol>()
-                    .Any(subMember => subMember.GetAttributes().Any(attr => attr.AttributeClass?.BaseType?.ToDisplayString() == "EasyValidate.Abstraction.Attributes.ValidationAttributeBase"));
+                    .Any(subMember => subMember.GetAttributes().Any(attr => attr.AttributeClass?.BaseType?.ToDisplayString() == "EasyValidate.Attributes.ValidationAttributeBase"));
 
 
                 foreach (var attr in member.GetAttributes())
                 {
                     var attributeClass = attr.AttributeClass;
-                    if (attributeClass?.BaseType?.ToDisplayString() != "EasyValidate.Abstraction.Attributes.ValidationAttributeBase")
+                    if (attributeClass?.BaseType?.ToDisplayString() != "EasyValidate.Attributes.ValidationAttributeBase")
                         continue;
 
                     var constructorArguments = new List<string>();

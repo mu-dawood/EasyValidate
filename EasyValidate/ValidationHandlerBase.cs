@@ -11,7 +11,7 @@ namespace EasyValidate
 
     public abstract class ValidationHandlerBase : IValidationHandler
     {
-        private IValidationHandler _nextHandler;
+        private IValidationHandler? _nextHandler;
 
         public IValidationHandler WithNext(IValidationHandler handler)
         {
