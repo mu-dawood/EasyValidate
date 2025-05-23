@@ -30,7 +30,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must be between {1} and {2}.",
-                    MessageArgs = new object?[] { propertyName, Minimum, Maximum }
+                    MessageArgs = [propertyName, Minimum, Maximum]
                 };
             }
             return new AttributeResult { IsValid = true };

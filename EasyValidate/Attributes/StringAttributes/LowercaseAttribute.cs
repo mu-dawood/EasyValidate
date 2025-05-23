@@ -23,7 +23,7 @@ namespace EasyValidate.Attributes
                     {
                         IsValid = false,
                         Message = "The field {0} must be all lowercase.",
-                        MessageArgs = new object?[] { propertyName }
+                        MessageArgs = [propertyName]
                     };
                 }
             }

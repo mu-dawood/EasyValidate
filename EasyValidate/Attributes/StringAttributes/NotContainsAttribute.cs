@@ -25,7 +25,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must not contain '{1}'.",
-                    MessageArgs = new object?[] { propertyName, Substring }
+                    MessageArgs = [propertyName, Substring]
                 };
             }
             return new AttributeResult { IsValid = true };

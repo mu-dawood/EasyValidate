@@ -25,7 +25,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must end with {1}.",
-                    MessageArgs = new object?[] { propertyName, Suffix }
+                    MessageArgs = [propertyName, Suffix]
                 };
             }
             return new AttributeResult { IsValid = true };

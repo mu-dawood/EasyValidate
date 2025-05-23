@@ -28,7 +28,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must not contain the value {1}.",
-                    MessageArgs = new object?[] { propertyName, ForbiddenValue }
+                    MessageArgs = [propertyName, ForbiddenValue]
                 };
             }
             return new AttributeResult { IsValid = true };

@@ -20,7 +20,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must be today ({1:yyyy-MM-dd}).",
-                    MessageArgs = new object?[] { propertyName, today }
+                    MessageArgs = [propertyName, today]
                 };
             }
             return new AttributeResult { IsValid = true };

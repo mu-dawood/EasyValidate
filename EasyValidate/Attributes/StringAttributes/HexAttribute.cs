@@ -21,7 +21,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must contain only hexadecimal characters (0-9, a-f, A-F).",
-                    MessageArgs = new object?[] { propertyName }
+                    MessageArgs = [propertyName]
                 };
             }
             return new AttributeResult { IsValid = true };

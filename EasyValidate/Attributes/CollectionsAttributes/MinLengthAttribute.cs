@@ -28,7 +28,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must have a minimum length of {1}.",
-                    MessageArgs = new object?[] { propertyName, Minimum }
+                    MessageArgs = [propertyName, Minimum]
                 };
             }
             return new AttributeResult { IsValid = true };

@@ -24,7 +24,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must be in year {1}.",
-                    MessageArgs = new object?[] { propertyName, Year }
+                    MessageArgs = [propertyName, Year]
                 };
             }
             return new AttributeResult { IsValid = true };

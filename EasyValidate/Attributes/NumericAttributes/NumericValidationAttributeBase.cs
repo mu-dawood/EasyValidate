@@ -15,7 +15,7 @@ namespace EasyValidate.Attributes
         public virtual AttributeResult Validate(string propertyName, byte? value)
         {
             if (value == null)
-                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = new object?[] { propertyName } };
+                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = [propertyName] };
             return ValidateNumber(propertyName, value.Value);
         }
 
@@ -25,7 +25,7 @@ namespace EasyValidate.Attributes
         public virtual AttributeResult Validate(string propertyName, sbyte? value)
         {
             if (value == null)
-                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = new object?[] { propertyName } };
+                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = [propertyName] };
             return ValidateNumber(propertyName, value.Value);
         }
 
@@ -35,7 +35,7 @@ namespace EasyValidate.Attributes
         public virtual AttributeResult Validate(string propertyName, short? value)
         {
             if (value == null)
-                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = new object?[] { propertyName } };
+                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = [propertyName] };
             return ValidateNumber(propertyName, value.Value);
         }
 
@@ -45,7 +45,7 @@ namespace EasyValidate.Attributes
         public virtual AttributeResult Validate(string propertyName, ushort? value)
         {
             if (value == null)
-                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = new object?[] { propertyName } };
+                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = [propertyName] };
             return ValidateNumber(propertyName, value.Value);
         }
 
@@ -55,7 +55,7 @@ namespace EasyValidate.Attributes
         public virtual AttributeResult Validate(string propertyName, int? value)
         {
             if (value == null)
-                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = new object?[] { propertyName } };
+                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = [propertyName] };
             return ValidateNumber(propertyName, value.Value);
         }
 
@@ -65,7 +65,7 @@ namespace EasyValidate.Attributes
         public virtual AttributeResult Validate(string propertyName, uint? value)
         {
             if (value == null)
-                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = new object?[] { propertyName } };
+                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = [propertyName] };
             return ValidateNumber(propertyName, value.Value);
         }
 
@@ -75,7 +75,7 @@ namespace EasyValidate.Attributes
         public virtual AttributeResult Validate(string propertyName, long? value)
         {
             if (value == null)
-                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = new object?[] { propertyName } };
+                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = [propertyName] };
             return ValidateNumber(propertyName, value.Value);
         }
 
@@ -85,7 +85,7 @@ namespace EasyValidate.Attributes
         public virtual AttributeResult Validate(string propertyName, ulong? value)
         {
             if (value == null)
-                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = new object?[] { propertyName } };
+                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = [propertyName] };
             return ValidateNumber(propertyName, (decimal)value.Value);
         }
 
@@ -95,7 +95,7 @@ namespace EasyValidate.Attributes
         public virtual AttributeResult Validate(string propertyName, float? value)
         {
             if (value == null)
-                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = new object?[] { propertyName } };
+                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = [propertyName] };
             return ValidateNumber(propertyName, (decimal)value.Value);
         }
 
@@ -105,7 +105,7 @@ namespace EasyValidate.Attributes
         public virtual AttributeResult Validate(string propertyName, double? value)
         {
             if (value == null)
-                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = new object?[] { propertyName } };
+                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = [propertyName] };
             return ValidateNumber(propertyName, (decimal)value.Value);
         }
 
@@ -115,7 +115,7 @@ namespace EasyValidate.Attributes
         public virtual AttributeResult Validate(string propertyName, decimal? value)
         {
             if (value == null)
-                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = new object?[] { propertyName } };
+                return new AttributeResult { IsValid = false, Message = "The field {0} cannot be null.", MessageArgs = [propertyName] };
             return ValidateNumber(propertyName, value.Value);
         }
 

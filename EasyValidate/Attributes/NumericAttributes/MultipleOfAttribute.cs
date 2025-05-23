@@ -4,25 +4,25 @@ using EasyValidate.Abstraction;
 namespace EasyValidate.Attributes
 {
     /// <summary>
-    /// Validates that a numeric value is greater than or equal to a specified comparison value.
+    /// Validates that a numeric value is a multiple of a specified number.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class GreaterThanOrEqualToAttribute(double comparisonValue) : NumericValidationAttributeBase
+    public class MultipleOfAttribute(double factor) : NumericValidationAttributeBase
     {
-        public double ComparisonValue { get; } = comparisonValue;
+        public decimal Factor { get; } = (decimal)factor;
 
-        public override string ErrorCode => "GreaterThanOrEqualToValidationError";
+        public override string ErrorCode => "MultipleOfValidationError";
 
         /// <inheritdoc/>
         public override AttributeResult ValidateNumber(string propertyName, decimal value)
         {
-            if (value < (decimal)ComparisonValue)
+            if (Factor == 0 || value % Factor != 0)
             {
                 return new AttributeResult
                 {
                     IsValid = false,
-                    Message = "The field {0} must be greater than or equal to {1}.",
-                    MessageArgs = [propertyName, ComparisonValue]
+                    Message = "The field {0} must be a multiple of {1}.",
+                    MessageArgs = [propertyName, Factor]
                 };
             }
             return new AttributeResult { IsValid = true };

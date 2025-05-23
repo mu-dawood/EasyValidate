@@ -28,7 +28,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must contain the value {1}.",
-                    MessageArgs = new object?[] { propertyName, ExpectedValue }
+                    MessageArgs = [propertyName, ExpectedValue]
                 };
             }
             return new AttributeResult { IsValid = true };

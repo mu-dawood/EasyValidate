@@ -25,7 +25,7 @@ namespace EasyValidate.Attributes
                     {
                         IsValid = false,
                         Message = "The field {0} must contain only unique values.",
-                        MessageArgs = new object?[] { propertyName }
+                        MessageArgs = [propertyName]
                     };
                 }
             }

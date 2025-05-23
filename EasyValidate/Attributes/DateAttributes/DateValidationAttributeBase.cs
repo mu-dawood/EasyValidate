@@ -23,7 +23,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} cannot be null.",
-                    MessageArgs = new object?[] { propertyName }
+                    MessageArgs = [propertyName]
                 };
             }
             return Validate(propertyName, value.Value);

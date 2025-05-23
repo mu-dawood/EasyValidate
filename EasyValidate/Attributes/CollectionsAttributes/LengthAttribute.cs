@@ -28,7 +28,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} cannot be null.",
-                    MessageArgs = new object?[] { propertyName }
+                    MessageArgs = [propertyName]
                 };
             }
 
@@ -39,7 +39,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must have exactly {1} items.",
-                    MessageArgs = new object?[] { propertyName, Length }
+                    MessageArgs = [propertyName, Length]
                 };
             }
 

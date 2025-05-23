@@ -7,14 +7,9 @@ namespace EasyValidate.Attributes
     /// Validates that a numeric value is less than a specified comparison value.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class LessThanAttribute : NumericValidationAttributeBase
+    public class LessThanAttribute(double comparisonValue) : NumericValidationAttributeBase
     {
-        public double ComparisonValue { get; }
-
-        public LessThanAttribute(double comparisonValue)
-        {
-            ComparisonValue = comparisonValue;
-        }
+        public double ComparisonValue { get; } = comparisonValue;
 
         public override string ErrorCode => "LessThanValidationError";
 
@@ -27,7 +22,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must be less than {1}.",
-                    MessageArgs = new object?[] { propertyName, ComparisonValue }
+                    MessageArgs = [propertyName, ComparisonValue]
                 };
             }
             return new AttributeResult { IsValid = true };

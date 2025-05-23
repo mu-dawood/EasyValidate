@@ -20,7 +20,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must fall on a weekday (Monday through Friday).",
-                    MessageArgs = new object?[] { propertyName }
+                    MessageArgs = [propertyName]
                 };
             }
             return new AttributeResult { IsValid = true };

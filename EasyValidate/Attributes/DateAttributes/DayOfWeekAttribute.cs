@@ -26,7 +26,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must fall on a {1}.",
-                    MessageArgs = new object?[] { propertyName, Day }
+                    MessageArgs = [propertyName, Day]
                 };
             }
             return new AttributeResult { IsValid = true };

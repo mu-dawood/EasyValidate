@@ -32,7 +32,7 @@ namespace EasyValidate.Attributes
                         {
                             IsValid = false,
                             Message = "The field {0} must contain the value {1} exactly once.",
-                            MessageArgs = new object?[] { propertyName, Value }
+                            MessageArgs = [propertyName, Value]
                         };
                     }
                     found = true;
@@ -44,7 +44,7 @@ namespace EasyValidate.Attributes
             {
                 IsValid = false,
                 Message = "The field {0} must contain the value {1} exactly once.",
-                MessageArgs = new object?[] { propertyName, Value }
+                MessageArgs = [propertyName, Value]
             };
         }
     }

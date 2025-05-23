@@ -20,7 +20,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} cannot be empty.",
-                    MessageArgs = new object?[] { propertyName }
+                    MessageArgs = [propertyName]
                 };
             }
             return new AttributeResult { IsValid = true };

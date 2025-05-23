@@ -1,26 +1,25 @@
 using System;
-using System.Linq;
 using EasyValidate.Abstraction;
 
 namespace EasyValidate.Attributes
 {
     /// <summary>
-    /// Validates that a string does not contain any whitespace characters.
+    /// Validates that a numeric value is not zero.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class DisallowWhitespaceAttribute : StringValidationAttributeBase
+    public class NonZeroAttribute : NumericValidationAttributeBase
     {
-        public override string ErrorCode => "DisallowWhitespaceValidationError";
+        public override string ErrorCode => "NonZeroValidationError";
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(string propertyName, string? value)
+        public override AttributeResult ValidateNumber(string propertyName, decimal value)
         {
-            if (!string.IsNullOrEmpty(value) && value.Any(char.IsWhiteSpace))
+            if (value == 0)
             {
                 return new AttributeResult
                 {
                     IsValid = false,
-                    Message = "The field {0} must not contain whitespace characters.",
+                    Message = "The field {0} must not be zero.",
                     MessageArgs = [propertyName]
                 };
             }

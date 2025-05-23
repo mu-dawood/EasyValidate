@@ -22,7 +22,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must be a valid IPv4 or IPv6 address.",
-                    MessageArgs = new object?[] { propertyName }
+                    MessageArgs = [propertyName]
                 };
             }
             return new AttributeResult { IsValid = true };

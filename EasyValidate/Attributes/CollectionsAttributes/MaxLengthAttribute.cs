@@ -28,7 +28,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must not exceed a length of {1}.",
-                    MessageArgs = new object?[] { propertyName, Maximum }
+                    MessageArgs = [propertyName, Maximum]
                 };
             }
             return new AttributeResult { IsValid = true };

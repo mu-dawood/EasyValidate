@@ -25,7 +25,7 @@ namespace EasyValidate.Attributes
                 {
                     IsValid = false,
                     Message = "The field {0} must be at least {1} characters long.",
-                    MessageArgs = new object?[] { propertyName, MinLength }
+                    MessageArgs = [propertyName, MinLength]
                 };
             }
             return new AttributeResult { IsValid = true };

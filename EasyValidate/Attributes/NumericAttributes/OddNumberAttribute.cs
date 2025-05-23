@@ -16,7 +16,7 @@ namespace EasyValidate.Attributes
         {
             if (value % 2 == 0)
             {
-                return new AttributeResult { IsValid = false, Message = "The field {0} must be an odd number.", MessageArgs = new object?[] { propertyName } };
+                return new AttributeResult { IsValid = false, Message = "The field {0} must be an odd number.", MessageArgs = [propertyName] };
             }
             return new AttributeResult { IsValid = true };
         }
