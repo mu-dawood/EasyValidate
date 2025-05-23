@@ -1,0 +1,27 @@
+{
+  "id": "localization",
+  "title": "Localization",
+  "description": "All error messages in EasyValidate are localization-ready. Use resource files or custom formatters for multi-language support.",
+  "source": "@site/docs/localization.md",
+  "sourceDirName": ".",
+  "slug": "/localization",
+  "permalink": "/docs/localization",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/your-org/EasyValidate/edit/main/website/docs/localization.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "localization",
+    "title": "Localization"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Source Generators & Analyzers",
+    "permalink": "/docs/analyzers"
+  },
+  "next": {
+    "title": "Contributing",
+    "permalink": "/docs/contributing"
+  }
+}

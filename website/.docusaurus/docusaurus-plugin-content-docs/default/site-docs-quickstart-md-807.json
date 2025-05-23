@@ -1,0 +1,27 @@
+{
+  "id": "quickstart",
+  "title": "Quick Start",
+  "description": "See Attributes Reference for all available validation attributes.",
+  "source": "@site/docs/quickstart.md",
+  "sourceDirName": ".",
+  "slug": "/quickstart",
+  "permalink": "/docs/quickstart",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/your-org/EasyValidate/edit/main/website/docs/quickstart.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "quickstart",
+    "title": "Quick Start"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Installation",
+    "permalink": "/docs/installation"
+  },
+  "next": {
+    "title": "Attributes Reference",
+    "permalink": "/docs/attributes"
+  }
+}

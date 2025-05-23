@@ -1,0 +1,27 @@
+{
+  "id": "analyzers",
+  "title": "Source Generators & Analyzers",
+  "description": "EasyValidate uses Roslyn source generators to create fast, reflection-free validation code at compile time. Analyzers ensure correct attribute usage and provide IDE feedback.",
+  "source": "@site/docs/analyzers.md",
+  "sourceDirName": ".",
+  "slug": "/analyzers",
+  "permalink": "/docs/analyzers",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/your-org/EasyValidate/edit/main/website/docs/analyzers.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "analyzers",
+    "title": "Source Generators & Analyzers"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Extending EasyValidate",
+    "permalink": "/docs/extending"
+  },
+  "next": {
+    "title": "Localization",
+    "permalink": "/docs/localization"
+  }
+}
