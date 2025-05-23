@@ -67,8 +67,9 @@ public class ValidationMethodAnalyzer : DiagnosticAnalyzer
 
         bool allHaveTwoParameters = validateMethods.All(m => m.Parameters.Length == 2);
 
+        // Check for correct return type using the full metadata name
         bool allReturnCorrectType = validateMethods.All(m =>
-            m.ReturnType.ToDisplayString() == "EasyValidate.Abstraction.AttributeResult");
+            m.ReturnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == "global::EasyValidate.Abstraction.AttributeResult");
 
         if (!hasCorrectOverload || !allHaveTwoParameters || !allReturnCorrectType)
         {

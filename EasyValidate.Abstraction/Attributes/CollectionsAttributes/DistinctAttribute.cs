@@ -4,17 +4,12 @@ using System.Collections.Generic;
 namespace EasyValidate.Abstraction.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class DistinctAttribute<T> : ValidationAttributeBase
+    public class DistinctAttribute<T> : CollectionValidationAttributeBase<T>
     {
         public override string ErrorCode => "NoDuplicatesValidationError";
 
-        public AttributeResult Validate(string propertyName, IEnumerable<T> value)
+        protected override AttributeResult ValidateCollection(string propertyName, IEnumerable<T> value)
         {
-            if (value == null)
-            {
-                throw new InvalidOperationException($"The property '{propertyName}' must be of type IEnumerable to use the NoDuplicatesAttribute.");
-            }
-
             var seenItems = new HashSet<T>();
             foreach (var item in value)
             {
@@ -28,7 +23,6 @@ namespace EasyValidate.Abstraction.Attributes
                     };
                 }
             }
-
             return new AttributeResult { IsValid = true };
         }
     }

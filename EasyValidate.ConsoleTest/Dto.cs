@@ -13,3 +13,13 @@ public partial class Dto
 }
 
 
+
+public class XXX : ValidationAttributeBase
+{
+    public override string ErrorCode => throw new NotImplementedException();
+
+    public string Validate(string propertyName, object? value)
+    {
+        throw new NotImplementedException();
+    }
+}

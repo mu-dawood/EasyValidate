@@ -5,13 +5,13 @@ using System.Linq;
 namespace EasyValidate.Abstraction.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class LengthAttribute<T>(int length) : ValidationAttributeBase
+    public class LengthAttribute<T>(int length) : CollectionValidationAttributeBase<T>
     {
         public int Length { get; } = length;
 
         public override string ErrorCode => "LengthValidationError";
 
-        public AttributeResult Validate(string propertyName, IEnumerable<T> value)
+        protected override AttributeResult ValidateCollection(string propertyName, IEnumerable<T> value)
         {
             if (value == null)
             {

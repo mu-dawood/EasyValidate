@@ -22,9 +22,9 @@
 
   <ItemGroup>
     <ProjectReference Include="../EasyValidate.Abstraction/EasyValidate.Abstraction.csproj" />
+    <ProjectReference Include="../EasyValidate.Analyzers/EasyValidate.Analyzers.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs"
-      Visible="false" />
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 </Project>

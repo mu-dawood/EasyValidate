@@ -9,14 +9,11 @@ namespace EasyValidate.Abstraction
     /// <summary>
     /// Represents the result of a validation operation.
     /// </summary>
-    public sealed class ValidationResult
+    public sealed class ValidationResult(IFormatter formatter)
     {
         public static IFormatter GetDefaultFormatter() => new DefaultFormatter();
-        private readonly IFormatter _formatter;
-        public ValidationResult(IFormatter formatter)
-        {
-            _formatter = formatter;
-        }
+        private readonly IFormatter _formatter = formatter;
+
         /// <summary>
         /// Gets or sets a value indicating whether there are validation errors.
         /// </summary>

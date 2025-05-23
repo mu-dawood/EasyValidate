@@ -5,34 +5,25 @@ using System.Collections.Generic;
 namespace EasyValidate.Abstraction.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class UniqueAttribute<T>(T uniqueValue) : ValidationAttributeBase
+    public class UniqueAttribute<T> : CollectionValidationAttributeBase<T>
     {
-
-        private readonly T _uniqueValue = uniqueValue;
-
         public override string ErrorCode => "UniqueValidationError";
 
-        public AttributeResult Validate(string propertyName, IEnumerable<T> collection)
+        protected override AttributeResult ValidateCollection(string propertyName, IEnumerable<T> collection)
         {
-            int count = 0;
-
+            var seen = new HashSet<T>();
             foreach (var item in collection)
             {
-                if (item.Equals(_uniqueValue))
+                if (!seen.Add(item))
                 {
-                    count++;
-                    if (count > 1)
+                    return new AttributeResult
                     {
-                        return new AttributeResult
-                        {
-                            IsValid = false,
-                            Message = "The field {0} must be unique.",
-                            MessageArgs = [propertyName]
-                        };
-                    }
+                        IsValid = false,
+                        Message = "The field {0} must be unique.",
+                        MessageArgs = [propertyName]
+                    };
                 }
             }
-
             return new AttributeResult { IsValid = true };
         }
     }
