@@ -11,8 +11,7 @@ function CodeWindow({
     language = 'csharp',
     className = '',
     showCopyButton = true,
-    style = {},
-    variant = 'default' // 'default', 'hero', 'colorful', 'light'
+    variant = 'light' // 'default', 'hero', 'colorful', 'light'
 }) {
     const [copied, setCopied] = useState(false);
 
@@ -58,7 +57,7 @@ function CodeWindow({
     }, [children, language]);
 
     return (
-        <div className={clsx(styles.codeWindow, styles[variant], className)} style={{ overflow: 'auto', maxHeight: '450px', width: '100%', ...style }}>
+        <div className={clsx(styles.codeWindow, styles[variant], className)} style={{ overflow: 'auto', width: '100%' }}>
             <div className={styles.windowHeader}>
                 <div className={styles.windowControls}>
                     <span className={clsx(styles.control, styles.controlClose)}></span>

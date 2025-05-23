@@ -1,36 +1,41 @@
 /* Light-themed inline code snippet styling */
 .inlineSnippet {
-  background: #fafafa; /* Atom Light background */
-  border: 1px solid #e1e4e8;
-  border-radius: 6px;
-  padding: 0.5rem 0.75rem;
-  margin: 0.5rem 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  overflow-x: auto;
-  position: relative;
+  background: #fafafa !important; /* Atom Light background */
+  border: 1px solid #e1e4e8 !important;
+  border-radius: 6px !important;
+  padding: 0.5rem 0.75rem !important;
+  margin: 0.5rem 0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+  overflow-x: auto !important;
+  position: relative !important;
 }
 
-/* Light C# syntax highlighting */
+/* Light C# syntax highlighting - with important flags to override theme styles */
 .inlineSnippet pre {
-  margin: 0;
-  padding: 0;
-  overflow: visible;
-  background: transparent;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
 }
 
 .inlineSnippet code {
-  color: #24292e;
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  white-space: pre;
-  word-wrap: normal;
-  display: block;
-  width: 100%;
-  font-weight: 400;
-  background: transparent;
-  border: none;
-  padding: 0;
+  color: #24292e !important;
+  font-family: 'Consolas', 'Courier New', monospace !important;
+  font-size: 0.9rem !important;
+  line-height: 1.5 !important;
+  white-space: pre !important;
+  word-wrap: normal !important;
+  display: block !important;
+  width: 100% !important;
+  font-weight: 400 !important;
+  background: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  padding: 0 !important;
 }
 
 /* C# Specific Syntax Highlighting - Light Theme */

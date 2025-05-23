@@ -1,7 +1,7 @@
 {
   "id": "intro",
   "title": "Introduction",
-  "description": "EasyValidate is a modern, high-performance, and extensible attribute-based validation library for .NET. Built with source generators and Roslyn analyzers, it provides compile-time validation generation with zero reflection overhead.",
+  "description": "<DocSection",
   "source": "@site/docs/intro.md",
   "sourceDirName": ".",
   "slug": "/intro",

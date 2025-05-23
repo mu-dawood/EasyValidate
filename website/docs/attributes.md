@@ -53,12 +53,10 @@ import { DocsWrapper, FeatureCard, InfoBox, DocSection, FeatureGrid ,AttributeCa
 #### `NotEmpty`
 Validates that a string is not null, empty, or whitespace.
 
-<InlineSnippet language="csharp">
-{`
+<InlineSnippet language="csharp">{`
 [NotEmpty]
 public string Name { get; set; }
-`}
-</InlineSnippet>
+`}</InlineSnippet>
 
 #### `MinLength(int minLength)`
 Validates minimum string length.

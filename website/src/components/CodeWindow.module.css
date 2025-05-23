@@ -3,16 +3,19 @@
   background: #1e1e1e;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #3c3c3c;
   position: relative;
   transition: all 0.3s ease;
+  margin: 1.5rem 0;
 }
 
 /* Window Header */
 .windowHeader {
-  background: #2d2d2d;
-  padding: 1rem 1.5rem;
+  background: linear-gradient(to right, #2d2d2d, #252525);
+  padding: 0.75rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -72,6 +75,7 @@
 
 .fileName {
   color: #d4d4d4;
+  font-weight: 500;
 }
 
 /* Window Actions */
@@ -102,6 +106,7 @@
   background: #374151;
   color: #d4d4d4;
   transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .copyBtn.copySuccess {
@@ -118,24 +123,42 @@
 
 /* Code Content */
 .codeContent {
-  padding: 0;
-  overflow-x: auto;
-  background: #1e1e1e;
+  padding: 0 !important;
+  overflow-x: auto !important;
+  background: #1e1e1e !important;
+  background-image: none !important;
 }
 
 .pre {
-  margin: 0;
-  padding: 1.5rem;
+  margin: 0 !important;
+  padding: 1.5rem !important;
+  background: #1e1e1e !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 0 !important;
 }
 
 .codeContent code {
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 0.9rem;
-  line-height: 1.6;
-  white-space: pre;
-  word-wrap: normal;
-  width: 100%;
-  font-weight: 400;
+  font-family: 'Consolas', 'Courier New', monospace !important;
+  font-size: 0.9rem !important;
+  line-height: 1.6 !important;
+  white-space: pre !important;
+  word-wrap: normal !important;
+  width: 100% !important;
+  font-weight: 400 !important;
+  background: transparent !important;
+  background-image: none !important;
+  padding: 0 !important;
+  border: none !important;
+  color: inherit !important;
+  tab-size: 2 !important;
+}
+
+/* Default standard code formatting */
+.codeWindow .pre code {
+  display: block !important;
+  width: 100% !important;
 }
 
 /* Default dark theme syntax highlighting */
@@ -294,7 +317,20 @@
 }
 
 .codeWindow.light .codeContent {
-  background: #fafafa; /* Atom Light background */
+  background: #fafafa !important; /* Atom Light background */
+}
+
+.codeWindow.light .pre {
+  background: #fafafa !important;
+  color: #24292e !important;
+  padding: 1.25rem 1.5rem !important;
+  line-height: 1.7 !important;
+}
+
+.codeWindow.light code {
+  background: #fafafa !important;
+  color: #24292e !important;
+  line-height: 1.7 !important;
 }
 
 /* Responsive Design */

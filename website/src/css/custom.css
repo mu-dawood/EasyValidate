@@ -280,6 +280,56 @@ body {
   color: var(--ev-primary) !important;
 }
 
+/* Isolate CodeWindow and InlineSnippet from markdown styles */
+/* This ensures these components use only their own styles */
+.codeWindow pre,
+.codeWindow pre code,
+.codeWindow code,
+[class*='codeWindow'] pre,
+[class*='codeWindow'] code,
+[class*='inlineSnippet'] pre,
+[class*='inlineSnippet'] code {
+  /* Reset the theme's pre/code styling */
+  all: revert !important;
+  font-family: 'Consolas', 'Courier New', monospace !important;
+  background: none !important;
+  background-image: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: initial !important;
+  background-clip: initial !important;
+  border-left: none !important;
+}
+
+/* Override specific theme-doc-markdown styles for our components */
+.theme-doc-markdown .codeWindow pre,
+.theme-doc-markdown .codeWindow code,
+.theme-doc-markdown [class*='inlineSnippet'] pre,
+.theme-doc-markdown [class*='inlineSnippet'] code {
+  background: none !important;
+  background-image: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: initial !important;
+  background-clip: initial !important;
+}
+
+/* Completely isolate the components by nullifying any theme inheritance */
+.theme-doc-markdown .codeWindow,
+.theme-doc-markdown [class*='inlineSnippet'] {
+  all: revert !important;
+  background: initial !important;
+  background-image: none !important; 
+  transform: initial !important;
+  transition: initial !important;
+  text-shadow: none !important;
+}
+
 /* Responsive Design */
 @media (max-width: 996px) {
   .theme-doc-sidebar-container {
