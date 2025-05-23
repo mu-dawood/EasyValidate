@@ -3,14 +3,9 @@ using System;
 namespace EasyValidate.Abstraction.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class StartsWithAttribute : ValidationAttributeBase
+    public class StartsWithAttribute(string prefix) : ValidationAttributeBase
     {
-        public string Prefix { get; }
-
-        public StartsWithAttribute(string prefix)
-        {
-            Prefix = prefix;
-        }
+        public string Prefix { get; } = prefix;
 
         public override string ErrorCode => "StartsWithValidationError";
 

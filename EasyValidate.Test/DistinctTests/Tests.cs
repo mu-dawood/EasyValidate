@@ -1,18 +1,17 @@
 using System.Collections.Generic;
 using Xunit;
 
-namespace EasyValidate.Test.NoDuplicatesTests
+namespace EasyValidate.Test.DistinctTests
 {
-    public class NoDuplicatesTests
+    public class DistinctTests
     {
         [Fact]
-        public void Validate_NoDuplicates_ShouldPass()
+        public void Validate_Distinct_ShouldPass()
         {
-            var model = new NoDuplicatesModel
+            var model = new DistinctModel
             {
                 UniqueCollection = [1, 2, 3, 4]
             };
-
             var result = model.Validate();
 
             Assert.True(result.IsValid(nameof(model.UniqueCollection)));
@@ -21,7 +20,7 @@ namespace EasyValidate.Test.NoDuplicatesTests
         [Fact]
         public void Validate_Duplicates_ShouldFail()
         {
-            var model = new NoDuplicatesModel
+            var model = new DistinctModel
             {
                 UniqueCollection = [1, 2, 2, 4]
             };
@@ -34,7 +33,7 @@ namespace EasyValidate.Test.NoDuplicatesTests
         [Fact]
         public void Validate_EmptyCollection_ShouldPass()
         {
-            var model = new NoDuplicatesModel
+            var model = new DistinctModel
             {
                 UniqueCollection = []
             };
@@ -47,7 +46,7 @@ namespace EasyValidate.Test.NoDuplicatesTests
         [Fact]
         public void Validate_NullCollection_ShouldThrowException()
         {
-            var model = new NoDuplicatesModel
+            var model = new DistinctModel
             {
                 UniqueCollection = null
             };

@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace EasyValidate.Abstraction.Attributes
 {
@@ -34,6 +32,5 @@ namespace EasyValidate.Abstraction.Attributes
             return new AttributeResult { IsValid = true };
         }
     }
-    public class DistinctAttribute : DistinctAttribute<object>;
 
 }

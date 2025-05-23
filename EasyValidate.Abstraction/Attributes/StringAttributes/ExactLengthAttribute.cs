@@ -3,14 +3,9 @@ using System;
 namespace EasyValidate.Abstraction.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class ExactLengthAttribute : ValidationAttributeBase
+    public class ExactLengthAttribute(int length) : ValidationAttributeBase
     {
-        public int Length { get; }
-
-        public ExactLengthAttribute(int length)
-        {
-            Length = length;
-        }
+        public int Length { get; } = length;
 
         public override string ErrorCode => "ExactLengthValidationError";
 

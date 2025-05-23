@@ -3,14 +3,9 @@ using System;
 namespace EasyValidate.Abstraction.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class EndsWithAttribute : ValidationAttributeBase
+    public class EndsWithAttribute(string suffix) : ValidationAttributeBase
     {
-        public string Suffix { get; }
-
-        public EndsWithAttribute(string suffix)
-        {
-            Suffix = suffix;
-        }
+        public string Suffix { get; } = suffix;
 
         public override string ErrorCode => "EndsWithValidationError";
 

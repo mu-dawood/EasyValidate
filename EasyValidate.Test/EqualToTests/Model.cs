@@ -5,7 +5,6 @@ namespace EasyValidate.Test.EqualToTests
     public partial class Model
     {
         [EqualTo<string>("ExpectedValue")]
-        // [Range(0, 100)]
         public string EqualString { get; set; } = string.Empty;
 
         [EqualTo<int>(42)]

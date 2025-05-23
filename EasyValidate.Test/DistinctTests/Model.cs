@@ -1,11 +1,11 @@
 using EasyValidate.Abstraction.Attributes;
 using System.Collections.Generic;
 
-namespace EasyValidate.Test.NoDuplicatesTests
+namespace EasyValidate.Test.DistinctTests
 {
-    public partial class NoDuplicatesModel
+    public partial class DistinctModel
     {
-        [Distinct]
+        [Distinct<int>]
         public IEnumerable<int>? UniqueCollection { get; set; }
     }
 }

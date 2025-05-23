@@ -7,7 +7,7 @@ public partial class Dto
 {
     [NotNull]
     public string Name { get; set; } = string.Empty;
-    [NotEmpty]
+    [Range(0, 100)]
     public int Age { get; set; }
 
 }

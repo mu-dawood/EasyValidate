@@ -4,14 +4,9 @@ using System.Text.RegularExpressions;
 namespace EasyValidate.Abstraction.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class MatchesAttribute : ValidationAttributeBase
+    public class MatchesAttribute(string pattern) : ValidationAttributeBase
     {
-        public string Pattern { get; }
-
-        public MatchesAttribute(string pattern)
-        {
-            Pattern = pattern;
-        }
+        public string Pattern { get; } = pattern;
 
         public override string ErrorCode => "MatchesValidationError";
 
