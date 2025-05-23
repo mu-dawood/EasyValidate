@@ -5,6 +5,14 @@
     <LangVersion>latest</LangVersion>
     <IsRoslynAnalyzer>true</IsRoslynAnalyzer>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <Version>1.0.0</Version>
+    <Authors>mu-dawood</Authors>
+    <Description>EasyValidate Roslyn analyzers for validation attributes.</Description>
+    <PackageTags>validation;analyzer;roslyn</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/mu-dawood/EasyValidate</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/mu-dawood/EasyValidate</PackageProjectUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
