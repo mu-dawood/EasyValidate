@@ -732,6 +732,35 @@
   box-sizing: border-box;
 }
 
+/* Individual Window Header - Header content for specific windows */
+.individualWindowHeader {
+  background: #252525;
+  border-bottom: 1px solid #3c3c3c;
+  padding: 0.75rem 1.5rem;
+  color: #d4d4d4;
+  font-size: 0.85rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 40px;
+  box-sizing: border-box;
+}
+
+/* Light theme variants for individual window elements */
+.codeWindow.light .individualWindowHeader {
+  background: #f0f0f0;
+  border-bottom: 1px solid #d1d5da;
+  color: #24292e;
+}
+
+.codeWindow.light .codeFooter {
+  background: #f0f0f0;
+  border-top: 1px solid #d1d5da;
+  color: #586069;
+}
+
 .codeFooter a {
   color: #569CD6;
   text-decoration: none;

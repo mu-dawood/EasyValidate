@@ -11,6 +11,8 @@ export type Window = {
     snipt: string;
     language: string;
     active?: boolean;
+    header?: React.ReactNode;
+    footer?: React.ReactNode;
 }
 
 export type MultiWindowProps = {
@@ -159,6 +161,13 @@ function CodeWindow({
                 </>
             )}
 
+            {/* Optional Window Header (per individual window) */}
+            {activeTab.header && (
+                <div className={styles.individualWindowHeader}>
+                    {activeTab.header}
+                </div>
+            )}
+
             <div className={styles.codeContent} style={{ overflowY: 'auto', maxHeight: '400px' }}>
                 <pre className={styles.pre}>
                     <code className={`language-${activeTab.language}`}>
@@ -167,7 +176,14 @@ function CodeWindow({
                 </pre>
             </div>
 
-            {/* Optional Footer */}
+            {/* Optional Window Footer (per individual window) */}
+            {activeTab.footer && (
+                <div className={styles.codeFooter}>
+                    {activeTab.footer}
+                </div>
+            )}
+
+            {/* Optional Global Footer */}
             {footer && (
                 <div className={styles.codeFooter}>
                     {footer}
