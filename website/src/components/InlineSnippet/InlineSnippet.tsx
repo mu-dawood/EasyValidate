@@ -1,8 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Prism from 'prismjs';
+import 'prismjs/themes/prism.css'; // Default light theme
 import 'prismjs/components/prism-csharp';
 import 'prismjs/components/prism-bash';
-import styles from './InlineSnippet.module.css';
+import 'prismjs/components/prism-json';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-javascript';
 
 type InlineSnippetProps = {
   snipt: React.ReactNode;
@@ -11,22 +14,24 @@ type InlineSnippetProps = {
 };
 
 function InlineSnippet({ snipt, language = 'csharp', className = '' }: InlineSnippetProps) {
-  useEffect(() => {
-    Prism.highlightAll();
-  }, []);
+  const codeRef = useRef<HTMLElement>(null);
 
-  const clsx = (...classes: (string | undefined | null | false)[]) => {
-    return classes.filter(Boolean).join(' ');
-  };
+  useEffect(() => {
+    if (codeRef.current) {
+      // Highlight the specific code element
+      Prism.highlightElement(codeRef.current);
+    }
+  }, [snipt, language]);
 
   return (
-    <div className={clsx(styles.inlineSnippet, className)}>
-      <pre>
-        <code className={`language-${language}`}>
-          {snipt}
-        </code>
-      </pre>
-    </div>
+    <pre className={className}>
+      <code 
+        ref={codeRef}
+        className={`language-${language}`}
+      >
+        {snipt}
+      </code>
+    </pre>
   );
 }
 

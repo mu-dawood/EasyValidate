@@ -21,6 +21,7 @@ export type MultiWindowProps = {
     showCopyButton?: boolean;
     variant?: 'default' | 'hero' | 'colorful' | 'light';
     footer?: React.ReactNode;
+    header?: React.ReactNode;
 };
 
 function CodeWindow({
@@ -28,7 +29,7 @@ function CodeWindow({
     className = '',
     showCopyButton = true,
     variant = 'light',
-    footer
+    footer, header
 }: MultiWindowProps) {
 
     // Find initial active tab (if specified)
@@ -86,8 +87,8 @@ function CodeWindow({
 
     return (
         <div className={clsx(
-            styles.codeWindow, 
-            styles[variant], 
+            styles.codeWindow,
+            styles[variant],
             className,
             { [styles.hasFooter]: hasFooter }
         )} style={{ overflow: 'auto', width: '100%' }}>
@@ -133,35 +134,40 @@ function CodeWindow({
             </div>
 
             <div className={styles.mobileTabsNav}>
-                        <div className={styles.mobileTabsScroll}>
-                            {windows.map((window, index) => (
-                                <button
-                                    key={index}
-                                    className={clsx(styles.mobileTabButton, { [styles.activeTab]: activeTabIndex === index })}
-                                    onClick={() => setActiveTabIndex(index)}
-                                >
-                                    <span>{getFileIcon(window.fileName)}</span> {window.fileName}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Dropdown selector for very small screens */}
-                    <div className={styles.tabSelector}>
-                        <select
-                            className={styles.tabSelect}
-                            value={activeTabIndex}
-                            onChange={(e) => setActiveTabIndex(Number(e.target.value))}
-                            aria-label="Select file tab"
+                <div className={styles.mobileTabsScroll}>
+                    {windows.map((window, index) => (
+                        <button
+                            key={index}
+                            className={clsx(styles.mobileTabButton, { [styles.activeTab]: activeTabIndex === index })}
+                            onClick={() => setActiveTabIndex(index)}
                         >
-                            {windows.map((window, index) => (
-                                <option key={index} value={index}>
-                                    {getFileIcon(window.fileName)} {window.fileName}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                            <span>{getFileIcon(window.fileName)}</span> {window.fileName}
+                        </button>
+                    ))}
+                </div>
+            </div>
 
+            {/* Dropdown selector for very small screens */}
+            <div className={styles.tabSelector}>
+                <select
+                    className={styles.tabSelect}
+                    value={activeTabIndex}
+                    onChange={(e) => setActiveTabIndex(Number(e.target.value))}
+                    aria-label="Select file tab"
+                >
+                    {windows.map((window, index) => (
+                        <option key={index} value={index}>
+                            {getFileIcon(window.fileName)} {window.fileName}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            {/* Optional Global Header */}
+            {header && (
+                <div className={styles.individualWindowHeader}>
+                    {header}
+                </div>
+            )}
             {/* Optional Window Header (per individual window) */}
             {activeTab.header && (
                 <div className={styles.individualWindowHeader}>
