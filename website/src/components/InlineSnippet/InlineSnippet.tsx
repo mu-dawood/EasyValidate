@@ -5,12 +5,12 @@ import 'prismjs/components/prism-bash';
 import styles from './InlineSnippet.module.css';
 
 type InlineSnippetProps = {
-  children: React.ReactNode;
+  snipt: React.ReactNode;
   language?: string;
   className?: string;
 };
 
-function InlineSnippet({ children, language = 'csharp', className = '' }: InlineSnippetProps) {
+function InlineSnippet({ snipt, language = 'csharp', className = '' }: InlineSnippetProps) {
   useEffect(() => {
     Prism.highlightAll();
   }, []);
@@ -23,7 +23,7 @@ function InlineSnippet({ children, language = 'csharp', className = '' }: Inline
     <div className={clsx(styles.inlineSnippet, className)}>
       <pre>
         <code className={`language-${language}`}>
-          {children}
+          {snipt}
         </code>
       </pre>
     </div>
