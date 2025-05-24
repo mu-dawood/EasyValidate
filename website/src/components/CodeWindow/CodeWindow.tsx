@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import Prism from 'prismjs';
+import 'prismjs/themes/prism.css'; // Default light theme
 import 'prismjs/components/prism-csharp';
 import 'prismjs/components/prism-bash';
 import styles from './CodeWindow.module.css';
@@ -19,7 +20,6 @@ export type MultiWindowProps = {
     windows: Window[];
     className?: string;
     showCopyButton?: boolean;
-    variant?: 'default' | 'hero' | 'colorful' | 'light';
     footer?: React.ReactNode;
     header?: React.ReactNode;
 };
@@ -28,7 +28,6 @@ function CodeWindow({
     windows,
     className = '',
     showCopyButton = true,
-    variant = 'light',
     footer, header
 }: MultiWindowProps) {
 
@@ -88,7 +87,7 @@ function CodeWindow({
     return (
         <div className={clsx(
             styles.codeWindow,
-            styles[variant],
+            styles.light,
             className,
             { [styles.hasFooter]: hasFooter }
         )} style={{ overflow: 'auto', width: '100%' }}>

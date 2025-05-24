@@ -1,34 +1,34 @@
-/* CodeWindow Component - Enhanced window design */
+/* CodeWindow Component - Light theme only */
 .codeWindow {
-  background: #1e1e1e;
+  background: #fafafa;
+  border: 1px solid #e1e4e8;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.15),
-    0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #3c3c3c;
+    0 12px 24px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
   position: relative;
   transition: all 0.3s ease;
-  margin: 0; /* Remove all margins */
+  margin: 0;
   display: flex;
   flex-direction: column;
-  height: 100%; /* Take full height of container */
+  height: 100%;
 }
 
-/* Window Header - Modern browser design */
+/* Window Header - Light theme */
 .windowHeader {
-  background: #2a2a2a; /* Different color from window content */
+  background: #f0f0f0;
   padding: 0;
   padding-left: 1rem;
   padding-right: 1rem;
   display: flex;
   align-items: flex-end;
-  border-bottom: none; /* Remove border completely */
+  border-bottom: none;
   position: relative;
   flex-wrap: nowrap;
-  height: 48px; /* Header height - larger than tabs for proper spacing */
+  height: 48px;
   z-index: 1;
-  gap: 1rem; /* Add gap between header elements */
+  gap: 1rem;
 }
 
 /* Window Controls (Traffic Lights) */
@@ -76,28 +76,27 @@
   }
 }
 
-/* Window Title (for single tab) - Modern seamless design */
+/* Window Title (for single tab) - Light theme */
 .windowTitle {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #ffffff;
+  color: #24292e;
   font-size: 0.9rem;
   font-weight: 500;
   font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
-  background: #2a2a2a; /* Matches header color */
-  border-radius: 12px 12px 0 0; /* More rounded for modern look */
-  padding: 8px 16px 12px 16px; /* More space at top, less at bottom */
-  padding-right: 48px; /* Space for copy button */
+  background: #fafafa;
+  border-radius: 12px 12px 0 0;
+  padding: 8px 16px 12px 16px;
+  padding-right: 48px;
   margin-right: 10px;
-  margin-left: auto; /* Push to right */
+  margin-left: auto;
   height: 48px;
   box-sizing: border-box;
   z-index: 10;
-  border: none; /* No border for seamless blend */
+  border: none;
   position: relative;
-  /* Elevated appearance */
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
 }
 
 /* Remove old pseudo-elements for seamless design */
@@ -111,8 +110,8 @@
 }
 
 .fileName {
-  color: #d4d4d4;
-  font-weight: 500;
+  color: #4078f2;
+  font-weight: 600;
 }
 
 /* Tabs Container */
@@ -134,12 +133,12 @@
   display: none; /* Chrome, Safari, Opera */
 }
 
-/* Modern Tab Buttons */
+/* Modern Tab Buttons - Light theme */
 .tabButton {
   background: transparent;
   border: none;
-  padding: 6px 12px 8px 12px; /* Adjusted for 36px height */
-  color: #9ca3af;
+  padding: 6px 12px 8px 12px;
+  color: #586069;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -151,8 +150,8 @@
   min-width: 100px;
   flex-shrink: 0;
   position: relative;
-  height: 36px; /* Reduced height */
-  border-radius: 8px 8px 0 0; /* Slightly smaller radius for smaller height */
+  height: 36px;
+  border-radius: 8px 8px 0 0;
   z-index: 1;
 }
 
@@ -172,7 +171,7 @@
 }
 
 .tabButton:hover {
-  color: #d4d4d4;
+  color: #24292e;
 }
 
 .tabButton:hover::before {
@@ -180,20 +179,20 @@
   opacity: 0.8;
 }
 
-/* ACTIVE TAB - Seamless modern design with curved outer borders */
+/* ACTIVE TAB - Light theme seamless design */
 .tabButton.activeTab {
-  background: #1e1e1e; /* Matches window content background */
-  color: #ffffff;
-  z-index: 5; /* Ensure active tab is on top */
-  height: 36px; /* Match other tabs */
-  padding: 6px 12px 0px 12px; /* Remove bottom padding to connect seamlessly */
-  padding-right: 36px; /* Space for copy button */
+  background: #fafafa;
+  color: #24292e;
+  z-index: 5;
+  height: 36px;
+  padding: 6px 12px 0px 12px;
+  padding-right: 36px;
   margin-right: 0;
-  margin-bottom: 0; /* Ensure no gap at bottom */
-  min-width: 120px; /* Slightly wider than inactive tabs */
-  border-radius: 8px 8px 0 0; /* Rounded top, straight bottom for seamless connection */
-  border: none; /* No borders for seamless blend */
-  box-shadow: none; /* No shadow */
+  margin-bottom: 0;
+  min-width: 120px;
+  border-radius: 8px 8px 0 0;
+  border: none;
+  box-shadow: none;
   position: relative;
 }
 
@@ -214,7 +213,7 @@
   z-index: 2;
 }
 
-/* Copy button on tab */
+/* Copy button on tab - Light theme */
 .tabCopyBtn {
   position: absolute;
   right: 6px;
@@ -222,7 +221,7 @@
   transform: translateY(-50%);
   background: transparent;
   border: none;
-  color: #9ca3af;
+  color: #586069;
   cursor: pointer;
   padding: 3px;
   border-radius: 3px;
@@ -237,8 +236,8 @@
 }
 
 .tabCopyBtn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  background: rgba(0, 0, 0, 0.1);
+  color: #24292e;
   opacity: 1;
 }
 
@@ -247,14 +246,14 @@
   opacity: 1;
 }
 
-/* Mobile Tabs Navigation */
+/* Mobile Tabs Navigation - Light theme */
 .mobileTabsNav {
   display: none;
-  border-bottom: 1px solid #3c3c3c;
+  border-bottom: 1px solid #d1d5da;
   overflow-x: auto;
   position: relative;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .mobileTabsNav::-webkit-scrollbar {
@@ -268,11 +267,12 @@
   -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
 }
 
+/* Mobile tabs - Light theme */
 .mobileTabButton {
   background: transparent;
   border: none;
   padding: 6px 12px;
-  color: #9ca3af;
+  color: #586069;
   cursor: pointer;
   font-size: 0.75rem;
   white-space: nowrap;
@@ -289,34 +289,35 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(45, 45, 45, 0.6); /* Subtle background for inactive tabs */
+  background: rgba(0, 0, 0, 0.05);
   border-radius: 6px;
   z-index: -1;
 }
 
 .mobileTabButton.activeTab {
   background: transparent;
-  color: #ffffff;
+  color: #24292e;
   font-weight: 500;
 }
 
 .mobileTabButton.activeTab::before {
-  background: #1e1e1e;
+  background: #fafafa;
 }
 
-/* Tab selector dropdown for very small screens */
+/* Tab selector dropdown for very small screens - Light theme */
 .tabSelector {
   display: none;
   width: 100%;
   padding: 8px 16px;
-  border-bottom: 1px solid #3c3c3c;
+  border-bottom: 1px solid #d1d5da;
 }
 
+/* Tab selector dropdown - Light theme */
 .tabSelect {
   width: 100%;
-  background: transparent;
-  color: #d4d4d4;
-  border: 1px solid #3c3c3c;
+  background: #fafafa;
+  color: #24292e;
+  border: 1px solid #d1d5da;
   border-radius: 4px;
   padding: 8px 12px;
   font-size: 0.85rem;
@@ -325,7 +326,7 @@
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2014%2014%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M3%205L7%209L11%205%22%20stroke%3D%22%239ca3af%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2014%2014%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M3%205L7%209L11%205%22%20stroke%3D%22%23586069%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 36px;
@@ -333,12 +334,12 @@
 
 .tabSelect:focus {
   outline: none;
-  border-color: #569CD6;
+  border-color: #4078f2;
 }
 
 .tabSelect option {
-  background: #252525;
-  color: #d4d4d4;
+  background: #fafafa;
+  color: #24292e;
   padding: 8px;
 }
 
@@ -398,9 +399,9 @@
 }
 
 .copyBtn {
-  background: rgba(30, 30, 30, 0.5);
-  border: 1px solid #3c3c3c;
-  color: #9ca3af;
+  background: #e1e4e8;
+  border: 1px solid #d1d5da;
+  color: #24292e;
   cursor: pointer;
   padding: 0.35rem 0.5rem;
   border-radius: 6px;
@@ -431,15 +432,15 @@
 }
 
 .copyBtn:hover {
-  background: #374151;
-  color: #d4d4d4;
+  background: #d1d5da;
+  color: #24292e;
   transform: translateY(-1px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .copyBtn.copySuccess {
-  background: #2e7d32;
-  border-color: #2e7d32;
+  background: #28a745;
+  border-color: #28a745;
   color: #ffffff;
 }
 
@@ -449,246 +450,80 @@
   stroke-width: 2;
 }
 
-/* Code Content - Seamless connection with active tab */
+/* Code Content - Light theme seamless connection */
 .codeContent {
   padding: 0 !important;
-  overflow: hidden !important; /* Hide overflow on container */
-  background: #1e1e1e !important;
+  overflow: hidden !important;
+  background: #fafafa !important;
   background-image: none !important;
-  border-top: none; /* Remove border for seamless connection with active tab */
-  /* Add subtle inset shadow to create depth */
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-  flex: 1; /* Grow to fill available space */
+  border-top: none;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
 
 .pre {
   margin: 0 !important;
-  padding: 1.5rem !important;
-  background: #1e1e1e !important;
+  padding: 1.25rem 1.5rem !important;
+  background: #fafafa !important;
   background-image: none !important;
   box-shadow: none !important;
   border: none !important;
   border-radius: 0 !important;
-  flex: 1; /* Grow to fill available space */
-  overflow: auto; /* Enable scrolling when content exceeds height */
-  min-height: 0; /* Allow flex shrinking */
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+  color: #24292e !important;
+  line-height: 1.7 !important;
 }
 
 .codeContent code {
   font-family: 'Consolas', 'Courier New', monospace !important;
   font-size: 0.9rem !important;
-  line-height: 1.6 !important;
+  line-height: 1.7 !important;
   white-space: pre !important;
   word-wrap: normal !important;
   width: 100% !important;
   font-weight: 400 !important;
-  background: transparent !important;
+  background: #fafafa !important;
   background-image: none !important;
   padding: 0 !important;
   border: none !important;
-  color: inherit !important;
+  color: #24292e !important;
   tab-size: 2 !important;
 }
 
-/* Default standard code formatting */
-.codeWindow .pre code {
-  display: block !important;
-  width: 100% !important;
+/* Code Footer - Light theme */
+.codeFooter {
+  background: #f0f0f0;
+  border-top: 1px solid #d1d5da;
+  padding: 0.75rem 1.5rem;
+  color: #586069;
+  font-size: 0.8rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 44px;
+  box-sizing: border-box;
 }
 
-/* Default dark theme syntax highlighting */
-.codeWindow :global(.token.keyword) {
-  color: #569CD6 !important;
-  font-weight: 500;
-}
-
-.codeWindow :global(.token.class-name) {
-  color: #4EC9B0 !important;
-  font-weight: 500;
-}
-
-.codeWindow :global(.token.function) {
-  color: #DCDCAA !important;
-  font-weight: 500;
-}
-
-.codeWindow :global(.token.string) {
-  color: #CE9178 !important;
-}
-
-.codeWindow :global(.token.number) {
-  color: #B5CEA8 !important;
-}
-
-.codeWindow :global(.token.comment) {
-  color: #6A9955 !important;
-  font-style: italic;
-}
-
-/* Light theme syntax highlighting */
-.codeWindow.light :global(.token.keyword) {
-  color: #a626a4 !important; /* Atom Light purple */
-}
-
-.codeWindow.light :global(.token.class-name) {
-  color: #c18401 !important; /* Atom Light yellow/orange */
-}
-
-.codeWindow.light :global(.token.function) {
-  color: #4078f2 !important; /* Atom Light blue */
-}
-
-.codeWindow.light :global(.token.string) {
-  color: #50a14f !important; /* Atom Light green */
-}
-
-.codeWindow.light :global(.token.number) {
-  color: #986801 !important; /* Atom Light brown */
-}
-
-.codeWindow.light :global(.token.comment) {
-  color: #a0a1a7 !important; /* Atom Light gray */
-  font-style: italic;
-}
-
-.codeWindow.light code {
+/* Individual Window Header - Light theme */
+.individualWindowHeader {
+  background: #f0f0f0;
+  border-bottom: 1px solid #d1d5da;
+  padding: 0.75rem 1.5rem;
   color: #24292e;
-}
-
-/* Hero Variant - Enhanced for landing page */
-.codeWindow.hero {
-  background: rgba(30, 30, 30, 0.95);
-  border: 1px solid #4f46e5;
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(79, 70, 229, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-}
-
-.codeWindow.hero .windowHeader {
-  background: linear-gradient(135deg, #2d2d2d 0%, #1e1e1e 100%);
-}
-
-.codeWindow.hero .windowTitle {
-  color: #e5e7eb;
-}
-
-.codeWindow.hero .fileName {
-  color: #c7d2fe;
-  font-weight: 600;
-}
-
-/* Colorful Variant - More vibrant for demos */
-.codeWindow.colorful {
-  border: 1px solid transparent;
-  background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
-  box-shadow: 
-    0 12px 40px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(99, 102, 241, 0.3);
-}
-
-.codeWindow.colorful .windowHeader {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-  border-bottom: none;
-}
-
-.codeWindow.colorful .windowTitle {
-  color: white;
-}
-
-.codeWindow.colorful .fileName {
-  color: #e0e7ff;
-  font-weight: 600;
-}
-
-.codeWindow.colorful .copyBtn {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
-.codeWindow.colorful .copyBtn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
-/* Light Variant - Atom Light theme style for better readability */
-.codeWindow.light {
-  background: #fafafa;
-  border: 1px solid #e1e4e8;
-  box-shadow: 
-    0 12px 24px rgba(0, 0, 0, 0.08),
-    0 0 0 1px rgba(0, 0, 0, 0.02);
-}
-
-.codeWindow.light .windowHeader {
-  background: #f0f0f0; /* Different color from window content */
-}
-
-.codeWindow.light .windowTitle {
-  color: #24292e;
-  background: #fafafa;
-}
-
-/* Edge browser tab shape for light theme - seamless design */
-.codeWindow.light .windowTitle {
-  background: #fafafa; /* Matches content background for seamless connection */
-  border: none; /* No borders for seamless blend */
-  box-shadow: none; /* No shadow for clean connection */
-}
-
-/* Remove pseudo-elements for seamless design */
-.codeWindow.light .windowTitle::after,
-.codeWindow.light .windowTitle::before {
-  display: none;
-}
-
-.codeWindow.light .fileName {
-  color: #4078f2; /* Atom blue */
-  font-weight: 600;
-}
-
-/* Light theme tab styling - seamless design */
-.codeWindow.light .tabButton.activeTab {
-  background: #fafafa; /* Matches content background for seamless connection */
-  color: #24292e;
-  border: none; /* No borders for seamless blend */
-  border-radius: 8px 8px 0 0; /* Match other tabs radius */
-  box-shadow: none; /* No shadow for clean connection */
-}
-
-
-
-.codeWindow.light .copyBtn {
-  background: #e1e4e8;
-  border: 1px solid #d1d5da;
-  color: #24292e;
-}
-
-.codeWindow.light .copyBtn:hover {
-  background: #d1d5da;
-  color: #24292e;
-}
-
-.codeWindow.light .codeContent {
-  background: #fafafa !important; /* Atom Light background */
-  border-top: none; /* Remove border for seamless connection */
-}
-
-.codeWindow.light .pre {
-  background: #fafafa !important;
-  color: #24292e !important;
-  padding: 1.25rem 1.5rem !important;
-  line-height: 1.7 !important;
-}
-
-.codeWindow.light code {
-  background: #fafafa !important;
-  color: #24292e !important;
-  line-height: 1.7 !important;
+  font-size: 0.85rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 40px;
+  box-sizing: border-box;
 }
 
 /* Responsive Design */
@@ -775,20 +610,20 @@
 }
 
 .codeFooter a {
-  color: #569CD6;
+  color: #4078f2;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .codeFooter a:hover {
-  color: #7bb3f0;
+  color: #0366d6;
   text-decoration: underline;
 }
 
 .codeFooter button {
-  background: rgba(86, 156, 214, 0.1);
-  border: 1px solid #569CD6;
-  color: #569CD6;
+  background: rgba(64, 120, 242, 0.1);
+  border: 1px solid #4078f2;
+  color: #4078f2;
   padding: 0.4rem 0.8rem;
   border-radius: 4px;
   font-size: 0.75rem;
@@ -798,7 +633,7 @@
 }
 
 .codeFooter button:hover {
-  background: rgba(86, 156, 214, 0.2);
+  background: rgba(64, 120, 242, 0.2);
   transform: translateY(-1px);
 }
 
