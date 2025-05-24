@@ -10,10 +10,11 @@ const demoScenarios = [
         icon: '⚡',
         description: 'Simple model validation with attributes',
         color: '#3b82f6',
-        code: {
-            fileName: 'UserModel.cs',
-            language: 'csharp',
-            snipt: `using EasyValidate.Attributes;
+        code: [
+            {
+                fileName: 'UserModel.cs',
+                language: 'csharp',
+                snipt: `using EasyValidate.Attributes;
 
 public partial class User
 {
@@ -27,13 +28,19 @@ public partial class User
     [Range(18, 120)]
     public int Age { get; set; }
 }
-
+`
+            }, {
+                fileName: 'ValidationResult.cs',
+                language: 'csharp',
+                snipt: `
 // Usage
 var user = new User { Name = "John", Email = "john@example.com", Age = 25 };
 var result = user.Validate();
 
-Console.WriteLine(result.IsValid ? "✅ Valid" : "❌ Invalid");`
-        }
+Console.WriteLine(result.IsValid ? "✅ Valid" : "❌ Invalid");
+                `
+            }
+        ]
     },
     {
         id: 'collections',
@@ -41,10 +48,11 @@ Console.WriteLine(result.IsValid ? "✅ Valid" : "❌ Invalid");`
         icon: '🔗',
         description: 'Validate collections and nested objects',
         color: '#10b981',
-        code: {
-            fileName: 'ProductModel.cs',
-            language: 'csharp',
-            snipt: `public partial class Product
+        code: [
+            {
+                fileName: 'ProductModel.cs',
+                language: 'csharp',
+                snipt: `public partial class Product
 {
     [Required, StringLength(100)]
     public string Name { get; set; }
@@ -59,14 +67,18 @@ Console.WriteLine(result.IsValid ? "✅ Valid" : "❌ Invalid");`
     // Collection validation
     [CollectionNotEmpty]
     public List<string> Tags { get; set; }
-}
-
+}`
+            }, {
+                fileName: 'CategoryModel.cs',
+                language: 'csharp',
+                snipt: `
 public partial class Category
 {
     [Required]
     public string Name { get; set; }
 }`
-        }
+            }
+        ]
     },
     {
         id: 'custom',
@@ -74,10 +86,11 @@ public partial class Category
         icon: '🎨',
         description: 'Create your own validation logic',
         color: '#8b5cf6',
-        code: {
-            fileName: 'CustomValidation.cs',
-            language: 'csharp',
-            snipt: `public partial class Account
+        code: [
+            {
+                fileName: 'CustomValidation.cs',
+                language: 'csharp',
+                snipt: `public partial class Account
 {
     [Required]
     public string Username { get; set; }
@@ -94,7 +107,8 @@ public partial class Category
         return ValidationResult.Success();
     }
 }`
-        }
+            }
+        ]
     }
 ];
 
@@ -134,12 +148,12 @@ function StepperController() {
 
                 {/* Right: Code Display */}
                 <CodeWindow
-                    windows={[{
-                        fileName: currentDemo.code.fileName,
-                        language: currentDemo.code.language,
-                        snipt: currentDemo.code.snipt,
-                        active: true,
-                    }]}
+                    key={currentDemo.id}
+                    windows={currentDemo.code.map(code => ({
+                        fileName: code.fileName,
+                        language: code.language,
+                        snipt: code.snipt,
+                    }))}
                     footer={(
                         <div className={styles.footerContent}>
                             <span className={styles.footerText}>

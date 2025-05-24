@@ -9,7 +9,10 @@
   border: 1px solid #3c3c3c;
   position: relative;
   transition: all 0.3s ease;
-  margin: 1.5rem 0;
+  margin: 0; /* Remove all margins */
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Take full height of container */
 }
 
 /* Window Header - Modern browser design */
@@ -445,12 +448,15 @@
 /* Code Content - Seamless connection with active tab */
 .codeContent {
   padding: 0 !important;
-  overflow-x: auto !important;
+  overflow: hidden !important; /* Hide overflow on container */
   background: #1e1e1e !important;
   background-image: none !important;
   border-top: none; /* Remove border for seamless connection with active tab */
   /* Add subtle inset shadow to create depth */
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  flex: 1; /* Grow to fill available space */
+  display: flex;
+  flex-direction: column;
 }
 
 .pre {
@@ -461,6 +467,9 @@
   box-shadow: none !important;
   border: none !important;
   border-radius: 0 !important;
+  flex: 1; /* Grow to fill available space */
+  overflow: auto; /* Enable scrolling when content exceeds height */
+  min-height: 0; /* Allow flex shrinking */
 }
 
 .codeContent code {

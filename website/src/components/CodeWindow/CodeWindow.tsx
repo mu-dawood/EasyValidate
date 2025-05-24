@@ -30,8 +30,6 @@ function CodeWindow({
     variant = 'light',
     footer
 }: MultiWindowProps) {
-    // Check if we have multiple tabs
-    const hasMultipleTabs = windows.length > 1;
 
     // Find initial active tab (if specified)
     const initialActiveIndex = windows.findIndex(window => window.active);
@@ -83,8 +81,16 @@ function CodeWindow({
         Prism.highlightAll();
     }, [activeTab.snipt, activeTab.language]);
 
+    // Check if there's any footer (individual window footer or global footer)
+    const hasFooter = activeTab.footer || footer;
+
     return (
-        <div className={clsx(styles.codeWindow, styles[variant], className)} style={{ overflow: 'auto', width: '100%' }}>
+        <div className={clsx(
+            styles.codeWindow, 
+            styles[variant], 
+            className,
+            { [styles.hasFooter]: hasFooter }
+        )} style={{ overflow: 'auto', width: '100%' }}>
             <div className={styles.windowHeader}>
                 <div className={styles.windowControls}>
                     <span className={clsx(styles.control, styles.controlClose)}></span>
@@ -126,10 +132,7 @@ function CodeWindow({
                 </div>
             </div>
 
-            {/* Conditional tabs navigation for mobile view */}
-            {hasMultipleTabs && (
-                <>
-                    <div className={styles.mobileTabsNav}>
+            <div className={styles.mobileTabsNav}>
                         <div className={styles.mobileTabsScroll}>
                             {windows.map((window, index) => (
                                 <button
@@ -158,8 +161,6 @@ function CodeWindow({
                             ))}
                         </select>
                     </div>
-                </>
-            )}
 
             {/* Optional Window Header (per individual window) */}
             {activeTab.header && (
@@ -168,7 +169,7 @@ function CodeWindow({
                 </div>
             )}
 
-            <div className={styles.codeContent} style={{ overflowY: 'auto', maxHeight: '400px' }}>
+            <div className={styles.codeContent}>
                 <pre className={styles.pre}>
                     <code className={`language-${activeTab.language}`}>
                         {activeTab.snipt}
