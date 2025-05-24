@@ -1,0 +1,246 @@
+/* Interactive Demo Section */
+.interactiveDemo {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 24px;
+  padding: 2.5rem;
+  margin: 4rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.interactiveDemo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23667eea" fill-opacity="0.05"><circle cx="7" cy="7" r="1"/></g></svg>') repeat;
+  pointer-events: none;
+}
+
+/* Demo Header */
+.demoHeader {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+.demoTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1f2937 0%, #4f46e5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+.demoSubtitle {
+  font-size: 1.2rem;
+  color: #64748b;
+  font-weight: 400;
+}
+
+/* Demo Container */
+.demoContainer {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Demo Cards */
+.demoCards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.demoCard {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.demoCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--accent-color, #3b82f6);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.demoCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.demoCard:hover::before {
+  opacity: 1;
+}
+
+.demoCard.active {
+  border-color: var(--accent-color, #3b82f6);
+  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.15);
+}
+
+.demoCard.active::before {
+  opacity: 1;
+}
+
+.cardIcon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--accent-color, #3b82f6), var(--accent-color, #3b82f6)88);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cardIcon span {
+  font-size: 1.5rem;
+  filter: brightness(0) invert(1);
+}
+
+.cardContent {
+  flex: 1;
+}
+
+.cardTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.cardDescription {
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.cardArrow {
+  font-size: 1.2rem;
+  color: #94a3b8;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.demoCard:hover .cardArrow,
+.demoCard.active .cardArrow {
+  opacity: 1;
+  transform: translateX(4px);
+  color: var(--accent-color, #3b82f6);
+}
+
+/* Code Display */
+.codeDisplay {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.codeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.codeTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 1.1rem;
+}
+
+.codeIcon {
+  font-size: 1.2rem;
+}
+
+.codeBadge {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.codeContent {
+  position: relative;
+}
+
+.quickTip {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border-top: 1px solid #e2e8f0;
+  color: #1e40af;
+  font-size: 0.9rem;
+}
+
+.tipIcon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .interactiveDemo {
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  
+  .demoTitle {
+    font-size: 2rem;
+  }
+  
+  .demoContainer {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .demoCards {
+    order: 2;
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+  
+  .demoCard {
+    min-width: 280px;
+    flex-shrink: 0;
+  }
+  
+  .codeDisplay {
+    order: 1;
+  }
+}

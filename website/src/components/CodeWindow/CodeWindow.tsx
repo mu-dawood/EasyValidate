@@ -18,13 +18,15 @@ type MultiWindowProps = {
     className?: string;
     showCopyButton?: boolean;
     variant?: 'default' | 'hero' | 'colorful' | 'light';
+    footer?: React.ReactNode;
 };
 
 function CodeWindow({
     windows,
     className = '',
     showCopyButton = true,
-    variant = 'light'
+    variant = 'light',
+    footer
 }: MultiWindowProps) {
     // Check if we have multiple tabs
     const hasMultipleTabs = windows.length > 1;
@@ -164,6 +166,13 @@ function CodeWindow({
                     </code>
                 </pre>
             </div>
+
+            {/* Optional Footer */}
+            {footer && (
+                <div className={styles.codeFooter}>
+                    {footer}
+                </div>
+            )}
         </div>
     );
 }
