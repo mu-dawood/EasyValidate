@@ -13,7 +13,7 @@ export type Window = {
     active?: boolean;
 }
 
-type MultiWindowProps = {
+export type MultiWindowProps = {
     windows: Window[];
     className?: string;
     showCopyButton?: boolean;
