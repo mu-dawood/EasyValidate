@@ -20,8 +20,13 @@ function CallToActionSection() {
             </Link>
             <Link
               className={clsx('button', 'button--secondary', 'button--outline', 'button--lg', styles.ctaButton)}
-              to="/docs/quickstart">
-              View Examples
+              to="https://github.com/mu-dawood/EasyValidate">
+              GitHub Repository
+            </Link>
+            <Link
+              className={clsx('button', 'button--secondary', 'button--outline', 'button--lg', styles.ctaButton)}
+              to="/docs/examples">
+              Examples
             </Link>
           </div>
         </div>

@@ -1,0 +1,192 @@
+.gettingStarted {
+  padding: 6rem 0;
+  background: white;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #6b7280;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.steps {
+  margin-bottom: 4rem;
+}
+
+.step {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 4rem;
+  align-items: flex-start;
+}
+
+.stepNumber {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.stepNumber::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 3rem;
+  background: linear-gradient(to bottom, #667eea, transparent);
+}
+
+.step:last-child .stepNumber::after {
+  display: none;
+}
+
+.stepContent {
+  flex: 1;
+}
+
+.stepTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.stepDescription {
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.codeBlock {
+  margin-top: 1rem;
+}
+
+.highlight {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  color: #92400e;
+}
+
+.highlight strong {
+  color: #78350f;
+}
+
+.highlight code {
+  background: rgba(251, 191, 36, 0.2);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Fira Code', 'Monaco', monospace;
+  font-size: 0.9rem;
+}
+
+.nextSteps {
+  text-align: center;
+  padding: 3rem 0;
+  background: #f8fafc;
+  border-radius: 16px;
+  margin-top: 2rem;
+}
+
+.nextStepsTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 2rem;
+}
+
+.nextStepsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.nextStepCard {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #374151;
+  transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nextStepCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  color: #667eea;
+}
+
+.nextStepIcon {
+  font-size: 2rem;
+}
+
+.nextStepText {
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .gettingStarted {
+    padding: 4rem 0;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .step {
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+  
+  .stepNumber::after {
+    display: none;
+  }
+  
+  .nextStepsGrid {
+    grid-template-columns: 1fr;
+  }
+}

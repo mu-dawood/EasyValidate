@@ -4,7 +4,6 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import HeroSection from '../components/HeroSection';
 import CodeBlock from '../components/CodeBlock';
 import HowItWorksSection from '../components/HowItWorksSection';
-import AttributesSection from '../components/AttributesSection';
 import QuickStartSection from '../components/QuickStartSection';
 import CallToActionSection from '../components/CallToActionSection';
 import styles from './index.module.css';
@@ -19,7 +18,6 @@ export default function Home() {
       <HeroSection />
       <main>
         <HowItWorksSection />
-        <AttributesSection />
         <QuickStartSection />
         <CallToActionSection />
       </main>

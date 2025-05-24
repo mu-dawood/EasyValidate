@@ -30,7 +30,7 @@ function HeroSection() {
                             </Link>
                             <Link
                                 className={clsx('button', 'button--secondary', 'button--outline', 'button--lg', styles.heroButton)}
-                                to="https://github.com/EasyValidate/EasyValidate">
+                                to="https://github.com/mu-dawood/EasyValidate">
                                 <span className={styles.githubIcon}>
                                     ⭐
                                 </span>
