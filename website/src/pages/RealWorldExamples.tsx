@@ -10,12 +10,13 @@ function RealWorldExamples() {
 
 public class User
 {
-    [Required(ErrorMessage = "Name is required")]
-    [StringLength(50, MinLength = 2)]
+    [NotEmpty(ErrorMessage = "Name is required")]
+    [MinLength(2)]
+    [MaxLength(50)]
     public string Name { get; set; }
 
-    [Required]
-    [Email]
+    [NotEmpty]
+    [EmailAddress]
     public string Email { get; set; }
 
     [Range(18, 120, ErrorMessage = "Age must be between 18 and 120")]
@@ -39,25 +40,25 @@ public class User
 
 public class Product
 {
-    [Required]
-    [StringLength(100, MinLength = 1)]
+    [NotEmpty]
+    [MinLength(1)]
+    [MaxLength(100)]
     public string Name { get; set; }
 
-    [StringLength(500)]
+    [MaxLength(500)]
     public string? Description { get; set; }
 
-    [Required]
-    [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
+    [Positive]
     public decimal Price { get; set; }
 
-    [Required]
-    [Range(0, int.MaxValue)]
+    [NonZero]
     public int StockQuantity { get; set; }
 
-    [StringLength(20)]
+    [AlphaNumeric]
+    [MaxLength(20)]
     public string? SKU { get; set; }
 
-    [CollectionNotEmpty]
+    [MinLength(1, ErrorMessage = "At least one category is required")]
     public List<string> Categories { get; set; } = new();
 }`,
       active: true
@@ -72,48 +73,46 @@ public class Product
 
 public class Order
 {
-    [Required]
+    [NotEmpty]
+    [Guid]
     public string OrderId { get; set; }
 
-    [Required]
+    [NotInPast]
     public DateTime OrderDate { get; set; }
 
-    [Required]
-    [Range(0.01, double.MaxValue)]
+    [Positive]
     public decimal TotalAmount { get; set; }
 
-    [Required]
+    [NotNull]
     public Customer Customer { get; set; }
 
-    [CollectionNotEmpty]
+    [MinLength(1, ErrorMessage = "Order must contain at least one item")]
     public List<OrderItem> Items { get; set; } = new();
 
-    [Required]
+    [NotNull]
     public ShippingAddress ShippingAddress { get; set; }
 }
 
 public class OrderItem
 {
-    [Required]
+    [NotEmpty]
     public string ProductId { get; set; }
 
-    [Required]
-    [Range(1, int.MaxValue)]
+    [Positive]
     public int Quantity { get; set; }
 
-    [Required]
-    [Range(0.01, double.MaxValue)]
+    [Positive]
     public decimal UnitPrice { get; set; }
 }
 
 public class Customer
 {
-    [Required]
-    [StringLength(100)]
+    [NotEmpty]
+    [MaxLength(100)]
     public string FullName { get; set; }
 
-    [Required]
-    [Email]
+    [NotEmpty]
+    [EmailAddress]
     public string Email { get; set; }
 
     [Phone]
@@ -122,20 +121,20 @@ public class Customer
 
 public class ShippingAddress
 {
-    [Required]
-    [StringLength(200)]
+    [NotEmpty]
+    [MaxLength(200)]
     public string Street { get; set; }
 
-    [Required]
-    [StringLength(100)]
+    [NotEmpty]
+    [MaxLength(100)]
     public string City { get; set; }
 
-    [Required]
-    [StringLength(20)]
+    [NotEmpty]
+    [MaxLength(20)]
     public string PostalCode { get; set; }
 
-    [Required]
-    [StringLength(100)]
+    [NotEmpty]
+    [MaxLength(100)]
     public string Country { get; set; }
 }`,
       active: true
@@ -182,52 +181,23 @@ public class UserController : ControllerBase
         
         return Ok(new { Message = "User created successfully", UserId = user.Id });
     }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserRequest request)
-    {
-        var validationResult = request.Validate();
-        if (!validationResult.IsValid)
-        {
-            return BadRequest(validationResult.Errors);
-        }
-
-        // Update user logic here
-        
-        return Ok();
-    }
 }
 
 public class CreateUserRequest
 {
-    [Required(ErrorMessage = "Name is required")]
-    [StringLength(50, MinLength = 2, ErrorMessage = "Name must be between 2 and 50 characters")]
+    [NotEmpty(ErrorMessage = "Name is required")]
+    [MinLength(2, ErrorMessage = "Name must be at least 2 characters")]
+    [MaxLength(50, ErrorMessage = "Name cannot exceed 50 characters")]
     public string Name { get; set; }
 
-    [Required(ErrorMessage = "Email is required")]
-    [Email(ErrorMessage = "Please provide a valid email address")]
+    [NotEmpty(ErrorMessage = "Email is required")]
+    [EmailAddress(ErrorMessage = "Please provide a valid email address")]
     public string Email { get; set; }
 
-    [Required]
     [Range(18, 120, ErrorMessage = "Age must be between 18 and 120")]
     public int Age { get; set; }
 
     [Phone(ErrorMessage = "Please provide a valid phone number")]
-    public string? PhoneNumber { get; set; }
-}
-
-public class UpdateUserRequest
-{
-    [StringLength(50, MinLength = 2)]
-    public string? Name { get; set; }
-
-    [Email]
-    public string? Email { get; set; }
-
-    [Range(18, 120)]
-    public int? Age { get; set; }
-
-    [Phone]
     public string? PhoneNumber { get; set; }
 }`,
       active: true
@@ -242,98 +212,96 @@ public class UpdateUserRequest
 
 public class Company
 {
-    [Required]
-    [StringLength(200)]
+    [NotEmpty]
+    [MaxLength(200)]
     public string Name { get; set; }
 
-    [Required]
-    [Email]
+    [NotEmpty]
+    [EmailAddress]
     public string ContactEmail { get; set; }
 
     [Url]
     public string? Website { get; set; }
 
-    [CollectionNotEmpty]
+    [MinLength(1, ErrorMessage = "Company must have at least one department")]
     public List<Department> Departments { get; set; } = new();
 
-    [Required]
+    [NotNull]
     public Address HeadquartersAddress { get; set; }
 
-    [Range(1, int.MaxValue)]
+    [Positive]
     public int EmployeeCount { get; set; }
 
-    [DateRange("1800-01-01", "2100-12-31")]
+    [PastDate]
     public DateTime FoundedDate { get; set; }
 }
 
 public class Department
 {
-    [Required]
-    [StringLength(100)]
+    [NotEmpty]
+    [MaxLength(100)]
     public string Name { get; set; }
 
-    [Required]
-    [Range(1, double.MaxValue)]
+    [Positive]
     public decimal Budget { get; set; }
 
-    [CollectionNotEmpty]
+    [MinLength(1, ErrorMessage = "Department must have at least one employee")]
     public List<Employee> Employees { get; set; } = new();
 
-    [Required]
+    [NotNull]
     public Employee Manager { get; set; }
 }
 
 public class Employee
 {
-    [Required]
-    [StringLength(100)]
+    [NotEmpty]
+    [MaxLength(100)]
     public string FullName { get; set; }
 
-    [Required]
-    [Email]
+    [NotEmpty]
+    [EmailAddress]
     public string WorkEmail { get; set; }
 
-    [Required]
-    [StringLength(50)]
+    [NotEmpty]
+    [MaxLength(50)]
     public string Position { get; set; }
 
-    [Required]
-    [Range(0, double.MaxValue)]
+    [Positive]
     public decimal Salary { get; set; }
 
-    [Required]
-    [DateRange("1950-01-01", "2010-12-31")]
+    [PastDate]
     public DateTime DateOfBirth { get; set; }
 
-    [Required]
+    [PastDate]
     public DateTime HireDate { get; set; }
 
     [Phone]
     public string? PhoneNumber { get; set; }
 
-    [CollectionMaxLength(10)]
+    [MaxLength(10, ErrorMessage = "Maximum 10 skills allowed")]
     public List<string> Skills { get; set; } = new();
 }
 
 public class Address
 {
-    [Required]
-    [StringLength(200)]
+    [NotEmpty]
+    [MaxLength(200)]
     public string Street { get; set; }
 
-    [Required]
-    [StringLength(100)]
+    [NotEmpty]
+    [MaxLength(100)]
     public string City { get; set; }
 
-    [StringLength(50)]
+    [MaxLength(50)]
     public string? State { get; set; }
 
-    [Required]
-    [StringLength(20)]
+    [NotEmpty]
+    [Numeric]
+    [MaxLength(20)]
     public string PostalCode { get; set; }
 
-    [Required]
-    [StringLength(100)]
+    [NotEmpty]
+    [MaxLength(100)]
     public string Country { get; set; }
 }`,
       active: true
@@ -342,67 +310,134 @@ public class Address
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Real-World Examples</h1>
-        <p className={styles.subtitle}>
-          Explore practical validation scenarios and see how EasyValidate handles complex real-world use cases.
-        </p>
-      </div>
+      <header className={styles.header}>
+        <div className={styles.headerContent}>
+          <span className={styles.badge}>Real-World Examples</span>
+          <h1 className={styles.title}>Production-Ready Validation Patterns</h1>
+          <p className={styles.subtitle}>
+            Discover how EasyValidate handles complex real-world scenarios with elegant, maintainable code.
+          </p>
+        </div>
+      </header>
 
       <div className={styles.examples}>
         <section className={styles.example}>
-          <h2 className={styles.exampleTitle}>User Registration & Profile</h2>
-          <p className={styles.exampleDescription}>
-            A common user model with name, email, age, and contact information validation.
-            Perfect for registration forms and user profile management.
-          </p>
+          <div className={styles.exampleHeader}>
+            <div className={styles.exampleInfo}>
+              <h2 className={styles.exampleTitle}>User Registration & Profile</h2>
+              <p className={styles.exampleDescription}>
+                Essential user validation patterns for registration forms and profile management. 
+                Covers name validation, email verification, age constraints, and optional contact fields.
+              </p>
+              <div className={styles.tags}>
+                <span className={styles.tag}>NotEmpty</span>
+                <span className={styles.tag}>EmailAddress</span>
+                <span className={styles.tag}>MinLength</span>
+                <span className={styles.tag}>Range</span>
+              </div>
+            </div>
+            <span className={styles.difficulty}>Basic</span>
+          </div>
           <CodeWindow windows={userValidationExample} variant="light" />
         </section>
 
         <section className={styles.example}>
-          <h2 className={styles.exampleTitle}>E-commerce Product</h2>
-          <p className={styles.exampleDescription}>
-            Product validation for e-commerce applications including price, stock, and category validation.
-            Demonstrates range validation and collection handling.
-          </p>
-          <CodeWindow windows={productValidationExample} variant="default" />
+          <div className={styles.exampleHeader}>
+            <div className={styles.exampleInfo}>
+              <h2 className={styles.exampleTitle}>E-commerce Product Catalog</h2>
+              <p className={styles.exampleDescription}>
+                Product catalog validation for e-commerce platforms. Handles pricing constraints, 
+                inventory tracking, and category management with robust validation rules.
+              </p>
+              <div className={styles.tags}>
+                <span className={styles.tag}>Positive</span>
+                <span className={styles.tag}>AlphaNumeric</span>
+                <span className={styles.tag}>Collections</span>
+                <span className={styles.tag}>NonZero</span>
+              </div>
+            </div>
+            <span className={styles.difficulty}>Intermediate</span>
+          </div>
+          <CodeWindow windows={productValidationExample} variant="light" />
         </section>
 
         <section className={styles.example}>
-          <h2 className={styles.exampleTitle}>Order Processing System</h2>
-          <p className={styles.exampleDescription}>
-            Complex order validation with nested objects, customer details, and order items.
-            Shows how to validate hierarchical data structures.
-          </p>
-          <CodeWindow windows={orderValidationExample} variant="hero" />
+          <div className={styles.exampleHeader}>
+            <div className={styles.exampleInfo}>
+              <h2 className={styles.exampleTitle}>Order Processing System</h2>
+              <p className={styles.exampleDescription}>
+                Complex order validation with nested objects, customer details, and line items. 
+                Demonstrates hierarchical validation and business rule enforcement.
+              </p>
+              <div className={styles.tags}>
+                <span className={styles.tag}>Nested Objects</span>
+                <span className={styles.tag}>NotInPast</span>
+                <span className={styles.tag}>Guid</span>
+                <span className={styles.tag}>Phone</span>
+              </div>
+            </div>
+            <span className={styles.difficulty}>Advanced</span>
+          </div>
+          <CodeWindow windows={orderValidationExample} variant="light" />
         </section>
 
         <section className={styles.example}>
-          <h2 className={styles.exampleTitle}>Web API Integration</h2>
-          <p className={styles.exampleDescription}>
-            ASP.NET Core Web API controller showing how to integrate EasyValidate in API endpoints.
-            Includes request validation and error response handling.
-          </p>
-          <CodeWindow windows={apiValidationExample} variant="colorful" />
+          <div className={styles.exampleHeader}>
+            <div className={styles.exampleInfo}>
+              <h2 className={styles.exampleTitle}>Web API Integration</h2>
+              <p className={styles.exampleDescription}>
+                ASP.NET Core Web API integration showing request validation, error handling, 
+                and response formatting for production-ready applications.
+              </p>
+              <div className={styles.tags}>
+                <span className={styles.tag}>ASP.NET Core</span>
+                <span className={styles.tag}>Error Handling</span>
+                <span className={styles.tag}>DTOs</span>
+                <span className={styles.tag}>REST API</span>
+              </div>
+            </div>
+            <span className={styles.difficulty}>Production</span>
+          </div>
+          <CodeWindow windows={apiValidationExample} variant="light" />
         </section>
 
         <section className={styles.example}>
-          <h2 className={styles.exampleTitle}>Enterprise Data Models</h2>
-          <p className={styles.exampleDescription}>
-            Complex enterprise models with deep nesting, collections, and advanced validation rules.
-            Demonstrates validation for company, department, and employee hierarchies.
-          </p>
+          <div className={styles.exampleHeader}>
+            <div className={styles.exampleInfo}>
+              <h2 className={styles.exampleTitle}>Enterprise Data Models</h2>
+              <p className={styles.exampleDescription}>
+                Enterprise-grade validation for complex organizational structures. Features deep nesting, 
+                advanced date validation, and skill set management.
+              </p>
+              <div className={styles.tags}>
+                <span className={styles.tag}>PastDate</span>
+                <span className={styles.tag}>Deep Nesting</span>
+                <span className={styles.tag}>Enterprise</span>
+                <span className={styles.tag}>Collections</span>
+              </div>
+            </div>
+            <span className={styles.difficulty}>Enterprise</span>
+          </div>
           <CodeWindow windows={complexValidationExample} variant="light" />
         </section>
       </div>
 
-      <div className={styles.footer}>
-        <h3>Need More Examples?</h3>
-        <p>
-          These examples showcase common validation patterns. For more specific use cases or custom validation scenarios, 
-          check out our <a href="#getting-started">Getting Started guide</a> or explore the full documentation.
-        </p>
-      </div>
+      <footer className={styles.footer}>
+        <div className={styles.footerContent}>
+          <h3 className={styles.footerTitle}>Ready to Build Something Amazing?</h3>
+          <p className={styles.footerDescription}>
+            These examples are just the beginning. EasyValidate scales from simple forms to enterprise applications.
+          </p>
+          <div className={styles.footerActions}>
+            <a href="/docs/getting-started" className={styles.primaryButton}>
+              Get Started
+            </a>
+            <a href="/docs/attributes" className={styles.secondaryButton}>
+              View All Attributes
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
