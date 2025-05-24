@@ -15,10 +15,9 @@ const demoScenarios = [
                 fileName: 'UserModel.cs',
                 language: 'csharp',
                 snipt: `using EasyValidate.Attributes;
-
 public partial class User
 {
-    [Required]
+    [NotNull]
     [StringLength(50, MinimumLength = 2)]
     public string Name { get; set; }
 
@@ -28,17 +27,12 @@ public partial class User
     [Range(18, 120)]
     public int Age { get; set; }
 }
-`
-            }, {
-                fileName: 'ValidationResult.cs',
-                language: 'csharp',
-                snipt: `
+
 // Usage
 var user = new User { Name = "John", Email = "john@example.com", Age = 25 };
 var result = user.Validate();
-
-Console.WriteLine(result.IsValid ? "✅ Valid" : "❌ Invalid");
-                `
+Console.WriteLine(result.IsValid() ? "✅ Valid" : "❌ Invalid");
+`
             }
         ]
     },
@@ -52,16 +46,18 @@ Console.WriteLine(result.IsValid ? "✅ Valid" : "❌ Invalid");
             {
                 fileName: 'ProductModel.cs',
                 language: 'csharp',
-                snipt: `public partial class Product
+                snipt: `using EasyValidate.Attributes;
+
+public partial class Product
 {
-    [Required, StringLength(100)]
+    [NotNull, StringLength(100)]
     public string Name { get; set; }
 
     [Range(0.01, 10000)]
     public decimal Price { get; set; }
 
     // Nested validation
-    [Required]
+    [NotNull]
     public Category Category { get; set; }
 
     // Collection validation
@@ -71,10 +67,11 @@ Console.WriteLine(result.IsValid ? "✅ Valid" : "❌ Invalid");
             }, {
                 fileName: 'CategoryModel.cs',
                 language: 'csharp',
-                snipt: `
+                snipt: `using EasyValidate.Attributes;
+
 public partial class Category
 {
-    [Required]
+    [NotNull]
     public string Name { get; set; }
 }`
             }

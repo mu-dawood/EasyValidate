@@ -92,14 +92,7 @@ function CodeWindow({
             { [styles.hasFooter]: hasFooter }
         )} style={{ overflow: 'auto', width: '100%' }}>
             <div className={styles.windowHeader}>
-                <div className={styles.windowControls}>
-                    <span className={clsx(styles.control, styles.controlClose)}></span>
-                    <span className={clsx(styles.control, styles.controlMinimize)}></span>
-                    <span className={clsx(styles.control, styles.controlMaximize)}></span>
-                </div>
-
-                {/* Display tabs if multiple tabs are available */}
-
+                {/* Display tabs if multiple tabs are available - positioned at start */}
                 <div className={styles.tabsContainer}>
                     {windows.map((window, index) => (
                         <button
@@ -126,9 +119,16 @@ function CodeWindow({
                     ))}
                 </div>
 
-
+                {/* Window actions positioned at end (right) */}
                 <div className={styles.windowActions}>
-                    {/* Original copy button location - now empty */}
+                    {/* Any additional controls can be placed here */}
+                </div>
+
+                {/* Window controls moved to end and reversed */}
+                <div className={styles.windowControls}>
+                    <span className={clsx(styles.control, styles.controlMaximize)}></span>
+                    <span className={clsx(styles.control, styles.controlMinimize)}></span>
+                    <span className={clsx(styles.control, styles.controlClose)}></span>
                 </div>
             </div>
 

@@ -20,6 +20,7 @@
   background: #2a2a2a; /* Different color from window content */
   padding: 0;
   padding-left: 1rem;
+  padding-right: 1rem;
   display: flex;
   align-items: flex-end;
   border-bottom: none; /* Remove border completely */
@@ -27,6 +28,7 @@
   flex-wrap: nowrap;
   height: 48px; /* Header height - larger than tabs for proper spacing */
   z-index: 1;
+  gap: 1rem; /* Add gap between header elements */
 }
 
 /* Window Controls (Traffic Lights) */
@@ -120,11 +122,10 @@
   gap: 4px;
   overflow-x: auto;
   position: relative;
-  margin-left: auto; /* Push tabs to the right */
+  flex: 1; /* Take available space between controls and actions */
   padding: 0 10px;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
-  max-width: calc(100% - 120px);
   height: 36px; /* Match tab height */
   margin-bottom: 0; /* Ensure tabs touch the content area */
 }
@@ -390,7 +391,10 @@
 
 /* Window Actions */
 .windowActions {
-  display: none; /* Hide the original window actions since we're moving the copy button */
+  display: flex;
+  align-items: center;
+  flex-shrink: 0; /* Prevent shrinking */
+  margin-left: auto; /* Push to the right end */
 }
 
 .copyBtn {
