@@ -216,3 +216,7 @@ packages/
 
 # Generated files
 Generated/
+
+-lock.json
+*.lock
+*.log

@@ -16,11 +16,11 @@ import CodeWindow from '@site/src/components/CodeWindow';
 >
 
 <CodeWindow 
-  fileName="User.cs"
-  language="csharp"
-  showCopyButton={true}
->
-{`public partial class User
+  windows={[
+  {
+  fileName:"User.cs",
+  language:"csharp",
+  snipt:`public partial class User
 {
     [NotEmpty]
     [EmailAddress]
@@ -32,8 +32,12 @@ import CodeWindow from '@site/src/components/CodeWindow';
 
 // Generated at compile-time - no reflection!
 var user = new User { Email = "test@example.com", Age = 25 };
-var result = user.Validate();`}
-</CodeWindow>
+var result = user.Validate();`
+  }
+  ]}
+
+  showCopyButton={true}
+/>
 
 </DocSection>
 ## Key Features

@@ -26,6 +26,10 @@
               "sidebar": "docs"
             },
             {
+              "id": "example-usage",
+              "path": "/docs/example-usage"
+            },
+            {
               "id": "extending",
               "path": "/docs/extending",
               "sidebar": "docs"
@@ -44,6 +48,10 @@
               "id": "localization",
               "path": "/docs/localization",
               "sidebar": "docs"
+            },
+            {
+              "id": "multi-window-example",
+              "path": "/docs/multi-window-example"
             },
             {
               "id": "quickstart",

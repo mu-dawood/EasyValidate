@@ -200,13 +200,16 @@ public class UserService
                     <div className={styles.codeDisplay} style={{ flex: '1 1 auto', maxWidth: '100%', display: 'flex', flexDirection: 'column' }}>
                         <CodeWindow
                             style={{ width: '100%' }}
-                            fileName={currentStep.fileName}
-                            language={currentStep.language}
+                            windows={[{
+                                fileName: currentStep.fileName,
+                                language: currentStep.language,
+                                snipt: currentStep.code,
+                            }
+                            ]}
+
                             variant="light"
                             showCopyButton={true}
-                        >
-                            {currentStep.code}
-                        </CodeWindow>
+                        />
 
                         <div className={styles.stepInfo}>
                             <div className={styles.stepBadge}>

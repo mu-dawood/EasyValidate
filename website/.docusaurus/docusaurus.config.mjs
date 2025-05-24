@@ -161,11 +161,11 @@ export default {
       "classic",
       {
         "docs": {
-          "sidebarPath": "/Users/mu.dawood/Desktop/Apps/EasyValidate/website/sidebars.ts",
+          "sidebarPath": "./sidebars.ts",
           "editUrl": "https://github.com/your-org/EasyValidate/edit/main/website/"
         },
         "theme": {
-          "customCss": "/Users/mu.dawood/Desktop/Apps/EasyValidate/website/src/css/custom.css"
+          "customCss": "./src/css/custom.css"
         }
       }
     ]

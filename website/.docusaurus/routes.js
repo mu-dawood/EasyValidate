@@ -39,15 +39,15 @@ export default [
   },
   {
     path: '/docs',
-    component: ComponentCreator('/docs', '45c'),
+    component: ComponentCreator('/docs', '9a7'),
     routes: [
       {
         path: '/docs',
-        component: ComponentCreator('/docs', '231'),
+        component: ComponentCreator('/docs', '52d'),
         routes: [
           {
             path: '/docs',
-            component: ComponentCreator('/docs', '373'),
+            component: ComponentCreator('/docs', '78c'),
             routes: [
               {
                 path: '/docs/analyzers',
@@ -66,6 +66,11 @@ export default [
                 component: ComponentCreator('/docs/contributing', '476'),
                 exact: true,
                 sidebar: "docs"
+              },
+              {
+                path: '/docs/example-usage',
+                component: ComponentCreator('/docs/example-usage', 'f21'),
+                exact: true
               },
               {
                 path: '/docs/extending',
@@ -90,6 +95,11 @@ export default [
                 component: ComponentCreator('/docs/localization', 'fae'),
                 exact: true,
                 sidebar: "docs"
+              },
+              {
+                path: '/docs/multi-window-example',
+                component: ComponentCreator('/docs/multi-window-example', '9cd'),
+                exact: true
               },
               {
                 path: '/docs/quickstart',
