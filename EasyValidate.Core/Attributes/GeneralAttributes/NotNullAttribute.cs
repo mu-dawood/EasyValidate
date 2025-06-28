@@ -1,0 +1,40 @@
+using EasyValidate.Core.Abstraction;
+
+namespace EasyValidate.Core.Attributes
+{
+    /// <summary>
+    /// Validation attribute to ensure a property or field is not null.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// public partial class Model
+    /// {
+    ///     [NotNull]
+    ///     public string Name { get; set; } // Valid: "John", "", Invalid: null
+    ///     
+    ///     [NotNull]
+    ///     public List<int> Numbers { get; set; } // Valid: new List<int>(), Invalid: null
+    /// }
+    /// </code>
+    /// </example>
+    public class NotNullAttribute : GeneralValidationAttributeBase
+    {
+
+        /// <inheritdoc/>
+        public override string ErrorCode { get; set; } = "NotNullValidationError";
+
+        /// <inheritdoc/>
+        public override string ErrorMessage { get; set; } = "The field {0} cannot be null.";
+
+        /// Arguments propertyName
+
+        /// <inheritdoc/>
+        public override AttributeResult<object?> Validate(object obj, string propertyName, object? value)
+        {
+            if (value != null)
+                return new AttributeResult<object?>(true, value, propertyName);
+            return new AttributeResult<object?>(false, value, propertyName);
+        }
+    }
+
+}

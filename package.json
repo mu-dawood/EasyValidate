@@ -1,0 +1,20 @@
+{
+  "name": "easyvalidate-dev",
+  "version": "1.0.0",
+  "description": "Development scripts for EasyValidate project",
+  "private": true,
+  "scripts": {
+    "setup-website": "bash setup-website.sh",
+    "setup-website-win": "powershell -ExecutionPolicy Bypass -File setup-website.ps1",
+    "dev-website": "cd EasyValidate-Website && npm run dev",
+    "build-website": "cd EasyValidate-Website && npm run build",
+    "sync-to-external": "rsync -av --exclude='node_modules' --exclude='.git' website/ EasyValidate-Website/",
+    "sync-from-external": "rsync -av --exclude='node_modules' --exclude='.git' EasyValidate-Website/ website/",
+    "test": "dotnet test",
+    "build": "dotnet build",
+    "clean": "dotnet clean"
+  },
+  "keywords": ["validation", "dotnet", "source-generator"],
+  "author": "EasyValidate Team",
+  "license": "MIT"
+}
