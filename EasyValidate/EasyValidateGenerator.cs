@@ -44,7 +44,14 @@ namespace EasyValidate
             DebuggerUtil.Log("Finished setting up syntax provider and compilation provider.");
             DebuggerUtil.Log("Finished Initialize method.");
         }
+        private static bool IsBackingField(ISymbol symbol)
+        {
+            if (symbol is not IFieldSymbol field)
+                return false;
 
+            // Backing fields typically have names like "<PropertyName>k__BackingField"
+            return field.Name.StartsWith("<") && field.Name.EndsWith("k__BackingField");
+        }
         private static void GenerateValidationClass(INamedTypeSymbol classSymbol, Compilation compilation, SourceProductionContext context)
         {
             DebuggerUtil.Log($"Generating validation class for: {classSymbol.Name}");
@@ -62,10 +69,13 @@ namespace EasyValidate
                 {
                     if (member is not IPropertySymbol && member is not IFieldSymbol)
                         continue;
+                    if (IsBackingField(member)) continue; // Skip backing fields
                     bool isProperty = member is IPropertySymbol;
                     var type = isProperty ? ((IPropertySymbol)member).Type : ((IFieldSymbol)member).Type;
                     var name = member.Name;
-                    var info = new MemberInfo(name, type, isProperty);
+                    var (requireNested, isCollection) = RequiresNestedValidation(type);
+                    var info = new MemberInfo(name, type, isProperty, requireNested, isCollection);
+
                     foreach (var attr in member.GetAttributes())
                     {
                         if (attr.AttributeClass?.IsValidationAttribute(out var inputAndOutputTypes) == true)
@@ -84,7 +94,7 @@ namespace EasyValidate
                             }
                         }
                     }
-                    if (info.Attributes.Count > 0)
+                    if (info.RequireNestedValidation || info.Attributes.Count > 0)
                         memberInfos.Add(info);
                 }
 
@@ -112,6 +122,9 @@ namespace EasyValidate
             }
             catch (Exception ex)
             {
+                context.ReportDiagnostic(Diagnostic.Create(
+                    new DiagnosticDescriptor("EVGEN001", "Validation Class Generation Error", "Error generating validation class for {0}: {1}", "EasyValidate", DiagnosticSeverity.Error, true),
+                   classSymbol.Locations.First(), classSymbol.Name, ex.Message));
                 DebuggerUtil.Log($"Error generating validation class for {classSymbol.Name}: {ex.Message}");
                 return;
             }
@@ -198,12 +211,122 @@ namespace EasyValidate
             };
         }
 
+
+
+        /// <summary>
+        /// Determines if a type requires nested validation.
+        /// </summary>
+        private static (bool requireNestedValidation, bool isCollection) RequiresNestedValidation(ITypeSymbol memberType)
+        {
+            if (IsCollection(memberType))
+            {
+                // For collections, check if the element type has validations
+                var elementType = GetCollectionElementType(memberType);
+                if (elementType != null && HasValidations(elementType))
+                {
+                    return (true, true);
+                }
+                return (false, true); // It's a collection but elements don't need validation
+            }
+            return (HasValidations(memberType), false);
+
+
+        }
+
+        /// <summary>
+        /// Gets the element type of a collection.
+        /// </summary>
+        private static ITypeSymbol? GetCollectionElementType(ITypeSymbol type)
+        {
+            // Handle arrays
+            if (type is IArrayTypeSymbol arrayType)
+                return arrayType.ElementType;
+
+            // Handle generic collections (IEnumerable<T>, List<T>, etc.)
+            if (type is INamedTypeSymbol namedType)
+            {
+                // Look for IEnumerable<T> interface
+                var enumerableInterface = namedType.AllInterfaces
+                    .FirstOrDefault(i => i.IsGenericType &&
+                                   i.ConstructedFrom.ToDisplayString() == "System.Collections.Generic.IEnumerable<T>");
+
+                if (enumerableInterface != null && enumerableInterface.TypeArguments.Length > 0)
+                {
+                    return enumerableInterface.TypeArguments[0];
+                }
+
+                // If it's a generic type itself (like List<T>), check its type arguments
+                if (namedType.IsGenericType && namedType.TypeArguments.Length > 0)
+                {
+                    // For most collections, the first type argument is the element type
+                    return namedType.TypeArguments[0];
+                }
+            }
+
+            return null;
+        }
+
+        private static bool HasValidations(ITypeSymbol type)
+        {
+            // Get all properties and fields from the type
+            var properties = type.GetMembers().OfType<IPropertySymbol>();
+            // Check if any properties have validation attributes
+            var hasPropertiesWithValidation = properties.Any(property =>
+                property.GetAttributes().Any(attr =>
+                    attr.AttributeClass?.IsValidationAttribute() == true));
+
+            if (hasPropertiesWithValidation)
+            {
+                return true;
+            }
+
+            var fields = type.GetMembers().OfType<IFieldSymbol>();
+            // Check if any fields have validation attributes
+            var hasFieldsWithValidation = fields.Any(field =>
+                field.GetAttributes().Any(attr =>
+                    attr.AttributeClass?.IsValidationAttribute() == true));
+
+            return hasFieldsWithValidation;
+        }
+
+        /// <summary>
+        /// Determines if a type is a collection type.
+        /// </summary>
+        private static bool IsCollection(ITypeSymbol type)
+        {
+            // Exclude string type (even though it implements IEnumerable<char>)
+            if (type.SpecialType == SpecialType.System_String)
+                return false;
+
+            // Check for arrays first
+            if (type is IArrayTypeSymbol)
+                return true;
+
+            // Check if it's a collection type (implements IEnumerable)
+            if (type is INamedTypeSymbol namedType)
+            {
+                // Check if the collection type implements IEnumerable (generic or non-generic)
+                bool isEnumerable = namedType.AllInterfaces.Any(i =>
+                {
+                    var interfaceName = i.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+                    return interfaceName.StartsWith("global::System.Collections.Generic.IEnumerable") ||
+                           interfaceName == "global::System.Collections.IEnumerable";
+                });
+
+                return isEnumerable;
+            }
+
+            return false;
+        }
+
     }
 }
 
-public class MemberInfo(string name, ITypeSymbol type, bool isProperty)
+public class MemberInfo(string name, ITypeSymbol type, bool isProperty, bool requireNestedValidation, bool isCollection)
 {
     public string Name { get; } = name;
+    public bool IsCollection { get; } = isCollection;
+    public bool RequireNestedValidation { get; } = requireNestedValidation;
     public ITypeSymbol Type { get; } = type;
     public bool IsProperty { get; } = isProperty;
     public List<AttributeInfo> Attributes { get; } = [];

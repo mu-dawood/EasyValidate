@@ -27,9 +27,9 @@ namespace EasyValidate.Test.Strings.Url
             Assert.False(result.IsValid());
             Assert.True(result.HasErrors());
             Assert.False(result.HasErrors(nameof(model.PrimaryUrl)));
-            Assert.True(result.HasErrors("NestedUrls.Homepage"));
-            Assert.False(result.HasErrors("NestedUrls.ApiEndpoint"));
-            Assert.True(result.HasErrors("NestedUrls.OptionalUrl"));
+            Assert.True(result.HasErrors("NestedUrls", "Homepage"));
+            Assert.False(result.HasErrors("NestedUrls", "ApiEndpoint"));
+            Assert.True(result.HasErrors("NestedUrls", "OptionalUrl"));
 
             var nestedHomepageErrors = result.Errors.Where(e => e.Path.SequenceEqual(new[] { "NestedUrls", "Homepage" })).ToList();
             Assert.Single(nestedHomepageErrors);
@@ -82,9 +82,9 @@ namespace EasyValidate.Test.Strings.Url
             Assert.False(result.IsValid());
             Assert.True(result.HasErrors());
             Assert.True(result.HasErrors(nameof(model.PrimaryUrl)));
-            Assert.True(result.HasErrors("NestedUrls.Homepage"));
-            Assert.True(result.HasErrors("NestedUrls.ApiEndpoint"));
-            Assert.False(result.HasErrors("NestedUrls.OptionalUrl"));
+            Assert.True(result.HasErrors("NestedUrls", "Homepage"));
+            Assert.True(result.HasErrors("NestedUrls", "ApiEndpoint"));
+            Assert.False(result.HasErrors("NestedUrls", "OptionalUrl"));
         }
 
         [Fact]

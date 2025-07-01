@@ -14,7 +14,7 @@ namespace EasyValidate.Core.Attributes
     ///     public string Name { get; set; } // Valid: "John", "", Invalid: null
     ///     
     ///     [NotNull]
-    ///     public List<int> Numbers { get; set; } // Valid: new List<int>(), Invalid: null
+    ///     public List&lt;int&gt; Numbers { get; set; } // Valid: new List&lt;int&gt;(), Invalid: null
     /// }
     /// </code>
     /// </example>

@@ -1,87 +1,17 @@
-using EasyValidate;
 using Microsoft.CodeAnalysis;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
-namespace EasyValidate.Handlers.Validation
+namespace EasyValidate.Handlers
 {
     /// <summary>
     /// Coordinates validation processing for properties by delegating to specialized handlers.
     /// </summary>
     internal class ValidationAttributeProcessorHandler(Compilation compilation)
     {
-        private readonly NestedValidationHandler _nestedHandler = new();
         private readonly Compilation _compilation = compilation;
 
-        /// <summary>
-        /// Determines if a property requires a validation method to be generated.
-        /// </summary>
-        public bool ShouldGenerateValidationMethod(MemberInfo member)
-        {
-            if (member.Attributes.Count > 0) return true;
-            // Check if field requires nested validation
-            return RequiresNestedValidation(member.Type);
-        }
 
-        /// <summary>
-        /// Determines if a type requires nested validation.
-        /// </summary>
-        private bool RequiresNestedValidation(ITypeSymbol memberType)
-        {
-            if (IsCollection(memberType)) return true;
-            // Get all properties and fields from the type
-            var properties = memberType.GetMembers().OfType<IPropertySymbol>();
-            // Check if any properties have validation attributes
-            var hasPropertiesWithValidation = properties.Any(property =>
-                property.GetAttributes().Any(attr =>
-                    attr.AttributeClass?.IsValidationAttribute() == true));
-
-            if (hasPropertiesWithValidation)
-            {
-                return true;
-            }
-
-            var fields = memberType.GetMembers().OfType<IFieldSymbol>();
-            // Check if any fields have validation attributes
-            var hasFieldsWithValidation = fields.Any(field =>
-                field.GetAttributes().Any(attr =>
-                    attr.AttributeClass?.IsValidationAttribute() == true));
-
-            return hasFieldsWithValidation;
-
-        }
-
-        /// <summary>
-        /// Determines if a type is a collection type.
-        /// </summary>
-        private bool IsCollection(ITypeSymbol type)
-        {
-            // Exclude string type (even though it implements IEnumerable<char>)
-            if (type.SpecialType == SpecialType.System_String)
-                return false;
-
-            // Check for arrays first
-            if (type is IArrayTypeSymbol)
-                return true;
-
-            // Check if it's a collection type (implements IEnumerable)
-            if (type is INamedTypeSymbol namedType)
-            {
-                // Check if the collection type implements IEnumerable (generic or non-generic)
-                bool isEnumerable = namedType.AllInterfaces.Any(i =>
-                {
-                    var interfaceName = i.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-                    return interfaceName.StartsWith("global::System.Collections.Generic.IEnumerable") ||
-                           interfaceName == "global::System.Collections.IEnumerable";
-                });
-
-                return isEnumerable;
-            }
-
-            return false;
-        }
 
         /// <summary>
         /// Processes all validation for a property including attributes and nested validation.
@@ -96,10 +26,11 @@ namespace EasyValidate.Handlers.Validation
             {
                 ProcessValidationAttributesWithChain(sb, member);
             }
+            if (member.RequireNestedValidation)
+                sb.AppendLine($"            if ({member.Name} != null) result.MergeWith(nameof({member.Name}), {member.Name});");
 
-            // Process nested validation (collections and objects)
-            _nestedHandler.ProcessNestedValidation(sb, member);
         }
+
 
         /// <summary>
         /// Processes validation attributes for a member using the new CreateChain pattern.

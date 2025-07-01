@@ -36,7 +36,7 @@ namespace EasyValidate.Core.Attributes
         /// <inheritdoc/>
         public override AttributeResult<string> Validate(object obj, string propertyName, string value)
         {
-            bool isValid = string.IsNullOrWhiteSpace(value) || ColorRegex.IsMatch(value);
+            bool isValid = string.IsNullOrEmpty(value) || ColorRegex.IsMatch(value);
             return new AttributeResult<string>(isValid, value , propertyName);
         }
     }

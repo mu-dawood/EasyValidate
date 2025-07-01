@@ -14,7 +14,6 @@ namespace EasyValidate.Core.Attributes
     /// <remarks>
     /// Initializes a new instance of the CollectionValidationAttributeBase class.
     /// </remarks>
-    /// <param name="followUpValidations">Array of validation attribute names that should only be validated after this validation succeeds.</param>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
     public abstract class CollectionValidationAttributeBase : Attribute, IValidationAttribute<IEnumerable, IEnumerable>
     {

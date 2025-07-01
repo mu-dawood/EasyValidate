@@ -15,7 +15,7 @@ public class AsciiAdvancedTests
             {
                 Text = "Héllo", // Invalid: contains non-ASCII
                 Description = "Valid ASCII",
-                Content = "Valid content"
+                Content = "Valid content",
             }
         };
 
@@ -25,11 +25,11 @@ public class AsciiAdvancedTests
         // Assert
         Assert.False(result.IsValid());
         Assert.True(result.HasErrors());
-        Assert.True(result.HasErrors("Details.Text"));
+        Assert.True(result.HasErrors("Details", "Text"));
         Assert.False(result.HasErrors(nameof(model.MainText)));
-        Assert.False(result.HasErrors("Details.Description"));
-        Assert.False(result.HasErrors("Details.Content"));
-        
+        Assert.False(result.HasErrors("Details", "Description"));
+        Assert.False(result.HasErrors("Details", "Content"));
+
         var detailsTextErrors = result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Text" })).ToList();
         Assert.Single(detailsTextErrors);
         Assert.Contains("must contain only ASCII characters", detailsTextErrors[0].FormattedMessage);

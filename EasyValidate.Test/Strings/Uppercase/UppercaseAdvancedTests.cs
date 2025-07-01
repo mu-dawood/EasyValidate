@@ -25,10 +25,10 @@ public class UppercaseAdvancedTests
         // Assert
         Assert.False(result.IsValid());
         Assert.True(result.HasErrors());
-        Assert.True(result.HasErrors("Details.Title"));
+        Assert.True(result.HasErrors("Details", "Title"));
         Assert.False(result.HasErrors(nameof(model.MainCode)));
-        Assert.False(result.HasErrors("Details.Code"));
-        Assert.False(result.HasErrors("Details.Category"));
+        Assert.False(result.HasErrors("Details", "Code"));
+        Assert.False(result.HasErrors("Details", "Category"));
         
         var detailsTitleErrors = result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Title" })).ToList();
         Assert.Single(detailsTitleErrors);

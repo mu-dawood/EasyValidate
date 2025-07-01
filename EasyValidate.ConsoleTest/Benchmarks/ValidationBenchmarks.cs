@@ -4,7 +4,7 @@ using FluentValidation.Results;
 namespace EasyValidate.Benchmarks
 {
     [MemoryDiagnoser]
-    public class ValidationBenchmarks
+    public partial class ValidationBenchmarks
     {
         // DataAnnotations
         private EasyValidate.Benchmarks.Models.DataAnnotations.SimpleUser _daSimpleValid = new();

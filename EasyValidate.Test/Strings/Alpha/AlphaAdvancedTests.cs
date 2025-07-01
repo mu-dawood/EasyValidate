@@ -30,9 +30,9 @@ public class AlphaAdvancedTests
         Assert.True(result.HasErrors(nameof(model.Name)));
 
         // Check nested object errors with proper prefixing
-        Assert.True(result.HasErrors("NestedModel.FirstName"));
-        Assert.False(result.HasErrors("NestedModel.LastName"));
-        Assert.True(result.HasErrors("NestedModel.MiddleName"));
+        Assert.True(result.HasErrors("NestedModel", "FirstName"));
+        Assert.False(result.HasErrors("NestedModel", "LastName"));
+        Assert.True(result.HasErrors("NestedModel", "MiddleName"));
 
         // Verify error count
         Assert.Equal(3, result.Errors.Count);

@@ -1,6 +1,4 @@
 using Microsoft.CodeAnalysis;
-using System.Text;
-using EasyValidate.Handlers.Validation;
 
 namespace EasyValidate.Handlers
 {
@@ -15,15 +13,14 @@ namespace EasyValidate.Handlers
             sb.AppendLine("        public IValidationResult Validate(IFormatter formatter, IConfigureValidator configureValidator, params string[] parentPath)");
             sb.AppendLine("        {");
             sb.AppendLine("            var result = new ValidationResult(this, parentPath, formatter, configureValidator);");
-                        
+
             // Process members and generate validation methods
             foreach (var member in @params.Members)
             {
-                if (_processor.ShouldGenerateValidationMethod(member))
-                {
-                    var methodName = $"Validate{member.Name}";
-                    sb.AppendLine($"            {methodName}(result);");
-                }
+
+                var methodName = $"Validate{member.Name}";
+                sb.AppendLine($"            {methodName}(result);");
+
             }
 
             sb.AppendLine("            return result;");

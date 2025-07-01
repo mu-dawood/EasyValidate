@@ -1,7 +1,5 @@
 using Microsoft.CodeAnalysis;
 using System.Text;
-using EasyValidate.Handlers.Validation;
-
 namespace EasyValidate.Handlers
 {
     /// <summary>
@@ -16,10 +14,7 @@ namespace EasyValidate.Handlers
             // Process members
             foreach (var member in @params.Members)
             {
-                if (_processor.ShouldGenerateValidationMethod(member))
-                {
-                    GeneratePropertyValidationMethod(@params.StringBuilder, member);
-                }
+                GeneratePropertyValidationMethod(@params.StringBuilder, member);
             }
 
             base.Handle(@params);

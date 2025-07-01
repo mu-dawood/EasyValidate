@@ -39,7 +39,11 @@ namespace EasyValidate.Core.Attributes
         /// <inheritdoc/>
         public override AttributeResult<string> Validate(object obj, string propertyName, string value)
         {
-            bool isValid = !string.IsNullOrEmpty(value) && value!.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0;
+#if NET6_0_OR_GREATER
+            bool isValid = !string.IsNullOrEmpty(value) && value.Contains(Substring, Comparison);
+#else
+            bool isValid = !string.IsNullOrEmpty(value) && value!.IndexOf(Substring, Comparison) >= 0;
+#endif
             return new AttributeResult<string>(isValid, value, propertyName, Substring);
         }
     }

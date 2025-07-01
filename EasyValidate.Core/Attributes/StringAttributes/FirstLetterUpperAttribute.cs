@@ -31,7 +31,7 @@ namespace EasyValidate.Core.Attributes
         /// <inheritdoc/>
         public override AttributeResult<string> Validate(object obj, string propertyName, string value)
         {
-            if (string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrEmpty(value))
             {
                 bool isValid = true;
                 return new AttributeResult<string>(isValid, value ?? string.Empty, propertyName);

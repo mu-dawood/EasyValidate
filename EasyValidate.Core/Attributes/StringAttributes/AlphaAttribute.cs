@@ -18,7 +18,7 @@ namespace EasyValidate.Core.Attributes
     /// }
     /// </code>
     /// </example>
-        public class AlphaAttribute : StringValidationAttributeBase
+    public class AlphaAttribute : StringValidationAttributeBase
     {
         private static readonly Lazy<AlphaAttribute> _instance = new(() => new AlphaAttribute());
         public static AlphaAttribute Instance => _instance.Value;
@@ -34,7 +34,7 @@ namespace EasyValidate.Core.Attributes
         /// <inheritdoc/>
         public override AttributeResult<string> Validate(object obj, string propertyName, string value)
         {
-            bool isValid = !string.IsNullOrWhiteSpace(value) && IsAlpha(value!);
+            bool isValid = string.IsNullOrEmpty(value) || IsAlpha(value!);
             return new AttributeResult<string>(isValid, value, propertyName);
         }
 

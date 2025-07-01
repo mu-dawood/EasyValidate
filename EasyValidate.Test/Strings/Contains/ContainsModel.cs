@@ -24,6 +24,5 @@ public partial class ContainsNestedModel
 {
     [Optional, Contains("main")]
     public string? MainProperty { get; set; }
-
     public ContainsModel? Details { get; set; }
 }

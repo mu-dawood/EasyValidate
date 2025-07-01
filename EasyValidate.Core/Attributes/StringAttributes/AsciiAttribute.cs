@@ -31,14 +31,8 @@ namespace EasyValidate.Core.Attributes
 
         /// <inheritdoc/>
         public override AttributeResult<string> Validate(object obj, string propertyName, string value)
-        {
-            if (string.IsNullOrEmpty(value))
-            {
-                bool isValid = true;
-                return new AttributeResult<string>(isValid, value, propertyName);
-            }
-                
-            bool valid = !value.Any(c => c > 127);
+        {        
+            bool valid =string.IsNullOrEmpty(value) || !value.Any(c => c > 127);
             return new AttributeResult<string>(valid, value!, propertyName);
         }
     }
