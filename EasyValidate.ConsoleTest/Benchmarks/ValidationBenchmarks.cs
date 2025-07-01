@@ -4,6 +4,8 @@ using FluentValidation.Results;
 namespace EasyValidate.Benchmarks
 {
     [MemoryDiagnoser]
+    [SimpleJob(launchCount: 1, warmupCount: 1, iterationCount: 3)]
+    
     public partial class ValidationBenchmarks
     {
         // DataAnnotations

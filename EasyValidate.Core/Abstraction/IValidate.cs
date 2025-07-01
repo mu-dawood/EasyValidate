@@ -13,6 +13,7 @@ namespace EasyValidate.Core.Abstraction
         /// </summary>
         /// <param name="formatter">The formatter to use for formatting the validation result.</param>
         /// <param name="configureValidator">The configurator to use for configuring validation attributes.</param>
+        /// <param name="parentPath"></param>
         /// <returns>A ValidationResult containing the validation errors.</returns>
         /// <example>
         /// <code>
@@ -32,6 +33,7 @@ namespace EasyValidate.Core.Abstraction
         /// Validates the object and returns a ValidationResult using the specified formatter and default configurator.
         /// </summary>
         /// <param name="formatter">The formatter to use for formatting the validation result.</param>
+        /// <param name="parentPath"></param>
         /// <returns>A ValidationResult containing the validation errors.</returns>
         /// <example>
         /// <code>
@@ -50,6 +52,7 @@ namespace EasyValidate.Core.Abstraction
         /// Validates the object and returns a ValidationResult using the default formatter and specified configurator.
         /// </summary>
         /// <param name="configureValidator">The configurator to use for configuring validation attributes.</param>
+        /// <param name="parentPath"></param>
         /// <returns>A ValidationResult containing the validation errors.</returns>
         /// <example>
         /// <code>

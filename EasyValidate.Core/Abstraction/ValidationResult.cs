@@ -144,33 +144,12 @@ namespace EasyValidate.Core.Abstraction
         private readonly List<ValidationError> _errors = [];
         public IReadOnlyList<ValidationError> Errors => _errors;
 
-        internal void AddError(ValidationError error)
+        private void AddError(ValidationError error)
         {
             if (error == null)
                 throw new ArgumentNullException(nameof(error));
 
             _errors.Add(error);
-        }
-        /// <summary>
-        /// Creates a new validation chain for the specified property.
-        /// </summary>
-        /// <param name="propertyName">The name of the property to create a chain for.</param>
-        /// <param name="chain">The optional chain identifier for grouping validations.</param>
-        /// <returns>A new ValidationChain instance configured for the specified property.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when propertyName is null or empty.</exception>
-        /// <remarks>
-        /// This method creates a validation chain that can be used to add and execute validation attributes
-        /// for a specific property. The chain supports conditional validation and error collection.
-        /// </remarks>
-        /// <docs-member>CreateChain()</docs-member>
-        /// <docs-type>Method</docs-type>
-        /// <docs-return-type>ValidationChain</docs-return-type>
-        public ValidationChain CreateChain(string propertyName, string chain)
-        {
-            if (string.IsNullOrEmpty(propertyName))
-                throw new ArgumentNullException(nameof(propertyName));
-
-            return new ValidationChain(propertyName, this, _obj, _formatter, _configureValidator, chain, _parentPath);
         }
 
 
@@ -246,15 +225,12 @@ namespace EasyValidate.Core.Abstraction
         /// </summary>
         private class DefaultFormatter : IFormatter
         {
-            public string Format(string message, params object[] args)
+
+            public string Format<T>(AttributeResult result, T value)
             {
-                return string.Format(message, args);
+                return string.Format(result.MessageTemplate, result.MessageArgs);
             }
 
-            public string GetFormatedMessage<I, O>(IValidationAttribute<I, O> attribute, object?[] args)
-            {
-                return string.Format(attribute.ErrorMessage, args);
-            }
         }
         /// <summary>
         /// Default configure validator implementation that returns validation attributes unchanged.

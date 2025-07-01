@@ -140,7 +140,7 @@ namespace EasyValidate.Core.Abstraction
         /// </example>
         /// <docs-member>Errors</docs-member>
         /// <docs-type>Property</docs-type>
-        /// <docs-return-type>IReadOnlyList<ValidationError></docs-return-type>
+        /// <docs-return-type>IReadOnlyList&lt;ValidationError&gt;</docs-return-type>
         IReadOnlyList<ValidationError> Errors { get; }
         
         

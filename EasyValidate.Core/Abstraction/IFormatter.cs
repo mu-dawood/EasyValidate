@@ -9,40 +9,23 @@ namespace EasyValidate.Core.Abstraction
     public interface IFormatter
     {
         /// <summary>
-        /// Formats a message template with the provided arguments.
+        /// Formats a validation message using the template and arguments from an <see cref="AttributeResult"/> and the validated value.
         /// </summary>
-        /// <param name="message">The message template with placeholders.</param>
-        /// <param name="args">The arguments to substitute into the message template.</param>
-        /// <returns>The formatted message with arguments substituted.</returns>
+        /// <typeparam name="T">The type of the validated value.</typeparam>
+        /// <param name="result">The result of attribute validation containing the message template and arguments.</param>
+        /// <param name="value">The value that was validated (may be used for custom formatting).</param>
+        /// <returns>The formatted message with arguments substituted into the template.</returns>
         /// <example>
         /// <code>
         /// var formatter = new CustomFormatter();
-        /// var result = formatter.Format("Hello {0}!", "World");
-        /// // Returns: "Hello World!"
+        /// var result = AttributeResult.Fail("Value must be between {0} and {1}", 10, 100);
+        /// var message = formatter.Format(result, 42);
+        /// // Returns: "Value must be between 10 and 100"
         /// </code>
         /// </example>
         /// <docs-member>Format(string, object[])</docs-member>
         /// <docs-type>Method</docs-type>
         /// <docs-return-type>string</docs-return-type>
-        string Format(string message, params object[] args);
-
-        /// <summary>
-        /// Formats a message using the validation attribute and arguments.
-        /// </summary>
-        /// <typeparam name="TInput">The input type for the validation attribute.</typeparam>
-        /// <typeparam name="TOutput">The output type for the validation attribute.</typeparam>
-        /// <param name="attribute">The validation attribute instance.</param>
-        /// <param name="args">The arguments for message formatting.</param>
-        /// <returns>The formatted message.</returns>
-        /// <example>
-        /// <code>
-        /// var formatter = new CustomFormatter();
-        /// var result = formatter.GetFormatedMessage(attribute, new object[] { "value" });
-        /// </code>
-        /// </example>
-        /// <docs-member>GetFormatedMessage()</docs-member>
-        /// <docs-type>Method</docs-type>
-        /// <docs-return-type>string</docs-return-type>
-        string GetFormatedMessage<TInput, TOutput>(IValidationAttribute<TInput, TOutput> attribute, object?[] args);
+        string Format<T>(AttributeResult result, T value);
     }
 }

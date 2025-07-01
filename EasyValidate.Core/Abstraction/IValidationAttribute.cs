@@ -37,11 +37,6 @@ namespace EasyValidate.Core.Abstraction
         string ErrorCode { get; }
 
         /// <summary>
-        /// Gets or sets the error message for this validation attribute.
-        /// </summary>
-        string ErrorMessage { get; }
-
-        /// <summary>
         /// Gets or sets the name of a method that returns a boolean value to determine if this validation should be executed.
         /// The method must be parameterless and return bool. If null or empty, validation always executes.
         /// </summary>
@@ -57,18 +52,18 @@ namespace EasyValidate.Core.Abstraction
 
 
         /// <summary>
-        /// Gets or sets the validation chain for this attribute.
+        /// Gets the name of the validation chain this attribute belongs to.
         /// </summary>
         string Chain { get; }
-
 
         /// <summary>
         /// Validates the specified value and potentially transforms it.
         /// </summary>
-        /// <param name="obj">The main object being validated</param>
-        /// <param name="propertyName">The name of the property being validated</param>
-        /// <param name="value">The value to validate</param>
-        /// <returns>An AttributeResult indicating success/failure and any transformed value</returns>
-        AttributeResult<TOutput> Validate(object obj, string propertyName, TInput value);
+        /// <param name="obj">The main object being validated.</param>
+        /// <param name="propertyName">The name of the property being validated.</param>
+        /// <param name="value">The value to validate.</param>
+        /// <param name="output">The output value after validation and transformation, or <c>default</c> if validation fails.</param>
+        /// <returns>An <see cref="AttributeResult"/> indicating success or failure, and any transformed value via <paramref name="output"/>.</returns>
+        AttributeResult Validate(object obj, string propertyName, TInput value, out TOutput output);
     }
 }

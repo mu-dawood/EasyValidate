@@ -8,11 +8,9 @@ namespace EasyValidate.Core.Abstraction
     /// <docs-description>Detailed validation error information including error codes, messages, and attribute context for comprehensive error reporting.</docs-description>
     public sealed class ValidationError
     {
-        internal ValidationError(string errorCode, string message, object?[] args, string attributeName, string formattedMessage, string[] path, string chain)
+        internal ValidationError(string errorCode, string attributeName, string formattedMessage, string[] path, string chain)
         {
             ErrorCode = errorCode;
-            Message = message;
-            Args = args;
             AttributeName = attributeName;
             FormattedMessage = formattedMessage;
             Path = path;
@@ -37,47 +35,6 @@ namespace EasyValidate.Core.Abstraction
         /// <docs-type>Property</docs-type>
         /// <docs-return-type>string</docs-return-type>
         public string ErrorCode { get; }
-
-
-
-        /// <summary>
-        /// Gets or sets the validation error message template.
-        /// </summary>
-        /// <value>A string containing the message template with placeholders for formatting arguments.</value>
-        /// <remarks>
-        /// This is the raw message template before argument substitution. Use FormattedMessage
-        /// to get the final formatted message ready for display.
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// error.Message = "The {0} field is required.";
-        /// error.Args = new object[] { "Email" };
-        /// // FormattedMessage will be: "The Email field is required."
-        /// </code>
-        /// </example>
-        /// <docs-member>Message</docs-member>
-        /// <docs-type>Property</docs-type>
-        /// <docs-return-type>string</docs-return-type>
-        public string Message { get; }
-
-        /// <summary>
-        /// Gets or sets the arguments used for formatting the validation message.
-        /// </summary>
-        /// <value>An array of objects that provide values for message template placeholders.</value>
-        /// <remarks>
-        /// These arguments are used in conjunction with the Message property to create the FormattedMessage.
-        /// The arguments correspond to placeholders in the message template (e.g., {0}, {1}).
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// error.Args = new object[] { "Email", 5, 100 };
-        /// // Used with message: "The {0} field must be between {1} and {2} characters."
-        /// </code>
-        /// </example>
-        /// <docs-member>Args</docs-member>
-        /// <docs-type>Property</docs-type>
-        /// <docs-return-type>object?[]</docs-return-type>
-        public object?[] Args { get; }
 
         /// <summary>
         /// Gets or sets the name of the attribute that generated this validation error.
@@ -120,7 +77,7 @@ namespace EasyValidate.Core.Abstraction
 
         internal ValidationError WithPath(string[] path)
         {
-            return new ValidationError(ErrorCode, Message, Args, AttributeName, FormattedMessage, path, Chain);
+            return new ValidationError(ErrorCode, AttributeName, FormattedMessage, path, Chain);
         }
     }
 }

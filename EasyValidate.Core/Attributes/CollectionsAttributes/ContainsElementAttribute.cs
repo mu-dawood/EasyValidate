@@ -41,11 +41,17 @@ namespace EasyValidate.Core.Attributes
         /// <inheritdoc/>
         public override string ErrorMessage { get; set; } = "The field {0} must contain the value {1}.";
 
+
+
         /// <inheritdoc/>
         public override AttributeResult<IEnumerable> Validate(object obj, string propertyName, IEnumerable value)
         {
             bool isValid = value.Cast<object>().Contains(ExpectedValue);
+            return isValid
+                ? AttributeResult<IEnumerable>.Success(value)
+                : AttributeResult<IEnumerable>.Fail(value, propertyName, isValid);
             return new AttributeResult<IEnumerable>(isValid, value, propertyName, ExpectedValue);
         }
+
     }
 }

@@ -9,7 +9,7 @@ using EasyValidate.Benchmarks.Models.EasyValidate;
 using EasyValidate.Benchmarks.Validators;
 
 // Run the benchmarks first
-// BenchmarkDotNet.Running.BenchmarkRunner.Run<ValidationBenchmarks>();
+BenchmarkDotNet.Running.BenchmarkRunner.Run<ValidationBenchmarks>();
 
 // Then log the results
 Console.WriteLine("\nValidation result comparison for all approaches (valid/invalid, simple/heavy/nested):\n");
