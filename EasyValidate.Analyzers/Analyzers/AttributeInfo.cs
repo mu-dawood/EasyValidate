@@ -22,7 +22,7 @@ public record AttributeInfo
 
     public (bool areCompatible, InputAndOutputTypes?) CanAccept(SymbolAnalysisContext context, ITypeSymbol type)
     {
-        if (IsNotNullAttribute) return (true, InputAndOutputTypes.FirstOrDefault());
+        if (IsNotNullAttribute) return (true, new(type, type, true));
         return InputAndOutputTypes.CanAccept(context.Compilation, type);
     }
 }

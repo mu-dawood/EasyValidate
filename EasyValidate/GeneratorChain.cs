@@ -1,6 +1,3 @@
-using Microsoft.CodeAnalysis;
-using System.Text;
-
 namespace EasyValidate
 {
     internal class GeneratorChain
@@ -24,9 +21,9 @@ namespace EasyValidate
             return this;
         }
 
-        internal void Handle(INamedTypeSymbol classSymbol, SourceProductionContext context, StringBuilder sp)
+        internal void Handle(HandlerParams @params)
         {
-            _head?.Handle(classSymbol, context, sp);
+            _head?.Handle(@params);
         }
     }
 }

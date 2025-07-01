@@ -12,6 +12,7 @@ namespace EasyValidate.Core.Attributes
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
     public abstract class GeneralValidationAttributeBase : Attribute, IValidationAttribute<object?, object?>
     {
+        
         /// <inheritdoc/>
         public virtual string Chain { get; set; } = string.Empty;
         /// <inheritdoc/>

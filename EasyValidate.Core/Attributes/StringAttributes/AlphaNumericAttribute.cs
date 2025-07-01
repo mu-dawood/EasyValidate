@@ -1,3 +1,4 @@
+using System;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -19,6 +20,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class AlphaNumericAttribute : StringValidationAttributeBase
     {
+        private static readonly Lazy<AlphaNumericAttribute> _instance = new(() => new AlphaNumericAttribute());
+        public static AlphaNumericAttribute Instance => _instance.Value;
         /// <summary>
         /// Gets or sets the nullable behavior for this attribute.
         /// </summary>

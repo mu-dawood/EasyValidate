@@ -1,18 +1,17 @@
-using Microsoft.CodeAnalysis;
-using System.Text;
+using System.Linq;
 
 namespace EasyValidate.Handlers
 {
     internal class UsingImportsHandler : ValidationHandlerBase
     {
-        public override void Handle(INamedTypeSymbol classSymbol, SourceProductionContext context, StringBuilder sb)
+        public override void Handle(HandlerParams @params)
         {
-            sb.AppendLine("using System;");
-            sb.AppendLine("using System.Collections.Generic;");
-            sb.AppendLine("using EasyValidate.Core.Abstraction;");
-            sb.AppendLine("using EasyValidate.Core.Attributes;");
+            @params.StringBuilder.AppendLine("using global::System;");
+            @params.StringBuilder.AppendLine("using global::System.Collections.Generic;");
+            @params.StringBuilder.AppendLine("using global::EasyValidate.Core.Abstraction;");
+            @params.StringBuilder.AppendLine("using global::EasyValidate.Core.Attributes;");
 
-            base.Handle(classSymbol, context, sb);
+            base.Handle(@params);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -17,6 +18,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class OptionalAttribute : NotNullAttribute
     {
+        private static readonly Lazy<OptionalAttribute> _instance = new(() => new OptionalAttribute());
+        public static new OptionalAttribute Instance => _instance.Value;
         /// <inheritdoc/>
         public override ExecutionStrategy Strategy => ExecutionStrategy.SkipErrorAndStop;
 

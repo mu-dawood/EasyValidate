@@ -1,3 +1,4 @@
+using System;
 using System.Text.RegularExpressions;
 using EasyValidate.Core.Abstraction;
 
@@ -20,6 +21,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class MacAddressAttribute : StringValidationAttributeBase
     {
+        private static readonly Lazy<MacAddressAttribute> _instance = new(() => new MacAddressAttribute());
+        public static MacAddressAttribute Instance => _instance.Value;
         private static readonly Regex MacAddressRegex = new(
             "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$",
             RegexOptions.Compiled);

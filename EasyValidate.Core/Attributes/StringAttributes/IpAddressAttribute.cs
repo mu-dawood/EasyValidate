@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using EasyValidate.Core.Abstraction;
 
@@ -20,6 +21,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class IpAddressAttribute : StringValidationAttributeBase
     {
+        private static readonly Lazy<IpAddressAttribute> _instance = new(() => new IpAddressAttribute());
+        public static IpAddressAttribute Instance => _instance.Value;
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "IpAddressValidationError";
 

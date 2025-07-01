@@ -171,7 +171,7 @@ namespace EasyValidate.Analyzers.Analyzers.AttributeUsage
             // Check if the type is exactly IValidationResult
             if (typeSymbol.TypeKind == TypeKind.Interface &&
                 typeSymbol.Name == "IValidationResult" &&
-                typeSymbol.ContainingNamespace?.ToDisplayString() == "EasyValidate.Core.Abstraction")
+                typeSymbol.ContainingNamespace?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == "global::EasyValidate.Core.Abstraction")
             {
                 return true;
             }
@@ -179,7 +179,7 @@ namespace EasyValidate.Analyzers.Analyzers.AttributeUsage
             // Check if the type implements IValidationResult
             return typeSymbol.AllInterfaces.Any(i =>
                 i.Name == "IValidationResult" &&
-                i.ContainingNamespace?.ToDisplayString() == "EasyValidate.Core.Abstraction");
+                i.ContainingNamespace?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == "global::EasyValidate.Core.Abstraction");
         }
 
         private void ReportDiagnostic(SymbolAnalysisContext context, AttributeInfo attribute, DiagnosticDescriptor rule, params object[] args)

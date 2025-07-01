@@ -5,14 +5,14 @@ namespace EasyValidate.Handlers
 {
     internal class ClassDeclarationHandler : ValidationHandlerBase
     {
-        public override void Handle(INamedTypeSymbol classSymbol, SourceProductionContext context, StringBuilder sb)
+        public override void  Handle(HandlerParams @params)
         {
-            sb.AppendLine($"    public partial class {classSymbol.Name} : EasyValidate.Core.Abstraction.IValidate");
-            sb.AppendLine("    {");
+            @params.StringBuilder.AppendLine($"    public partial class {@params.ClassSymbol.Name} : IValidate");
+            @params.StringBuilder.AppendLine("    {");
 
-            base.Handle(classSymbol, context, sb);
+            base.Handle(@params);
 
-            sb.AppendLine("    }");
+            @params.StringBuilder.AppendLine("    }");
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Text.RegularExpressions;
 using EasyValidate.Core.Abstraction;
 
@@ -20,6 +21,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class ISBNAttribute : StringValidationAttributeBase
     {
+        private static readonly Lazy<ISBNAttribute> _instance = new(() => new ISBNAttribute());
+        public static ISBNAttribute Instance => _instance.Value;
         private static readonly Regex IsbnRegex = new(
             @"^(?:\d{9}[\dXx]|\d{13})$",
             RegexOptions.Compiled);

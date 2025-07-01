@@ -92,7 +92,7 @@ public class ChainIncompatibilityProcessor : IAttributeUsageChainProcessor
             }
             else
             {
-                currentType = info!.ResolveOutPutType(currentType);
+                currentType = info!.ResolveOutPutType();
             }
         }
 

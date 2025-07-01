@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using EasyValidate.Core.Abstraction;
 
@@ -20,6 +21,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class CommonPrintableAttribute : StringValidationAttributeBase
     {
+        private static readonly Lazy<CommonPrintableAttribute> _instance = new(() => new CommonPrintableAttribute());
+        public static CommonPrintableAttribute Instance => _instance.Value;
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "CommonPrintableValidationError";
 

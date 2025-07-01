@@ -5,8 +5,9 @@ namespace EasyValidate.Handlers
 {
     internal class ValidateMethodOverlodsHandler : ValidationHandlerBase
     {
-        public override void Handle(INamedTypeSymbol classSymbol, SourceProductionContext context, StringBuilder sb)
+        public override void Handle(HandlerParams @params)
         {
+            var sb = @params.StringBuilder;
             // Generate Validate method with only IFormatter parameter
             sb.AppendLine("        public IValidationResult Validate(IFormatter formatter, params string[] parentPath)");
             sb.AppendLine("        {");
@@ -27,7 +28,7 @@ namespace EasyValidate.Handlers
             sb.AppendLine("            return Validate(ValidationResult.GetDefaultFormatter(), ValidationResult.GetDefaultConfigureValidator(), parentPath);");
             sb.AppendLine("        }");
 
-            base.Handle(classSymbol, context, sb);
+            base.Handle(@params);
         }
     }
 }

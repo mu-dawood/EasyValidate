@@ -20,6 +20,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class NotDefaultAttribute : GeneralValidationAttributeBase
     {
+        private static readonly Lazy<NotDefaultAttribute> _instance = new(() => new NotDefaultAttribute());
+        public static NotDefaultAttribute Instance => _instance.Value;
         /// <summary>
         /// Gets or sets the nullable behavior for this attribute.
         /// </summary>
@@ -51,6 +53,6 @@ namespace EasyValidate.Core.Attributes
         {
             return type.IsValueType ? Activator.CreateInstance(type) : null;
         }
-        
+
     }
 }

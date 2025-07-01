@@ -12,38 +12,15 @@ namespace EasyValidate.Handlers.Validation
     /// </summary>
     internal class ValidationAttributeProcessorHandler(Compilation compilation)
     {
-        private readonly NestedValidationHandler _nestedHandler = new NestedValidationHandler();
+        private readonly NestedValidationHandler _nestedHandler = new();
         private readonly Compilation _compilation = compilation;
 
         /// <summary>
         /// Determines if a property requires a validation method to be generated.
         /// </summary>
-        public bool ShouldGenerateValidationMethod(IPropertySymbol member)
+        public bool ShouldGenerateValidationMethod(MemberInfo member)
         {
-            // Check if field has validation attributes
-            var hasValidationAttributes = member.GetAttributes()
-                .Any(attr => attr.AttributeClass?.IsValidationAttribute() == true);
-
-            if (hasValidationAttributes) return true;
-
-            // Check if field requires nested validation
-            return RequiresNestedValidation(member.Type);
-        }
-
-        /// <summary>
-        /// Determines if a field requires a validation method to be generated.
-        /// </summary>
-        public bool ShouldGenerateValidationMethod(IFieldSymbol member)
-        {
-            // Exclude compiler-generated backing fields
-            if (member.IsImplicitlyDeclared || member.Name.Contains("k__BackingField"))
-                return false;
-            // Check if field has validation attributes
-            var hasValidationAttributes = member.GetAttributes()
-                .Any(attr => attr.AttributeClass?.IsValidationAttribute() == true);
-
-            if (hasValidationAttributes) return true;
-
+            if (member.Attributes.Count > 0) return true;
             // Check if field requires nested validation
             return RequiresNestedValidation(member.Type);
         }
@@ -109,24 +86,15 @@ namespace EasyValidate.Handlers.Validation
         /// <summary>
         /// Processes all validation for a property including attributes and nested validation.
         /// </summary>
-        public void ProcessPropertyValidation(StringBuilder sb, IPropertySymbol member)
+        public void ProcessPropertyValidation(StringBuilder sb, MemberInfo member)
         {
             DebuggerUtil.Log($"Processing member: {member.Name}");
             DebuggerUtil.Log($"Member type: {member.Type.ToDisplayString()}");
 
-            List<AttributeInfo> attributes = [];
-            foreach (var attr in member.GetAttributes())
-            {
-                if (attr.AttributeClass?.IsValidationAttribute(out var inputAndOutputTypes) == true)
-                {
-                    attributes.Add(new AttributeInfo(attr, inputAndOutputTypes));
-                }
-            }
-
             // Process validation attributes using the new CreateChain pattern
-            if (attributes.Any())
+            if (member.Attributes.Any())
             {
-                ProcessValidationAttributesWithChain(sb, member.Name, member.Type, attributes);
+                ProcessValidationAttributesWithChain(sb, member);
             }
 
             // Process nested validation (collections and objects)
@@ -134,43 +102,14 @@ namespace EasyValidate.Handlers.Validation
         }
 
         /// <summary>
-        /// Processes all validation for a field including attributes and nested validation.
-        /// </summary>
-        public void ProcessFieldValidation(StringBuilder sb, IFieldSymbol member)
-        {
-            DebuggerUtil.Log($"Processing member: {member.Name}");
-            DebuggerUtil.Log($"Member type: {member.Type.ToDisplayString()}");
-
-            // Get all validation attributes for this field
-            List<AttributeInfo> attributes = [];
-            foreach (var attr in member.GetAttributes())
-            {
-                if (attr.AttributeClass?.IsValidationAttribute(out var inputAndOutputTypes) == true)
-                {
-                    attributes.Add(new AttributeInfo(attr, inputAndOutputTypes));
-                }
-            }
-
-            // Process validation attributes using the new CreateChain pattern
-            if (attributes.Any())
-            {
-                ProcessValidationAttributesWithChain(sb, member.Name, member.Type, attributes);
-            }
-
-            // Process nested validation (collections and objects)
-            _nestedHandler.ProcessNestedValidationForField(sb, member);
-        }
-
-        /// <summary>
         /// Processes validation attributes for a member using the new CreateChain pattern.
         /// </summary>
-        private void ProcessValidationAttributesWithChain(StringBuilder sb, string memberName, ITypeSymbol memberType, List<AttributeInfo> validationAttributes)
+        private void ProcessValidationAttributesWithChain(StringBuilder sb, MemberInfo member)
         {
-            var argumentHandler = new AttributeArgumentHandler();
             string indent = "            ";
 
             // Group attributes by Chain property
-            var groupedAttributes = validationAttributes.GroupBy(GetChainValue);
+            var groupedAttributes = member.Attributes.GroupBy(GetChainValue);
             foreach (var chainGroup in groupedAttributes)
             {
                 var chainName = chainGroup.Key;
@@ -188,23 +127,22 @@ namespace EasyValidate.Handlers.Validation
                         "" => "string.Empty",
                         _ => $"\"{chainName}\""
                     };
-                    sb.AppendLine($"{indent}var {chainVariable} = result.CreateChain(nameof({memberName}), {passedChainValue});");
+                    sb.AppendLine($"{indent}var {chainVariable} = result.CreateChain(nameof({member.Name}), {passedChainValue});");
 
                     // Generate validation chain with flow control
-                    string currentInputVariable = memberName;
+                    string currentInputVariable = member.Name;
                     var attributeList = attributes.ToList();
-                    var currentType = memberType;
+                    var currentType = member.Type;
                     for (int i = 0; i < attributeList.Count; i++)
                     {
                         var attr = attributeList[i].Attribute;
-                        var (canAccept, resolvedType) = attributeList[i].InputAndOutputTypes.CanAccept(_compilation, currentType);
+                        var (canAccept, resolvedType) = attributeList[i].CanAccept(_compilation, currentType);
                         if (!canAccept)
                         {
                             sb.AppendLine($"{indent}// Proplem with chain for {attr.AttributeClass?.Name} for {currentInputVariable} as it cannot accept type {currentType.ToDisplayString()}");
                             sb.AppendLine($"{indent}throw new InvalidOperationException($\"Attribute {attr.AttributeClass?.Name} cannot accept type {currentType.ToDisplayString()} for {currentInputVariable}.\");");
                             continue;
                         }
-                        var attributeInitialization = GenerateAttributeInitialization(attr, argumentHandler);
 
                         // Generate variable name for output (based on attribute type)
                         var attributeName = GetAttributeVariableName(attr);
@@ -212,16 +150,16 @@ namespace EasyValidate.Handlers.Validation
 
                         // Generate the AddValidtor call with flow control
                         if (attr.AttributeClass.IsNotNullAttribute())
-                            sb.AppendLine($"{indent}if (!{chainVariable}.AddValidtor({attributeInitialization}, {currentInputVariable}, out var {outputVariable}))");
+                            sb.AppendLine($"{indent}if (!{chainVariable}.AddValidtor({attributeList[i].InstanceName}, {currentInputVariable}, out var {outputVariable}))");
                         else if (attr.AttributeClass.IsGeneralAttribute())
-                            sb.AppendLine($"{indent}if (!{chainVariable}.AddValidtor<{currentType.GetFullName()}>({attributeInitialization}, {currentInputVariable}, out var {outputVariable}))");
+                            sb.AppendLine($"{indent}if (!{chainVariable}.AddValidtor<{currentType.GetFullName()}>({attributeList[i].InstanceName}, {currentInputVariable}, out var {outputVariable}))");
                         else
-                            sb.AppendLine($"{indent}if (!{chainVariable}.AddValidtor<{resolvedType!.InputType.GetFullName()}, {resolvedType!.OutputType.GetFullName()}>({attributeInitialization}, {currentInputVariable}, out var {outputVariable}))");
+                            sb.AppendLine($"{indent}if (!{chainVariable}.AddValidtor<{resolvedType!.InputType.GetFullName()}, {resolvedType!.ResolveOutPutType().GetFullName()}>({attributeList[i].InstanceName}, {currentInputVariable}, out var {outputVariable}))");
                         sb.AppendLine($"{indent}    return;");
 
                         // Update input variable for next iteration
                         currentInputVariable = outputVariable;
-                        currentType = resolvedType!.ResolveOutPutType(currentType);
+                        currentType = resolvedType!.ResolveOutPutType();
                     }
                 }
             }
@@ -237,77 +175,7 @@ namespace EasyValidate.Handlers.Validation
             return chainProperty.Value.Value?.ToString() ?? "";
         }
 
-        /// <summary>
-        /// Simplifies type names by removing global:: prefix and using short forms for common types.
-        /// </summary>
-        private string SimplifyTypeName(string typeName)
-        {
-            // Remove global:: prefix
-            if (typeName.StartsWith("global::"))
-            {
-                typeName = typeName.Substring(8);
-            }
 
-            // Map common system types to their C# keywords
-            return typeName switch
-            {
-                "System.String" => "string",
-                "System.Int32" => "int",
-                "System.Int64" => "long",
-                "System.Double" => "double",
-                "System.Decimal" => "decimal",
-                "System.Single" => "float",
-                "System.Boolean" => "bool",
-                "System.DateTime" => "DateTime",
-                "System.Object" => "object",
-                "System.Byte" => "byte",
-                "System.SByte" => "sbyte",
-                "System.Int16" => "short",
-                "System.UInt16" => "ushort",
-                "System.UInt32" => "uint",
-                "System.UInt64" => "ulong",
-                "System.Collections.IEnumerable" => "IEnumerable",
-                _ => typeName
-            };
-        }
-
-        /// <summary>
-        /// Generates the attribute initialization code with constructor and named arguments.
-        /// </summary>
-        private string GenerateAttributeInitialization(AttributeData attr, AttributeArgumentHandler argumentHandler)
-        {
-            var attributeClass = attr.AttributeClass!;
-            var constructorArguments = argumentHandler.FormatConstructorArguments(attr);
-
-            // Create attribute instance with constructor arguments - use short class name since we have using directive
-            var shortClassName = attributeClass.Name;
-
-            // Handle generic attributes by adding type parameters
-            if (attributeClass.IsGenericType && attributeClass.TypeArguments.Length > 0)
-            {
-                var typeArguments = attributeClass.TypeArguments
-                    .Select(typeArg => SimplifyTypeName(typeArg.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)))
-                    .ToArray();
-                shortClassName = $"{shortClassName}<{string.Join(", ", typeArguments)}>";
-            }
-
-            var attributeCreation = $"new {shortClassName}({string.Join(", ", constructorArguments)})";
-
-            // If there are named arguments (property assignments), use object initialization syntax
-            if (attr.NamedArguments.Any())
-            {
-                // Build object initializer with named arguments
-                var namedArguments = attr.NamedArguments
-                    .Select(namedArg => $"{namedArg.Key} = {argumentHandler.FormatArgument(namedArg.Value)}")
-                    .ToList();
-
-                return $"{attributeCreation} {{ {string.Join(", ", namedArguments)} }}";
-            }
-            else
-            {
-                return attributeCreation;
-            }
-        }
 
         /// <summary>
         /// Gets a variable name based on the attribute type for generating output variables.
@@ -331,9 +199,3 @@ namespace EasyValidate.Handlers.Validation
 
 
 
-public class AttributeInfo(AttributeData attribute, ImmutableArray<InputAndOutputTypes> inputAndOutputTypes)
-{
-    public AttributeData Attribute { get; } = attribute;
-
-    public ImmutableArray<InputAndOutputTypes> InputAndOutputTypes { get; } = inputAndOutputTypes;
-}

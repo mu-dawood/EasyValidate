@@ -1,3 +1,4 @@
+using System;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -23,6 +24,7 @@ namespace EasyValidate.Core.Attributes
     /// <param name="comparisonValue">The value to compare against.</param>
     public class NotEqualToAttribute(object comparisonValue) : GeneralValidationAttributeBase
     {
+       
         /// <summary>
         /// Gets the value to compare against.
         /// </summary>

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EasyValidate.Handlers.Validation
+namespace EasyValidate
 {
     /// <summary>
     /// Handles formatting of attribute constructor and named arguments for code generation.
@@ -13,7 +13,7 @@ namespace EasyValidate.Handlers.Validation
         private static readonly Dictionary<Type, Func<object, string>> PrimitiveFormatters = new()
         {
             { typeof(bool), value => (bool)value ? "true" : "false" },
-            { typeof(string), value => $"\"{value}\"" },
+            { typeof(string), value => $"\"{value.ToString().Replace("\\", "\\\\")}\"" },
             { typeof(char), value => $"\'{value}\'" },
             { typeof(int), value => value.ToString() },
             { typeof(double), value => value.ToString() },
@@ -51,7 +51,7 @@ namespace EasyValidate.Handlers.Validation
                 TypedConstantKind.Primitive => arg.Value != null && PrimitiveFormatters.TryGetValue(arg.Value.GetType(), out var formatter)
                     ? formatter(arg.Value)
                     : arg.Value?.ToString() ?? "null",
-                TypedConstantKind.Enum => $"({arg.Type?.ToDisplayString()}){arg.Value}",
+                TypedConstantKind.Enum => $"({arg.Type?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}){arg.Value}",
                 TypedConstantKind.Type => $"typeof({arg.Value})",
                 TypedConstantKind.Array => FormatArrayArgument(arg),
                 TypedConstantKind.Error => "null", // Handle error case gracefully

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using EasyValidate.Core.Abstraction;
 
@@ -20,6 +21,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class AsciiAttribute : StringValidationAttributeBase
     {
+        private static readonly Lazy<AsciiAttribute> _instance = new(() => new AsciiAttribute());
+        public static AsciiAttribute Instance => _instance.Value;
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "AsciiValidationError";
 

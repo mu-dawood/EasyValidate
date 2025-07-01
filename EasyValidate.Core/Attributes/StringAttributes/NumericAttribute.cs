@@ -1,3 +1,4 @@
+using System;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -19,9 +20,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class NumericAttribute : StringValidationAttributeBase<double>
     {
-        /// <summary>
-        /// Gets or sets the nullable behavior for this attribute.
-        /// </summary>
+        private static readonly Lazy<NumericAttribute> _instance = new(() => new NumericAttribute());
+        public static NumericAttribute Instance => _instance.Value;
 
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "NumericValidationError";

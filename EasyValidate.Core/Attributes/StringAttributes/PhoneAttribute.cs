@@ -1,3 +1,4 @@
+using System;
 using System.Text.RegularExpressions;
 using EasyValidate.Core.Abstraction;
 
@@ -20,6 +21,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class PhoneAttribute : StringValidationAttributeBase
     {
+        private static readonly Lazy<PhoneAttribute> _instance = new(() => new PhoneAttribute());
+        public static PhoneAttribute Instance => _instance.Value;
         /// <summary>
         /// Gets or sets the nullable behavior for this attribute. Defaults to NullIsInvalid.
         /// </summary>

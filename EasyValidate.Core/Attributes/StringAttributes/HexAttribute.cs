@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using EasyValidate.Core.Abstraction;
 
@@ -20,6 +21,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class HexAttribute : StringValidationAttributeBase
     {
+        private static readonly Lazy<HexAttribute> _instance = new(() => new HexAttribute());
+        public static HexAttribute Instance => _instance.Value;
         /// <summary>
         /// Gets or sets the nullable behavior for this attribute.
         /// </summary>

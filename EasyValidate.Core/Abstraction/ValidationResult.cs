@@ -37,7 +37,8 @@ namespace EasyValidate.Core.Abstraction
         /// <docs-member>GetDefaultFormatter()</docs-member>
         /// <docs-type>Method</docs-type>
         /// <docs-return-type>IFormatter</docs-return-type>
-        public static IFormatter GetDefaultFormatter() => new DefaultFormatter();
+        private static readonly IFormatter _defaultFormatter = new DefaultFormatter();
+        public static IFormatter GetDefaultFormatter() => _defaultFormatter;
 
         /// <summary>
         /// Gets the default configure validator instance used for configuring validation attributes.
@@ -56,7 +57,8 @@ namespace EasyValidate.Core.Abstraction
         /// <docs-member>GetDefaultConfigureValidator()</docs-member>
         /// <docs-type>Method</docs-type>
         /// <docs-return-type>IConfigureValidator</docs-return-type>
-        public static IConfigureValidator GetDefaultConfigureValidator() => new DefaultConfigureValidator();
+        private static readonly IConfigureValidator _defaultConfigureValidator = new DefaultConfigureValidator();
+        public static IConfigureValidator GetDefaultConfigureValidator() => _defaultConfigureValidator;
 
         /// <summary>
         /// Gets the default formatter instance used for formatting validation messages.
@@ -138,7 +140,7 @@ namespace EasyValidate.Core.Abstraction
         /// </example>
         /// <docs-member>Errors</docs-member>
         /// <docs-type>Property</docs-type>
-        /// <docs-return-type>IReadOnlyList<ValidationError></docs-return-type>
+        /// <docs-return-type>IReadOnlyList of ValidationError</docs-return-type>
         private readonly List<ValidationError> _errors = [];
         public IReadOnlyList<ValidationError> Errors => _errors;
 

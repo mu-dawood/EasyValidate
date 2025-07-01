@@ -1,3 +1,4 @@
+using System;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -19,6 +20,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class LowercaseAttribute : StringValidationAttributeBase
     {
+        private static readonly Lazy<LowercaseAttribute> _instance = new(() => new LowercaseAttribute());
+        public static LowercaseAttribute Instance => _instance.Value;
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "LowercaseValidationError";
 

@@ -17,7 +17,7 @@ public static class ClusteringChainBuilder
             var (areCompatible, inputOutput) = copy[i].CanAccept(context, memberType);
             if (areCompatible)
             {
-                result.Add((inputOutput!.ResolveOutPutType(memberType), copy[i]));
+                result.Add((inputOutput!.ResolveOutPutType(), copy[i]));
                 copy.RemoveAt(i);
                 break; // Found a valid starting point
             }
@@ -31,11 +31,11 @@ public static class ClusteringChainBuilder
         var nexCandidate = copy.GetAcceptable(context, currentOutPut);
         while (nexCandidate.areCompatible)
         {
-            var nextOutPutType = nexCandidate.inputAndOutputTypes!.ResolveOutPutType(currentOutPut);
+            var nextOutPutType = nexCandidate.inputAndOutputTypes!.ResolveOutPutType();
             result.Add((nextOutPutType, copy[nexCandidate.index]));
             copy.RemoveAt(nexCandidate.index);
             currentOutPut = nextOutPutType;
-            nexCandidate = copy.GetAcceptable(context, nexCandidate.inputAndOutputTypes!.OutputType);
+            nexCandidate = copy.GetAcceptable(context, nextOutPutType);
         }
         return (result.Count == nodes.Count(), result.Select(x => x.attribute).ToList());
     }

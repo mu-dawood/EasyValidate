@@ -1,3 +1,4 @@
+using System;
 using System.Text.RegularExpressions;
 using EasyValidate.Core.Abstraction;
 
@@ -20,6 +21,10 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class EmailAddressAttribute : StringValidationAttributeBase
     {
+        private static readonly Lazy<EmailAddressAttribute> _instance = new(() => new EmailAddressAttribute());
+        public static EmailAddressAttribute Instance => _instance.Value;
+        private static readonly Regex _emailRegex = new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
         /// <summary>
         /// Gets or sets the nullable behavior for this attribute.
         /// </summary>
@@ -35,8 +40,8 @@ namespace EasyValidate.Core.Attributes
         /// <inheritdoc/>
         public override AttributeResult<string> Validate(object obj, string propertyName, string value)
         {
-            bool isValid = !string.IsNullOrWhiteSpace(value) && Regex.IsMatch(value!, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
-            return new AttributeResult<string>(isValid, value , propertyName);
+            bool isValid = !string.IsNullOrWhiteSpace(value) && _emailRegex.IsMatch(value);
+            return new AttributeResult<string>(isValid, value, propertyName);
         }
     }
 }

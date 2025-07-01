@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using EasyValidate.Core.Abstraction;
 
@@ -20,6 +21,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class NoWhitespaceAttribute : StringValidationAttributeBase
     {
+        private static readonly Lazy<NoWhitespaceAttribute> _instance = new(() => new NoWhitespaceAttribute());
+        public static NoWhitespaceAttribute Instance => _instance.Value;
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "NoWhitespaceValidationError";
 

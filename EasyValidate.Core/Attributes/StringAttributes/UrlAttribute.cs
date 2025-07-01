@@ -20,6 +20,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class UrlAttribute : StringValidationAttributeBase
     {
+        private static readonly Lazy<UrlAttribute> _instance = new(() => new UrlAttribute());
+        public static UrlAttribute Instance => _instance.Value;
         /// <summary>
         /// Gets or sets the nullable behavior for this attribute. Defaults to NullIsInvalid.
         /// </summary>

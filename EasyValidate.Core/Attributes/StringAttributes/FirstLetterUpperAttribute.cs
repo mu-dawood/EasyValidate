@@ -1,3 +1,4 @@
+using System;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -19,6 +20,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class FirstLetterUpperAttribute : StringValidationAttributeBase
     {
+        private static readonly Lazy<FirstLetterUpperAttribute> _instance = new(() => new FirstLetterUpperAttribute());
+        public static FirstLetterUpperAttribute Instance => _instance.Value;
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "FirstLetterUpperValidationError";
 

@@ -1,3 +1,4 @@
+using System;
 using System.Text.RegularExpressions;
 using EasyValidate.Core.Abstraction;
 
@@ -20,6 +21,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class ColorAttribute : StringValidationAttributeBase
     {
+        private static readonly Lazy<ColorAttribute> _instance = new(() => new ColorAttribute());
+        public static ColorAttribute Instance => _instance.Value;
         private static readonly Regex ColorRegex = new(
             "^#(?:[0-9a-fA-F]{3}){1,2}$",
             RegexOptions.Compiled);

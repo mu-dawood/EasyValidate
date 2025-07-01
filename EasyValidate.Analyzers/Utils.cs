@@ -161,20 +161,20 @@ public static class Utils
 public class InputAndOutputTypes(ITypeSymbol inputType, ITypeSymbol outputType, bool isNotNullAttribute)
 {
     public ITypeSymbol InputType { get; set; } = inputType;
-    public ITypeSymbol OutputType { get; set; } = outputType;
+    public ITypeSymbol OutputType { private get; set; } = outputType;
     public bool IsNotNullAttribute { get; set; } = isNotNullAttribute;
-    public ITypeSymbol ResolveOutPutType(ITypeSymbol previousOutputType)
+    public ITypeSymbol ResolveOutPutType()
     {
         if (!IsNotNullAttribute) return OutputType;
         // For value types, strip nullable
-        if (previousOutputType is INamedTypeSymbol namedType &&
+        if (InputType is INamedTypeSymbol namedType &&
             namedType.IsGenericType &&
             namedType.ConstructedFrom.SpecialType == SpecialType.System_Nullable_T)
         {
             return namedType.TypeArguments[0];
         }
         // For reference types, remove nullable annotation
-        return previousOutputType.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
+        return InputType.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
     }
 
 }

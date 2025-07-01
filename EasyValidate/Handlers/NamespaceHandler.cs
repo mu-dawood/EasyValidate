@@ -1,27 +1,24 @@
-using Microsoft.CodeAnalysis;
-using System.Text;
-
 namespace EasyValidate.Handlers
 {
     internal class NamespaceHandler : ValidationHandlerBase
     {
-        public override void Handle(INamedTypeSymbol classSymbol, SourceProductionContext context, StringBuilder sb)
+        public override void Handle(HandlerParams @params)
         {
-            var namespaceName = classSymbol.ContainingNamespace.IsGlobalNamespace
+            var namespaceName = @params.ClassSymbol.ContainingNamespace.IsGlobalNamespace
                 ? string.Empty
-                : classSymbol.ContainingNamespace.ToDisplayString();
+                : @params.ClassSymbol.ContainingNamespace.ToDisplayString();
 
             if (!string.IsNullOrEmpty(namespaceName))
             {
-                sb.AppendLine($"namespace {namespaceName}");
-                sb.AppendLine("{");
+                @params.StringBuilder.AppendLine($"namespace {namespaceName}");
+                @params.StringBuilder.AppendLine("{");
             }
 
-            base.Handle(classSymbol, context, sb);
+            base.Handle(@params);
 
             if (!string.IsNullOrEmpty(namespaceName))
             {
-                sb.AppendLine("}");
+                @params.StringBuilder.AppendLine("}");
             }
         }
     }

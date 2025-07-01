@@ -12,7 +12,7 @@ namespace EasyValidate.Handlers.Validation
         /// <summary>
         /// Processes nested validation for properties that are collections or objects with validation attributes.
         /// </summary>
-        public void ProcessNestedValidation(StringBuilder sb, IPropertySymbol member)
+        public void ProcessNestedValidation(StringBuilder sb, MemberInfo member)
         {
             ProcessNestedValidationCore(sb, member.Name, member.Type);
         }

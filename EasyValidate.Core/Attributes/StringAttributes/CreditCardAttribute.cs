@@ -1,3 +1,4 @@
+using System;
 using System.Text.RegularExpressions;
 using EasyValidate.Core.Abstraction;
 
@@ -20,6 +21,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class CreditCardAttribute : StringValidationAttributeBase
     {
+        private static readonly Lazy<CreditCardAttribute> _instance = new(() => new CreditCardAttribute());
+        public static CreditCardAttribute Instance => _instance.Value;
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "CreditCardValidationError";
 

@@ -1,3 +1,4 @@
+using System;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -19,7 +20,8 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class NotNullAttribute : GeneralValidationAttributeBase
     {
-
+        private static readonly Lazy<NotNullAttribute> _instance = new(() => new NotNullAttribute());
+        public  static  NotNullAttribute Instance => _instance.Value;
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "NotNullValidationError";
 
