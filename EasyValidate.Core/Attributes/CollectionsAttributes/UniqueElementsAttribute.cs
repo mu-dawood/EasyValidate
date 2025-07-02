@@ -29,22 +29,23 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "UniqueValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} must contain only unique values.";
+        public string ErrorMessage { get; set; } = "The field {0} must contain only unique values.";
 
         /// Arguments propertyName
 
         /// <inheritdoc/>
-        public override AttributeResult<IEnumerable> Validate(object obj, string propertyName, IEnumerable value)
+        public override AttributeResult Validate(object obj, string propertyName, IEnumerable value, out IEnumerable output)
         {
             var seen = new HashSet<object>();
+            output = value; // Set output to the original value
             foreach (var item in value.Cast<object>())
             {
                 if (!seen.Add(item))
                 {
-                    return new AttributeResult<IEnumerable>(false, value, propertyName); // Duplicate found
+                    return AttributeResult.Fail(ErrorMessage, propertyName); // Duplicate found
                 }
             }
-            return new AttributeResult<IEnumerable>(true, value, propertyName);
+            return AttributeResult.Success(); // All elements are unique
         }
     }
 }

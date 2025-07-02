@@ -41,16 +41,18 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "QuarterValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} must fall within the specified quarters.";
+        public string ErrorMessage { get; set; } = "The field {0} must fall within the specified quarters.";
 
         /// Arguments propertyName
 
         /// <inheritdoc/>
-        protected override AttributeResult<DateTime> ValidateUtc(object obj, string propertyName, DateTime value)
+        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
         {
             int quarter = (value.Month - 1) / 3 + 1;
             bool isValid = Array.IndexOf(Quarters, (Quarter)quarter) != -1;
-            return new AttributeResult<DateTime>(isValid, value, propertyName);
+            return isValid
+              ? AttributeResult.Success()
+              : AttributeResult.Fail(ErrorMessage, propertyName);
         }
     }
 }

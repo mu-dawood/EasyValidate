@@ -49,7 +49,7 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "MultipleOfValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be a multiple of {1}.";
+        public string ErrorMessage { get; set; } = "The {0} field must be a multiple of {1}.";
 
         // Integer validation
         public bool IsValid(long value) => _factor.AsInt64 != 0 && value % _factor.AsInt64 == 0;
@@ -67,27 +67,60 @@ namespace EasyValidate.Core.Attributes
         public bool IsValid(decimal value) => _factor.AsDecimal != 0 && value % _factor.AsDecimal == 0;
 
         // IValidationAttribute implementations
-        public AttributeResult<byte> Validate(object obj, string propertyName, byte value) =>
-            new(IsValid(value), value, propertyName, _factor.AsUInt64);
-        public AttributeResult<sbyte> Validate(object obj, string propertyName, sbyte value) =>
-            new(IsValid(value), value, propertyName, _factor.AsInt64);
-        public AttributeResult<short> Validate(object obj, string propertyName, short value) =>
-            new(IsValid(value), value, propertyName, _factor.AsInt64);
-        public AttributeResult<ushort> Validate(object obj, string propertyName, ushort value) =>
-            new(IsValid(value), value, propertyName, _factor.AsUInt64);
-        public AttributeResult<int> Validate(object obj, string propertyName, int value) =>
-            new(IsValid(value), value, propertyName, _factor.AsInt64);
-        public AttributeResult<uint> Validate(object obj, string propertyName, uint value) =>
-            new(IsValid(value), value, propertyName, _factor.AsUInt64);
-        public AttributeResult<long> Validate(object obj, string propertyName, long value) =>
-            new(IsValid(value), value, propertyName, _factor.AsInt64);
-        public AttributeResult<ulong> Validate(object obj, string propertyName, ulong value) =>
-            new(IsValid(value), value, propertyName, _factor.AsUInt64);
-        public AttributeResult<float> Validate(object obj, string propertyName, float value) =>
-            new(IsValid(value), value, propertyName, _factor.AsFloat);
-        public AttributeResult<double> Validate(object obj, string propertyName, double value) =>
-            new(IsValid(value), value, propertyName, _factor.AsDouble);
-        public AttributeResult<decimal> Validate(object obj, string propertyName, decimal value) =>
-            new(IsValid(value), value, propertyName, _factor.AsDecimal);
+        public AttributeResult Validate(object obj, string propertyName, byte value, out byte output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsUInt64);
+        }
+        public AttributeResult Validate(object obj, string propertyName, sbyte value, out sbyte output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsInt64);
+        }
+        public AttributeResult Validate(object obj, string propertyName, short value, out short output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsInt64);
+        }
+        public AttributeResult Validate(object obj, string propertyName, ushort value, out ushort output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsUInt64);
+        }
+        public AttributeResult Validate(object obj, string propertyName, int value, out int output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsInt64);
+        }
+        public AttributeResult Validate(object obj, string propertyName, uint value, out uint output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsUInt64);
+        }
+        public AttributeResult Validate(object obj, string propertyName, long value, out long output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsInt64);
+        }
+        public AttributeResult Validate(object obj, string propertyName, ulong value, out ulong output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsUInt64);
+        }
+        public AttributeResult Validate(object obj, string propertyName, float value, out float output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsFloat);
+        }
+        public AttributeResult Validate(object obj, string propertyName, double value, out double output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsDouble);
+        }
+        public AttributeResult Validate(object obj, string propertyName, decimal value, out decimal output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsDecimal);
+        }
     }
 }

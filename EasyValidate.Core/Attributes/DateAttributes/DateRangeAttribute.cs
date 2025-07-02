@@ -68,15 +68,17 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "DateRangeValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be between {1} and {2}.";
+        public string ErrorMessage { get; set; } = "The {0} field must be between {1} and {2}.";
 
         /// Arguments propertyName, Minimum, Maximum
 
         /// <inheritdoc/>
-        protected override AttributeResult<DateTime> ValidateUtc(object obj, string propertyName, DateTime value)
+        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
         {
             bool isValid = value >= Minimum && value <= Maximum;
-            return new AttributeResult<DateTime>(isValid, value, propertyName);
+            return isValid
+               ? AttributeResult.Success()
+               : AttributeResult.Fail(ErrorMessage, propertyName, Minimum, Maximum);
         }
     }
 }

@@ -28,23 +28,21 @@ namespace EasyValidate.Core.Attributes
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "ContainsValidationError";
 
-        /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must contain '{1}'.";
-
         /// <summary>
         /// The comparison type to use when checking for the substring.
         /// Defaults to <see cref="StringComparison.Ordinal"/>.
         /// </summary>
         public StringComparison Comparison { get; set; } = StringComparison.Ordinal;
         /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
 #if NET6_0_OR_GREATER
             bool isValid = !string.IsNullOrEmpty(value) && value.Contains(Substring, Comparison);
 #else
             bool isValid = !string.IsNullOrEmpty(value) && value!.IndexOf(Substring, Comparison) >= 0;
 #endif
-            return new AttributeResult<string>(isValid, value, propertyName, Substring);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must contain '{1}'.", propertyName, Substring);
         }
     }
 }

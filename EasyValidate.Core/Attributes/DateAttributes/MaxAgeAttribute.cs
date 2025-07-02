@@ -33,18 +33,20 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "MaxAgeValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} must represent an age of no more than {1} years.";
+        public string ErrorMessage { get; set; } = "The field {0} must represent an age of no more than {1} years.";
 
         /// Arguments propertyName, MaximumAge
 
         /// <inheritdoc/>
-        protected override AttributeResult<DateTime> ValidateUtc(object obj, string propertyName, DateTime value)
+        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
         {
             var age = Now.Year - value.Year;
             if (value.Date > Now.AddYears(-age).Date) age--;
 
             bool isValid = age <= MaximumAge;
-            return new AttributeResult<DateTime>(isValid, value, propertyName);
+            return isValid
+                ? AttributeResult.Success()
+                : AttributeResult.Fail(ErrorMessage, propertyName, MaximumAge);
         }
     }
 }

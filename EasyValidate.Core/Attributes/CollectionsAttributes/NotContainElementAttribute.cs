@@ -39,13 +39,16 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "DoesNotContainValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} must not contain the value {1}.";
+        public string ErrorMessage { get; set; } = "The field {0} must not contain the value {1}.";
 
         /// <inheritdoc/>
-        public override AttributeResult<IEnumerable> Validate(object obj, string propertyName, IEnumerable value)
+        public override AttributeResult Validate(object obj, string propertyName, IEnumerable value, out IEnumerable output)
         {
             bool isValid = !value.Cast<object>().Contains(ForbiddenValue);
-            return new AttributeResult<IEnumerable>(isValid, value, propertyName, ForbiddenValue);
+            output = value;
+            return isValid
+                ? AttributeResult.Success()
+                : AttributeResult.Fail(ErrorMessage, propertyName, ForbiddenValue);
         }
     }
 }

@@ -38,7 +38,7 @@ public class NotNullSimpleTests
         // Assert
         Assert.False(result.IsValid());
         Assert.True(result.HasErrors());
-        Assert.Contains(result.Errors, e => e.Path.Contains("Name") && e.Message.Contains("null"));
+        Assert.Contains(result.Errors, e => e.Path.Contains("Name") && e.FormattedMessage.Contains("null"));
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class NotNullSimpleTests
         // Assert
         Assert.False(result.IsValid());
         Assert.True(result.HasErrors());
-        Assert.Contains(result.Errors, e => e.Path.Contains("Data") && e.Message.Contains("null"));
+        Assert.Contains(result.Errors, e => e.Path.Contains("Data") && e.FormattedMessage.Contains("null"));
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class NotNullSimpleTests
         // Assert
         Assert.False(result.IsValid());
         Assert.True(result.HasErrors());
-        Assert.Contains(result.Errors, e => e.Path.Contains("Items") && e.Message.Contains("null"));
+        Assert.Contains(result.Errors, e => e.Path.Contains("Items") && e.FormattedMessage.Contains("null"));
     }
 
     [Fact]

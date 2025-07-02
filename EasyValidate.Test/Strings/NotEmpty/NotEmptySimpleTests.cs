@@ -41,7 +41,7 @@ public class NotEmptySimpleTests
         Assert.True(result.HasErrors());
         Assert.Single(result.Errors);
         Assert.Contains(result.Errors, e => e.Path.Contains("Name"));
-        Assert.Contains("must not be empty", result.Errors.First(e => e.Path.Contains("Name")).Message);
+        Assert.Contains("must not be empty", result.Errors.First(e => e.Path.Contains("Name")).FormattedMessage);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class NotEmptySimpleTests
         Assert.True(result.HasErrors());
         Assert.Single(result.Errors);
         Assert.Contains(result.Errors, e => e.Path.Contains("Name"));
-        Assert.Contains("must not be empty", result.Errors.First(e => e.Path.Contains("Name")).Message);
+        Assert.Contains("must not be empty", result.Errors.First(e => e.Path.Contains("Name")).FormattedMessage);
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class NotEmptySimpleTests
         Assert.True(result.HasErrors());
         Assert.Single(result.Errors);
         Assert.Contains(result.Errors, e => e.Path.Contains("Name"));
-        Assert.Contains("must not be empty", result.Errors.First(e => e.Path.Contains("Name")).Message);
+        Assert.Contains("must not be empty", result.Errors.First(e => e.Path.Contains("Name")).FormattedMessage);
     }
 
     [Fact]
@@ -155,7 +155,7 @@ public class NotEmptySimpleTests
         Assert.True(result.HasErrors());
         Assert.Single(result.Errors);
         Assert.Contains(result.Errors, e => e.Path.Contains("Description"));
-        Assert.Contains("must not be empty", result.Errors.First(e => e.Path.Contains("Description")).Message);
+        Assert.Contains("must not be empty", result.Errors.First(e => e.Path.Contains("Description")).FormattedMessage);
     }
 
     [Fact]
@@ -181,7 +181,7 @@ public class NotEmptySimpleTests
         Assert.True(result.HasErrors());
         Assert.Single(result.Errors);
         Assert.Contains(result.Errors, e => e.Path.Contains("Details.Name"));
-        Assert.Contains("must not be empty", result.Errors.First(e => e.Path.Contains("Details.Name")).Message);
+        Assert.Contains("must not be empty", result.Errors.First(e => e.Path.Contains("Details.Name")).FormattedMessage);
     }
 
     [Fact]

@@ -29,10 +29,7 @@ namespace EasyValidate.Core.Attributes
         public abstract string ErrorCode { get; set; }
 
         /// <inheritdoc/>
-        public abstract string ErrorMessage { get; set; }
-
-        // /// <inheritdoc/>
-        public abstract AttributeResult<TOut> Validate(object obj, string propertyName, string value);
+        public abstract AttributeResult Validate(object obj, string propertyName, string value, out TOut output);
     }
 
     public abstract class StringValidationAttributeBase : StringValidationAttributeBase<string>

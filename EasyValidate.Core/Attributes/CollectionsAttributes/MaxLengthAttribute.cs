@@ -38,13 +38,16 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "MaxLengthValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} must not exceed a length of {1}.";
+        public string ErrorMessage { get; set; } = "The field {0} must not exceed a length of {1}.";
 
         /// <inheritdoc/>
-        public override AttributeResult<IEnumerable> Validate(object obj, string propertyName, IEnumerable value)
+        public override AttributeResult Validate(object obj, string propertyName, IEnumerable value, out IEnumerable output)
         {
             bool isValid = value.Cast<object>().Count() <= Maximum;
-            return new AttributeResult<IEnumerable>(isValid, value, propertyName, Maximum);
+            output = value;
+            return isValid
+                ? AttributeResult.Success()
+                : AttributeResult.Fail(ErrorMessage, propertyName, Maximum);
         }
     }
 }

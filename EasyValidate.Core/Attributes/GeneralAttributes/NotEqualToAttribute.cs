@@ -24,7 +24,7 @@ namespace EasyValidate.Core.Attributes
     /// <param name="comparisonValue">The value to compare against.</param>
     public class NotEqualToAttribute(object comparisonValue) : GeneralValidationAttributeBase
     {
-       
+
         /// <summary>
         /// Gets the value to compare against.
         /// </summary>
@@ -38,15 +38,18 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "NotEqualToValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} must not be equal to {1}.";
+        public string ErrorMessage { get; set; } = "The field {0} must not be equal to {1}.";
 
         /// Arguments propertyName, ComparisonValue
 
         /// <inheritdoc/>
-        public override AttributeResult<object?> Validate(object obj, string propertyName, object? value)
+        public override AttributeResult Validate(object obj, string propertyName, object? value, out object? output)
         {
             bool isValid = !Equals(value, ComparisonValue);
-            return new AttributeResult<object?>(isValid, value, propertyName, ComparisonValue);
+            output = value;
+            return isValid
+                ? AttributeResult.Success()
+                : AttributeResult.Fail(ErrorMessage, propertyName, ComparisonValue);
         }
     }
 }

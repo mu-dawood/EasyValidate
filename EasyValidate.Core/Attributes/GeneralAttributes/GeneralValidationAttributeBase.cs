@@ -12,7 +12,7 @@ namespace EasyValidate.Core.Attributes
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
     public abstract class GeneralValidationAttributeBase : Attribute, IValidationAttribute<object?, object?>
     {
-        
+
         /// <inheritdoc/>
         public virtual string Chain { get; set; } = string.Empty;
         /// <inheritdoc/>
@@ -22,11 +22,7 @@ namespace EasyValidate.Core.Attributes
         /// <inheritdoc/>
         public abstract string ErrorCode { get; set; }
 
-        /// <inheritdoc/>
-        public abstract string ErrorMessage { get; set; }
-
         // /// <inheritdoc/>
-        public abstract AttributeResult<object?> Validate(object obj, string propertyName, object? value);
-
+        public abstract AttributeResult Validate(object obj, string propertyName, object? value, out object? output);
     }
 }

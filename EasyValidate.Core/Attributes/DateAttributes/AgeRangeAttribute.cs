@@ -38,18 +38,20 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "AgeRangeValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} must represent an age between {1} and {2} years.";
+        public string ErrorMessage { get; set; } = "The field {0} must represent an age between {1} and {2} years.";
 
         /// Arguments propertyName, MinimumAge, MaximumAge
 
         /// <inheritdoc/>
-        protected override AttributeResult<DateTime> ValidateUtc(object obj, string propertyName, DateTime value)
+        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
         {
             var age = Now.Year - value.Year;
             if (value.Date > Now.AddYears(-age).Date) age--;
 
             bool isValid = age >= MinimumAge && age <= MaximumAge;
-            return new AttributeResult<DateTime>(isValid, value, propertyName);
+            return isValid
+               ? AttributeResult.Success()
+               : AttributeResult.Fail(ErrorMessage, propertyName, MinimumAge, MaximumAge);
         }
     }
 }

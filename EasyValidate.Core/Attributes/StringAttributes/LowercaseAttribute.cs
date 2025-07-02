@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -26,13 +27,11 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "LowercaseValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be lowercase.";
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
-            bool valid = value == value.ToLowerInvariant();
-            return new AttributeResult<string>(valid, value, propertyName);
+            bool isValid = string.IsNullOrEmpty(value) || value.All(char.IsLower);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must be lowercase.", propertyName);
         }
     }
 }

@@ -27,13 +27,11 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "CommonPrintableValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must contain only common printable characters.";
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {  
             bool valid = !value.Any(c => !IsCommonPrintable(c));
-            return new AttributeResult<string>(valid, value!, propertyName);
+            output = value;
+            return valid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must contain only common printable characters.", propertyName);
         }
 
         private static bool IsCommonPrintable(char c)

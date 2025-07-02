@@ -31,13 +31,16 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "ISBNValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be a valid ISBN-10 or ISBN-13.";
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
-            bool valid = IsbnRegex.IsMatch(value);
-            return new AttributeResult<string>(valid, value, propertyName);
+            bool isValid = string.IsNullOrEmpty(value) || IsISBN(value!);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must be a valid ISBN.", propertyName);
+        }
+
+        private static bool IsISBN(string value)
+        {
+            return IsbnRegex.IsMatch(value);
         }
     }
 }

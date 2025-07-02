@@ -52,8 +52,8 @@ public class NotEmptyAdvancedTests
         Assert.Equal(2, result.Errors.Count);
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Details", "Name" }));
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Details", "Description" }));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Name" })), e => e.Message.Contains("must not be empty"));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Description" })), e => e.Message.Contains("must not be empty"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Name" })), e => e.FormattedMessage.Contains("must not be empty"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Description" })), e => e.FormattedMessage.Contains("must not be empty"));
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class NotEmptyAdvancedTests
         Assert.True(result.HasErrors());
         Assert.Single(result.Errors);
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Name" }));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Name" })), e => e.Message.Contains("must not be empty"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Name" })), e => e.FormattedMessage.Contains("must not be empty"));
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public class NotEmptyAdvancedTests
         Assert.True(result.HasErrors());
         Assert.Single(result.Errors);
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Name" }));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Name" })), e => e.Message.Contains("must not be empty"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Name" })), e => e.FormattedMessage.Contains("must not be empty"));
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class NotEmptyAdvancedTests
         Assert.True(result.HasErrors());
         Assert.Single(result.Errors);
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Name" }));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Name" })), e => e.Message.Contains("must not be empty"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Name" })), e => e.FormattedMessage.Contains("must not be empty"));
     }
 
     [Fact]
@@ -212,21 +212,16 @@ public class NotEmptyAdvancedTests
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Title" }));
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Details", "Name" }));
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Details", "Description" }));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Title" })), e => e.Message.Contains("must not be empty"));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Name" })), e => e.Message.Contains("must not be empty"));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Description" })), e => e.Message.Contains("must not be empty"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Title" })), e => e.FormattedMessage.Contains("must not be empty"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Name" })), e => e.FormattedMessage.Contains("must not be empty"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Description" })), e => e.FormattedMessage.Contains("must not be empty"));
     }
 }
 
 public class CustomTestFormatter : IFormatter
 {
-    public string Format(string message, params object[] args)
+    public string Format<T>(AttributeResult result, T value)
     {
-        return $"CUSTOM: {string.Format(message, args)}";
-    }
-
-    public string GetFormatedMessage<TInput, TOutput>(IValidationAttribute<TInput, TOutput> attribute, object?[] args)
-    {
-        return $"CUSTOM: {string.Format(attribute.ErrorMessage, args)}";
+        return $"CUSTOM: {string.Format(result.MessageTemplate, result.MessageArgs)}";
     }
 }

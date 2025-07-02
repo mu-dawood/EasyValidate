@@ -38,15 +38,30 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "EqualToValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} must be equal to {1}.";
+        public string ErrorMessage { get; set; } = "The field {0} must be equal to {1}.";
 
         /// Arguments propertyName, ComparisonValue
 
         /// <inheritdoc/>
-        public override AttributeResult<object?> Validate(object obj, string propertyName, object? value)
+        public override AttributeResult Validate(object obj, string propertyName, object? value, out object? output)
         {
+            output = value;
+            // If value is null and ComparisonValue is not, or vice versa, return false
+            if (value is null && ComparisonValue is not null)
+            {
+                return AttributeResult.Fail(ErrorMessage, propertyName, ComparisonValue);
+            }
+            if (value is not null && ComparisonValue is null)
+            {
+                return AttributeResult.Fail(ErrorMessage, propertyName, ComparisonValue);
+            }
+
+            // Compare the values for equality
             bool isValid = Equals(value, ComparisonValue);
-            return new AttributeResult<object?>(isValid, value, propertyName, ComparisonValue);
+            return isValid
+                ? AttributeResult.Success()
+                : AttributeResult.Fail(ErrorMessage, propertyName, ComparisonValue);
         }
     }
+
 }

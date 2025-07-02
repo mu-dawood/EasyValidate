@@ -33,15 +33,11 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "MatchesValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must match the specified pattern.";
-
-        /// Arguments propertyName, Pattern
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
-            bool isValid = !string.IsNullOrWhiteSpace(value) && Regex.IsMatch(value, Pattern);
-            return new AttributeResult<string>(isValid, value , propertyName, Pattern);
+            bool isValid = string.IsNullOrEmpty(value) || Regex.IsMatch(value!, Pattern);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must match the pattern '{1}'.", propertyName, Pattern);
         }
     }
 }

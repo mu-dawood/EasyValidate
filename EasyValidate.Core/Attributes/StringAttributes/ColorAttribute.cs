@@ -19,25 +19,28 @@ namespace EasyValidate.Core.Attributes
     /// }
     /// </code>
     /// </example>
-    public class ColorAttribute : StringValidationAttributeBase
+    public partial class ColorAttribute : StringValidationAttributeBase
     {
         private static readonly Lazy<ColorAttribute> _instance = new(() => new ColorAttribute());
         public static ColorAttribute Instance => _instance.Value;
-        private static readonly Regex ColorRegex = new(
-            "^#(?:[0-9a-fA-F]{3}){1,2}$",
-            RegexOptions.Compiled);
+        private static readonly Regex ColorRegex = MyRegex();
 
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "ColorValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be a valid hexadecimal color.";
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
             bool isValid = string.IsNullOrEmpty(value) || ColorRegex.IsMatch(value);
-            return new AttributeResult<string>(isValid, value , propertyName);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must be a valid hexadecimal color.", propertyName);
         }
+
+#if NET7_0_OR_GREATER
+        [GeneratedRegex("^#(?:[0-9a-fA-F]{3}){1,2}$", RegexOptions.Compiled)]
+        private static partial Regex MyRegex();
+#else
+        private static Regex MyRegex() => new Regex("^#(?:[0-9a-fA-F]{3}){1,2}$", RegexOptions.Compiled);
+#endif
     }
 }

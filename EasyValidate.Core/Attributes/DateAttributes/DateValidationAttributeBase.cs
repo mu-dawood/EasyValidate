@@ -35,29 +35,29 @@ namespace EasyValidate.Core.Attributes
         public abstract string ErrorCode { get; set; }
 
         /// <inheritdoc/>
-        public abstract string ErrorMessage { get; set; }
+        protected abstract AttributeResult ValidateUtc(object obj, string propertyName, DateTime value);
 
         /// <inheritdoc/>
-        protected abstract AttributeResult<DateTime> ValidateUtc(object obj, string propertyName, DateTime value);
-
-        /// <inheritdoc/>
-        public AttributeResult<DateTime> Validate(object obj, string propertyName, DateTime value)
+        public AttributeResult Validate(object obj, string propertyName, DateTime value, out DateTime output)
         {
             var result = ValidateUtc(obj, propertyName, value.ToUniversalTime());
-            return new AttributeResult<DateTime>(result.IsValid, value, propertyName);
+            output = value;
+            return result;
         }
 
-        public AttributeResult<DateTimeOffset> Validate(object obj, string propertyName, DateTimeOffset value)
+        public AttributeResult Validate(object obj, string propertyName, DateTimeOffset value, out DateTimeOffset output)
         {
             var result = ValidateUtc(obj, propertyName, value.UtcDateTime);
-            return new AttributeResult<DateTimeOffset>(result.IsValid, value, propertyName);
+            output = value;
+            return result;
         }
 #if NET6_0_OR_GREATER
         /// <inheritdoc/>
-        public AttributeResult<DateOnly> Validate(object obj, string propertyName, DateOnly value)
+        public AttributeResult Validate(object obj, string propertyName, DateOnly value, out DateOnly output)
         {
-            var result = Validate(obj, propertyName, value.ToDateTime(TimeOnly.FromTimeSpan(Now.TimeOfDay), DateTimeKind.Utc));
-            return new AttributeResult<DateOnly>(result.IsValid, value, propertyName);
+            var result = ValidateUtc(obj, propertyName, value.ToDateTime(TimeOnly.FromTimeSpan(Now.TimeOfDay), DateTimeKind.Utc));
+            output = value;
+            return result;
         }
 #endif
     }

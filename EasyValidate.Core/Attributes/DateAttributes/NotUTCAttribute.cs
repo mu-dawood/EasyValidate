@@ -28,15 +28,17 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "NotUTCValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} must not be in UTC format.";
+        public string ErrorMessage { get; set; } = "The field {0} must not be in UTC format.";
 
         /// Arguments propertyName
 
         /// <inheritdoc/>
-        protected override AttributeResult<DateTime> ValidateUtc(object obj, string propertyName, DateTime value)
+        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
         {
             bool isValid = value.Kind != DateTimeKind.Utc;
-            return new AttributeResult<DateTime>(isValid, value, propertyName);
+            return isValid
+              ? AttributeResult.Success()
+              : AttributeResult.Fail(ErrorMessage, propertyName);
         }
     }
 }

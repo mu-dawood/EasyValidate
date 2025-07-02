@@ -24,13 +24,15 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "TodayValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be today's date.";
+        public string ErrorMessage { get; set; } = "The {0} field must be today's date.";
 
         /// <inheritdoc/>
-        protected override AttributeResult<DateTime> ValidateUtc(object obj, string propertyName, DateTime value)
+        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
         {
             bool isValid = value.Date == Now.Date;
-            return new AttributeResult<DateTime>(isValid, value, propertyName);
+            return isValid
+              ? AttributeResult.Success()
+              : AttributeResult.Fail(ErrorMessage, propertyName);
         }
     }
 }

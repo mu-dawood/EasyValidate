@@ -27,13 +27,11 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "NotOneOfValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must not be one of the following values: {1}.";
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {   
             bool valid = !DisallowedValues.Contains(value);
-            return new AttributeResult<string>(valid, value, propertyName, string.Join(", ", DisallowedValues));
+            output = value;
+            return valid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must not be one of the following values: {1}.", propertyName, string.Join(", ", DisallowedValues));
         }
     }
 }

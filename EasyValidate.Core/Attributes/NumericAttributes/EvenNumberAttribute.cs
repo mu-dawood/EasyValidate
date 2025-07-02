@@ -36,7 +36,7 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "EvenNumberValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be an even number.";
+        public string ErrorMessage { get; set; } = "The {0} field must be an even number.";
 
         // Integer validation
         public static bool IsValid(long value) => value % 2 == 0;
@@ -49,21 +49,45 @@ namespace EasyValidate.Core.Attributes
         public static bool IsValid(sbyte value) => value % 2 == 0;
 
         // IValidationAttribute implementations
-        public AttributeResult<byte> Validate(object obj, string propertyName, byte value) =>
-            new(IsValid(value), value, propertyName);
-        public AttributeResult<sbyte> Validate(object obj, string propertyName, sbyte value) =>
-            new(IsValid(value), value, propertyName);
-        public AttributeResult<short> Validate(object obj, string propertyName, short value) =>
-            new(IsValid(value), value, propertyName);
-        public AttributeResult<ushort> Validate(object obj, string propertyName, ushort value) =>
-            new(IsValid(value), value, propertyName);
-        public AttributeResult<int> Validate(object obj, string propertyName, int value) =>
-            new(IsValid(value), value, propertyName);
-        public AttributeResult<uint> Validate(object obj, string propertyName, uint value) =>
-            new(IsValid(value), value, propertyName);
-        public AttributeResult<long> Validate(object obj, string propertyName, long value) =>
-            new(IsValid(value), value, propertyName);
-        public AttributeResult<ulong> Validate(object obj, string propertyName, ulong value) =>
-            new(IsValid(value), value, propertyName);
+        public AttributeResult Validate(object obj, string propertyName, byte value, out byte output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
+        }
+        public AttributeResult Validate(object obj, string propertyName, sbyte value, out sbyte output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
+        }
+        public AttributeResult Validate(object obj, string propertyName, short value, out short output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
+        }
+        public AttributeResult Validate(object obj, string propertyName, ushort value, out ushort output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
+        }
+        public AttributeResult Validate(object obj, string propertyName, int value, out int output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
+        }
+        public AttributeResult Validate(object obj, string propertyName, uint value, out uint output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
+        }
+        public AttributeResult Validate(object obj, string propertyName, long value, out long output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
+        }
+        public AttributeResult Validate(object obj, string propertyName, ulong value, out ulong output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
+        }
     }
 }

@@ -29,13 +29,15 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "DayOfWeekValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be one of the following days: {1}.";
+        public string ErrorMessage { get; set; } = "The {0} field must be one of the following days: {1}.";
 
         /// <inheritdoc/>
-        protected override AttributeResult<DateTime> ValidateUtc(object obj, string propertyName, DateTime value)
+        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
         {
             bool isValid = Array.Exists(Days, day => day == value.DayOfWeek);
-            return new AttributeResult<DateTime>(isValid, value, propertyName, string.Join(", ", Days));
+            return isValid
+               ? AttributeResult.Success()
+               : AttributeResult.Fail(ErrorMessage, propertyName, string.Join(", ", Days));
         }
     }
 }

@@ -28,25 +28,17 @@ namespace EasyValidate.Core.Attributes
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "StartsWithValidationError";
 
-        /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must start with '{1}'.";
-
         /// <summary>
         /// The comparison type to use when checking for the substring.
         /// Defaults to <see cref="StringComparison.Ordinal"/>.
         /// </summary>
         public StringComparison Comparison { get; set; } = StringComparison.Ordinal;
         /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
-            if (value == null)
-            {
-                bool isValid = true;
-                return new AttributeResult<string>(isValid, string.Empty, propertyName, Prefix);
-            }
-
-            bool valid = value.StartsWith(Prefix, Comparison);
-            return new AttributeResult<string>(valid, value, propertyName, Prefix);
+            bool isValid = value.StartsWith(Prefix, Comparison);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must start with '{1}'.", propertyName, Prefix);
         }
     }
 }

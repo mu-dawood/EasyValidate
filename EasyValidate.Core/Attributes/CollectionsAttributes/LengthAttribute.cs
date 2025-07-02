@@ -38,13 +38,14 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "LengthValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} must have exactly {1} elements.";
+        public string ErrorMessage { get; set; } = "The field {0} must have exactly {1} elements.";
 
         /// <inheritdoc/>
-        public override AttributeResult<IEnumerable> Validate(object obj, string propertyName, IEnumerable value)
+        public override AttributeResult Validate(object obj, string propertyName, IEnumerable value, out IEnumerable output)
         {
             bool isValid = value.Cast<object>().Count() == Length;
-            return new AttributeResult<IEnumerable>(isValid, value, propertyName, Length);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, Length);
         }
     }
 }

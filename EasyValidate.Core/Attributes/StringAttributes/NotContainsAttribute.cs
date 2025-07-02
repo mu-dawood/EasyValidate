@@ -17,24 +17,26 @@ namespace EasyValidate.Core.Attributes
     /// }
     /// </code>
     /// </example>
-    public class NotContainsAttribute(string substring) : StringValidationAttributeBase
+    public class NotContainsAttribute : StringValidationAttributeBase
     {
         /// <summary>
         /// The substring that must not be present.
         /// </summary>
-        public string Substring { get; } = substring;
+        public string Substring { get; }
+        public NotContainsAttribute(string substring)
+        {
+            Substring = substring;
+        }
 
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "StringNotContainsValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must not contain '{1}'.";
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
-            bool valid = !value.Contains(Substring);
-            return new AttributeResult<string>(valid, value, propertyName, Substring);
+            bool isValid = string.IsNullOrEmpty(value) || !value.Contains(Substring);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must not contain '{1}'.", propertyName, Substring);
         }
     }
 }

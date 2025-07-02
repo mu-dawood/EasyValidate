@@ -54,7 +54,7 @@ namespace EasyValidate.Test.Strings.Url
             // Assert
             Assert.False(result.IsValid());
             Assert.True(result.HasErrors());
-            
+
             var homepageErrors = result.Errors.Where(e => e.Path.SequenceEqual(new[] { nameof(model.Homepage) })).ToList();
             Assert.Single(homepageErrors);
             Assert.Equal("CUSTOM: The Homepage field must be a valid URL.", homepageErrors[0].FormattedMessage);
@@ -107,14 +107,9 @@ namespace EasyValidate.Test.Strings.Url
 
         private class TestFormatter : IFormatter
         {
-            public string Format(string message, params object[] args)
+            public string Format<T>(AttributeResult result, T value)
             {
-                return $"CUSTOM: {string.Format(message, args)}";
-            }
-
-            public string GetFormatedMessage<TInput, TOutput>(IValidationAttribute<TInput, TOutput> attribute, object?[] args)
-            {
-                return $"CUSTOM: {attribute.ErrorMessage}";
+                return $"CUSTOM: {string.Format(result.MessageTemplate, result.MessageArgs)}";
             }
         }
     }

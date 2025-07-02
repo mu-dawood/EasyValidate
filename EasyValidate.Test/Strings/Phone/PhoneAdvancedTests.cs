@@ -53,7 +53,7 @@ namespace EasyValidate.Test.Strings.Phone
             // Assert
             Assert.False(result.IsValid());
             Assert.True(result.HasErrors());
-            
+
             var contactErrors = result.Errors.Where(e => e.Path.SequenceEqual(new[] { nameof(model.ContactNumber) })).ToList();
             Assert.Single(contactErrors);
             Assert.Equal("CUSTOM: The ContactNumber field must be a valid phone number.", contactErrors[0].FormattedMessage);
@@ -106,14 +106,9 @@ namespace EasyValidate.Test.Strings.Phone
 
         private class TestFormatter : IFormatter
         {
-            public string Format(string message, params object[] args)
+            public string Format<T>(AttributeResult result, T value)
             {
-                return $"CUSTOM: {string.Format(message, args)}";
-            }
-
-            public string GetFormatedMessage<TInput, TOutput>(IValidationAttribute<TInput, TOutput> attribute, object?[] args)
-            {
-                return $"CUSTOM: {string.Format(attribute.ErrorMessage, args)}";
+                return $"CUSTOM: {string.Format(result.MessageTemplate, result.MessageArgs)}";
             }
         }
     }

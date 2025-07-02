@@ -18,7 +18,7 @@ namespace EasyValidate.Core.Attributes
     /// var invalidSite = new Website { Homepage = "not-a-url" }; // Invalid
     /// </code>
     /// </example>
-    public class UrlAttribute : StringValidationAttributeBase
+    public class UrlAttribute : StringValidationAttributeBase<Uri>
     {
         private static readonly Lazy<UrlAttribute> _instance = new(() => new UrlAttribute());
         public static UrlAttribute Instance => _instance.Value;
@@ -30,15 +30,21 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "UrlValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be a valid URL.";
-
-        /// Arguments propertyName
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out Uri output)
         {
-            bool isValid =  Uri.IsWellFormedUriString(value, UriKind.Absolute);
-            return new AttributeResult<string>(isValid, value , propertyName);
+            if (string.IsNullOrEmpty(value))
+            {
+                output = new Uri("about:blank");
+                return AttributeResult.Success();
+            }
+            bool isValid = IsUrl(value!, out Uri? uriOutput);
+            output = uriOutput ?? new Uri(value!);
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must be a valid URL.", propertyName);
+        }
+
+        private static bool IsUrl(string value, out Uri? output)
+        {
+            return Uri.TryCreate(value, UriKind.Absolute, out output);
         }
     }
 }

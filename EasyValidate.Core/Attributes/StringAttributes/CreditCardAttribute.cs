@@ -27,16 +27,14 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "CreditCardValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be a valid credit card number.";
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
-            bool isValid = !string.IsNullOrWhiteSpace(value) && IsValidCreditCard(value!);
-            return new AttributeResult<string>(isValid, value , propertyName);
+            bool isValid = string.IsNullOrEmpty(value) || IsCreditCard(value!);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must be a valid credit card number.", propertyName);
         }
 
-        private static bool IsValidCreditCard(string number)
+        private static bool IsCreditCard(string number)
         {
             number = number.Replace(" ", "").Replace("-", "");
             if (!Regex.IsMatch(number, "^\\d{13,19}$")) return false;

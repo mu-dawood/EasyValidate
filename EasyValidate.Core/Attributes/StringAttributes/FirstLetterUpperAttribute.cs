@@ -26,19 +26,16 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "FirstLetterUpperValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must start with an uppercase letter.";
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
             if (string.IsNullOrEmpty(value))
             {
-                bool isValid = true;
-                return new AttributeResult<string>(isValid, value ?? string.Empty, propertyName);
+                output = value ?? string.Empty;
+                return AttributeResult.Success();
             }
-                
-            bool valid = char.IsUpper(value![0]);
-            return new AttributeResult<string>(valid, value, propertyName);
+            bool valid = char.IsUpper(value[0]);
+            output = value;
+            return valid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must start with an uppercase letter.", propertyName);
         }
     }
 }

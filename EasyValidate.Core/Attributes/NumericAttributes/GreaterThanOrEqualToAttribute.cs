@@ -48,7 +48,7 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "GreaterThanOrEqualToValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be greater than or equal to {1}.";
+        public string ErrorMessage { get; set; } = "The {0} field must be greater than or equal to {1}.";
 
         // Integer validation
         public bool IsValid(long value) => value >= _comparisonValue.AsInt64;
@@ -66,27 +66,60 @@ namespace EasyValidate.Core.Attributes
         public bool IsValid(decimal value) => value >= _comparisonValue.AsDecimal;
 
         // IValidationAttribute implementations
-        public AttributeResult<byte> Validate(object obj, string propertyName, byte value) =>
-            new(IsValid(value), value, propertyName, _comparisonValue.AsUInt64);
-        public AttributeResult<sbyte> Validate(object obj, string propertyName, sbyte value) =>
-            new(IsValid(value), value, propertyName, _comparisonValue.AsInt64);
-        public AttributeResult<short> Validate(object obj, string propertyName, short value) =>
-            new(IsValid(value), value, propertyName, _comparisonValue.AsInt64);
-        public AttributeResult<ushort> Validate(object obj, string propertyName, ushort value) =>
-            new(IsValid(value), value, propertyName, _comparisonValue.AsUInt64);
-        public AttributeResult<int> Validate(object obj, string propertyName, int value) =>
-            new(IsValid(value), value, propertyName, _comparisonValue.AsInt64);
-        public AttributeResult<uint> Validate(object obj, string propertyName, uint value) =>
-            new(IsValid(value), value, propertyName, _comparisonValue.AsUInt64);
-        public AttributeResult<long> Validate(object obj, string propertyName, long value) =>
-            new(IsValid(value), value, propertyName, _comparisonValue.AsInt64);
-        public AttributeResult<ulong> Validate(object obj, string propertyName, ulong value) =>
-            new(IsValid(value), value, propertyName, _comparisonValue.AsUInt64);
-        public AttributeResult<float> Validate(object obj, string propertyName, float value) =>
-            new(IsValid(value), value, propertyName, _comparisonValue.AsFloat);
-        public AttributeResult<double> Validate(object obj, string propertyName, double value) =>
-            new(IsValid(value), value, propertyName, _comparisonValue.AsDouble);
-        public AttributeResult<decimal> Validate(object obj, string propertyName, decimal value) =>
-            new(IsValid(value), value, propertyName, _comparisonValue.AsDecimal);
+        public AttributeResult Validate(object obj, string propertyName, byte value, out byte output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsUInt64);
+        }
+        public AttributeResult Validate(object obj, string propertyName, sbyte value, out sbyte output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsInt64);
+        }
+        public AttributeResult Validate(object obj, string propertyName, short value, out short output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsInt64);
+        }
+        public AttributeResult Validate(object obj, string propertyName, ushort value, out ushort output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsUInt64);
+        }
+        public AttributeResult Validate(object obj, string propertyName, int value, out int output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsInt64);
+        }
+        public AttributeResult Validate(object obj, string propertyName, uint value, out uint output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsUInt64);
+        }
+        public AttributeResult Validate(object obj, string propertyName, long value, out long output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsInt64);
+        }
+        public AttributeResult Validate(object obj, string propertyName, ulong value, out ulong output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsUInt64);
+        }
+        public AttributeResult Validate(object obj, string propertyName, float value, out float output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsFloat);
+        }
+        public AttributeResult Validate(object obj, string propertyName, double value, out double output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsDouble);
+        }
+        public AttributeResult Validate(object obj, string propertyName, decimal value, out decimal output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsDecimal);
+        }
     }
 }

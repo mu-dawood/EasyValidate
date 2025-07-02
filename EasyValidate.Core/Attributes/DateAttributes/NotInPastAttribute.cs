@@ -28,15 +28,17 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "NotInPastValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must not be in the past.";
+        public string ErrorMessage { get; set; } = "The {0} field must not be in the past.";
 
         /// Arguments propertyName
 
         /// <inheritdoc/>
-        protected override AttributeResult<DateTime> ValidateUtc(object obj, string propertyName, DateTime value)
+        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
         {
             bool isValid = value >= Now;
-            return new AttributeResult<DateTime>(isValid, value, propertyName);
+            return isValid
+               ? AttributeResult.Success()
+               : AttributeResult.Fail(ErrorMessage, propertyName);
         }
     }
 }

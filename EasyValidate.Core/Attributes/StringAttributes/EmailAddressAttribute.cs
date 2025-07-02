@@ -33,15 +33,11 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "EmailAddressValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be a valid email address.";
-
-        /// Arguments propertyName
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
             bool isValid = !string.IsNullOrWhiteSpace(value) && _emailRegex.IsMatch(value);
-            return new AttributeResult<string>(isValid, value, propertyName);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must be a valid email address.", propertyName);
         }
     }
 }

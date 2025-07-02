@@ -28,15 +28,17 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "NotLeapYearValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} must not be in a leap year.";
+        public string ErrorMessage { get; set; } = "The field {0} must not be in a leap year.";
 
         /// Arguments propertyName
 
         /// <inheritdoc/>
-        protected override AttributeResult<DateTime> ValidateUtc(object obj, string propertyName, DateTime value)
+        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
         {
             bool isValid = !DateTime.IsLeapYear(value.Year);
-            return new AttributeResult<DateTime>(isValid, value, propertyName);
+            return isValid
+              ? AttributeResult.Success()
+              : AttributeResult.Fail(ErrorMessage, propertyName);
         }
     }
 }

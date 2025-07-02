@@ -27,13 +27,11 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "AsciiValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} must contain only ASCII characters.";
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {        
-            bool valid =string.IsNullOrEmpty(value) || !value.Any(c => c > 127);
-            return new AttributeResult<string>(valid, value!, propertyName);
+            bool valid = string.IsNullOrEmpty(value) || !value.Any(c => c > 127);
+            output = value;
+            return valid ? AttributeResult.Success() : AttributeResult.Fail("The field {0} must contain only ASCII characters.", propertyName);
         }
     }
 }

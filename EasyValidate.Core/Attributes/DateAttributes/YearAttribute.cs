@@ -29,13 +29,15 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "YearValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must contain a valid year.";
+        public string ErrorMessage { get; set; } = "The field {0} must fall within the specified years: {1}.";
 
         /// <inheritdoc/>
-        protected override AttributeResult<DateTime> ValidateUtc(object obj, string propertyName, DateTime value)
+        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
         {
             bool isValid = Array.Exists(Years, year => year == value.Year);
-            return new AttributeResult<DateTime>(isValid, value, propertyName, string.Join(", ", Years));
+            return isValid
+              ? AttributeResult.Success()
+              : AttributeResult.Fail(ErrorMessage, propertyName, string.Join(", ", Years));
         }
     }
 }

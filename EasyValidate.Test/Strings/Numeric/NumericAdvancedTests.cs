@@ -52,8 +52,8 @@ public class NumericAdvancedTests
         Assert.Equal(2, result.Errors.Count);
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Details", "Amount" }));
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Details", "OptionalValue" }));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Amount" })), e => e.Message.Contains("must contain only numeric characters"));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "OptionalValue" })), e => e.Message.Contains("must contain only numeric characters"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Amount" })), e => e.FormattedMessage.Contains("must contain only numeric characters"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "OptionalValue" })), e => e.FormattedMessage.Contains("must contain only numeric characters"));
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class NumericAdvancedTests
         Assert.True(result.HasErrors());
         Assert.Single(result.Errors);
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Amount" }));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Amount" })), e => e.Message.Contains("must contain only numeric characters"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Amount" })), e => e.FormattedMessage.Contains("must contain only numeric characters"));
     }
 
     [Fact]
@@ -208,9 +208,9 @@ public class NumericAdvancedTests
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "MainValue" }));
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Details", "Amount" }));
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Details", "OptionalValue" }));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "MainValue" })), e => e.Message.Contains("must contain only numeric characters"));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Amount" })), e => e.Message.Contains("must contain only numeric characters"));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "OptionalValue" })), e => e.Message.Contains("must contain only numeric characters"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "MainValue" })), e => e.FormattedMessage.Contains("must contain only numeric characters"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Amount" })), e => e.FormattedMessage.Contains("must contain only numeric characters"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "OptionalValue" })), e => e.FormattedMessage.Contains("must contain only numeric characters"));
     }
 
     [Fact]
@@ -236,13 +236,8 @@ public class NumericAdvancedTests
 
 public class CustomTestFormatter : IFormatter
 {
-    public string Format(string message, params object[] args)
+    public string Format<T>(AttributeResult result, T value)
     {
-        return $"CUSTOM: {string.Format(message, args)}";
-    }
-
-    public string GetFormatedMessage<TInput, TOutput>(IValidationAttribute<TInput, TOutput> attribute, object?[] args)
-    {
-        return $"CUSTOM: {string.Format(attribute.ErrorMessage, args)}";
+        return $"CUSTOM: {string.Format(result.MessageTemplate, result.MessageArgs)}";
     }
 }

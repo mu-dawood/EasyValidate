@@ -23,23 +23,23 @@ namespace EasyValidate.Core.Attributes
         private static readonly Lazy<NumericAttribute> _instance = new(() => new NumericAttribute());
         public static NumericAttribute Instance => _instance.Value;
 
-        /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "NumericValidationError";
 
-        /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must contain only numeric characters.";
 
-        /// Arguments propertyName
 
         /// <inheritdoc/>
-        public override AttributeResult<double> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out double output)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                return new AttributeResult<double>(false, default, propertyName);
+                output = default;
+                return AttributeResult.Fail($"The {propertyName} field must contain only numeric characters.");
             }
             bool isValid = IsNumeric(value, out double number);
-            return new AttributeResult<double>(isValid, number, propertyName);
+            output = number;
+            return isValid
+                ? AttributeResult.Success()
+                : AttributeResult.Fail($"The {propertyName} field must contain only numeric characters.");
         }
 
         /// <summary>

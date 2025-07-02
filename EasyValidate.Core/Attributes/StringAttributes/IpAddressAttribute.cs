@@ -27,13 +27,11 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "IpAddressValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be a valid IP address.";
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
-            bool valid = IsValidIpAddress(value!);
-            return new AttributeResult<string>(valid, value, propertyName);
+            bool valid = IsValidIpAddress(value);
+            output = value;
+            return valid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must be a valid IP address.", propertyName);
         }
 
         private static bool IsValidIpAddress(string value)

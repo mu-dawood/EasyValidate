@@ -39,26 +39,29 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "SingleValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} must contain the value {1} exactly once.";
+        public string ErrorMessage { get; set; } = "The field {0} must contain the value {1} exactly once.";
 
         /// Arguments propertyName, Value
 
         /// <inheritdoc/>
-        public override AttributeResult<IEnumerable> Validate(object obj, string propertyName, IEnumerable value)
+        public override AttributeResult Validate(object obj, string propertyName, IEnumerable value, out IEnumerable output)
         {
             bool found = false;
+            output = value; // Set output to the original value
             foreach (var item in value.Cast<object>())
             {
                 if (Equals(item, Value))
                 {
                     if (found)
                     {
-                        return new AttributeResult<IEnumerable>(false, value, propertyName, Value); // Found more than once
+                        return AttributeResult.Fail(ErrorMessage, propertyName, Value);
                     }
                     found = true;
                 }
             }
-            return new AttributeResult<IEnumerable>(found, value, propertyName, Value); // Must be found exactly once
+            return found
+                ? AttributeResult.Success()
+                : AttributeResult.Fail(ErrorMessage, propertyName, Value);
         }
     }
 }

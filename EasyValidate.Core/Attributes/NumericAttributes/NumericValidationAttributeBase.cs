@@ -25,9 +25,6 @@ namespace EasyValidate.Core.Attributes
         public abstract string ErrorCode { get; set; }
 
         /// <inheritdoc/>
-        public abstract string ErrorMessage { get; set; }
-
-        /// <inheritdoc/>
         public virtual string Chain { get; set; } = string.Empty;
     }
 }

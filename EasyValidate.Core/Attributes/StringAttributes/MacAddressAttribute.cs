@@ -31,13 +31,16 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "MacAddressValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be a valid MAC address.";
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
-            bool valid = MacAddressRegex.IsMatch(value);
-            return new AttributeResult<string>(valid, value, propertyName);
+            bool isValid = string.IsNullOrEmpty(value) || IsMacAddress(value!);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must be a valid MAC address.", propertyName);
+        }
+
+        private static bool IsMacAddress(string value)
+        {
+            return MacAddressRegex.IsMatch(value);
         }
     }
 }

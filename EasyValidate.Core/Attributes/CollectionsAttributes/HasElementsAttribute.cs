@@ -28,13 +28,16 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "HasElementsValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} must contain at least one element.";
+        public string ErrorMessage { get; set; } = "The field {0} must contain at least one element.";
 
         /// <inheritdoc/>
-        public override AttributeResult<IEnumerable> Validate(object obj, string propertyName, IEnumerable value)
+        public override AttributeResult Validate(object obj, string propertyName, IEnumerable value, out IEnumerable output)
         {
             bool isValid = value.GetEnumerator().MoveNext();
-            return new AttributeResult<IEnumerable>(isValid, value, propertyName);
+            output = value;
+            return isValid
+                ? AttributeResult.Success()
+                : AttributeResult.Fail(ErrorMessage, propertyName);
         }
     }
 }

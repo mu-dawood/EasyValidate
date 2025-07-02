@@ -29,16 +29,14 @@ namespace EasyValidate.Core.Attributes
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "NotEmptyValidationError";
 
-        /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must not be empty.";
-
         /// Arguments propertyName
 
         /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
             bool isValid = !string.IsNullOrWhiteSpace(value);
-            return new AttributeResult<string>(isValid, value , propertyName);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must not be empty.", propertyName);
         }
     }
 }

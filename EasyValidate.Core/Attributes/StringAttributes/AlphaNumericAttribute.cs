@@ -30,15 +30,11 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "AlphaNumericValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must contain only alphanumeric characters.";
-
-        /// Arguments propertyName
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
-            bool isValid = string.IsNullOrEmpty(value) || IsAlphaNumeric(value);
-            return new AttributeResult<string>(isValid, value, propertyName);
+            bool isValid = string.IsNullOrEmpty(value) || IsAlphaNumeric(value!);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must contain only alphanumeric characters.", propertyName);
         }
 
         private static bool IsAlphaNumeric(string s)

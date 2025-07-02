@@ -31,15 +31,16 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "PhoneValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be a valid phone number.";
-
-        /// Arguments propertyName
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
-            bool isValid = Regex.IsMatch(value, @"^\+?[0-9 .\-()]{7,}$");
-            return new AttributeResult<string>(isValid, value , propertyName);
+            bool isValid = string.IsNullOrEmpty(value) || IsPhone(value!);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must be a valid phone number.", propertyName);
+        }
+
+        private static bool IsPhone(string value)
+        {
+            return Regex.IsMatch(value, @"^\+?[0-9 .\-()]{7,}$");
         }
     }
 }

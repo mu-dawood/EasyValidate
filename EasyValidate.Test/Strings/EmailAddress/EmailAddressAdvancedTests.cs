@@ -52,8 +52,8 @@ public class EmailAddressAdvancedTests
         Assert.Equal(2, result.Errors.Count);
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "UserEmails", "Email" }));
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "UserEmails", "OptionalEmail" }));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "UserEmails", "Email" })), e => e.Message.Contains("must be a valid email address"));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "UserEmails", "OptionalEmail" })), e => e.Message.Contains("must be a valid email address"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "UserEmails", "Email" })), e => e.FormattedMessage.Contains("must be a valid email address"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "UserEmails", "OptionalEmail" })), e => e.FormattedMessage.Contains("must be a valid email address"));
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class EmailAddressAdvancedTests
         Assert.True(result.HasErrors());
         Assert.Single(result.Errors);
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Email" }));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Email" })), e => e.Message.Contains("must be a valid email address"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Email" })), e => e.FormattedMessage.Contains("must be a valid email address"));
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public class EmailAddressAdvancedTests
         Assert.True(result.HasErrors());
         Assert.Single(result.Errors);
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Email" }));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Email" })), e => e.Message.Contains("must be a valid email address"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Email" })), e => e.FormattedMessage.Contains("must be a valid email address"));
     }
 
     [Fact]
@@ -210,9 +210,9 @@ public class EmailAddressAdvancedTests
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "AdminEmail" }));
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "UserEmails", "Email" }));
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "UserEmails", "OptionalEmail" }));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "AdminEmail" })), e => e.Message.Contains("must be a valid email address"));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "UserEmails", "Email" })), e => e.Message.Contains("must be a valid email address"));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "UserEmails", "OptionalEmail" })), e => e.Message.Contains("must be a valid email address"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "AdminEmail" })), e => e.FormattedMessage.Contains("must be a valid email address"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "UserEmails", "Email" })), e => e.FormattedMessage.Contains("must be a valid email address"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "UserEmails", "OptionalEmail" })), e => e.FormattedMessage.Contains("must be a valid email address"));
     }
 
     [Fact]
@@ -238,13 +238,8 @@ public class EmailAddressAdvancedTests
 
 public class CustomTestFormatter : IFormatter
 {
-    public string Format(string message, params object[] args)
+    public string Format<T>(AttributeResult result, T value)
     {
-        return $"CUSTOM: {string.Format(message, args)}";
-    }
-
-    public string GetFormatedMessage<TInput, TOutput>(IValidationAttribute<TInput, TOutput> attribute, object?[] args)
-    {
-        return $"CUSTOM: {string.Format(attribute.ErrorMessage, args)}";
+        return $"CUSTOM: {string.Format(result.MessageTemplate, result.MessageArgs)}";
     }
 }

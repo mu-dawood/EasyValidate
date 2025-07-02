@@ -29,7 +29,7 @@ public class UppercaseAdvancedTests
         Assert.False(result.HasErrors(nameof(model.MainCode)));
         Assert.False(result.HasErrors("Details", "Code"));
         Assert.False(result.HasErrors("Details", "Category"));
-        
+
         var detailsTitleErrors = result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Title" })).ToList();
         Assert.Single(detailsTitleErrors);
         Assert.Contains("must be uppercase", detailsTitleErrors[0].FormattedMessage);
@@ -218,13 +218,8 @@ public class UppercaseAdvancedTests
 
 public class CustomTestFormatter : IFormatter
 {
-    public string Format(string message, params object[] args)
+    public string Format<T>(AttributeResult result, T value)
     {
-        return $"CUSTOM: {string.Format(message, args)}";
-    }
-
-    public string GetFormatedMessage<TInput, TOutput>(IValidationAttribute<TInput, TOutput> attribute, object?[] args)
-    {
-        return $"CUSTOM: {string.Format(attribute.ErrorMessage, args)}";
+        return $"CUSTOM: {string.Format(result.MessageTemplate, result.MessageArgs)}";
     }
 }

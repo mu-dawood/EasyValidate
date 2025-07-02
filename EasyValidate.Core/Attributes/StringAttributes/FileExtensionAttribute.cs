@@ -28,14 +28,12 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "FileExtensionValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must have one of the following extensions: {1}.";
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {       
             var extension = Path.GetExtension(value);
             bool valid = AllowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
-            return new AttributeResult<string>(valid, value!, propertyName, string.Join(", ", AllowedExtensions));
+            output = value;
+            return valid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must have one of the following extensions: {1}.", propertyName, string.Join(", ", AllowedExtensions));
         }
     }
 }

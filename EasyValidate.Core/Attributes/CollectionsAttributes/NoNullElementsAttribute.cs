@@ -27,21 +27,22 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "NoNullElementsValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} must not contain null elements.";
+        public string ErrorMessage { get; set; } = "The field {0} must not contain null elements.";
 
         /// Arguments propertyName
 
         /// <inheritdoc/>
-        public override AttributeResult<IEnumerable> Validate(object obj, string propertyName, IEnumerable value)
+        public override AttributeResult Validate(object obj, string propertyName, IEnumerable value, out IEnumerable output)
         {
+            output = value;
             foreach (var item in value)
             {
                 if (item == null)
                 {
-                    return new AttributeResult<IEnumerable>(false, value, propertyName);
+                    return AttributeResult.Fail(ErrorMessage, propertyName);
                 }
             }
-            return new AttributeResult<IEnumerable>(true, value, propertyName);
+            return AttributeResult.Success();
         }
     }
 }

@@ -101,7 +101,7 @@ namespace EasyValidate.Core.Attributes
         }
 
         public override string ErrorCode { get; set; } = "RangeValidationError";
-        public override string ErrorMessage { get; set; } = "The {0} field must be between {1} and {2} ({3}).";
+        public string ErrorMessage { get; set; } = "The {0} field must be within the specified range: {1} to {2}.";
 
         // Type-specific range checks
         private bool IsValid(long value) => IsValidRange(value, _min.AsInt64, _max.AsInt64);
@@ -117,28 +117,61 @@ namespace EasyValidate.Core.Attributes
         private bool IsValid(decimal value) => IsValidRange(value, _min.AsDecimal, _max.AsDecimal);
 
         // IValidationAttribute implementations
-        public AttributeResult<byte> Validate(object obj, string propertyName, byte value) =>
-            BuildResult(IsValid(value), value, propertyName);
-        public AttributeResult<sbyte> Validate(object obj, string propertyName, sbyte value) =>
-            BuildResult(IsValid(value), value, propertyName);
-        public AttributeResult<short> Validate(object obj, string propertyName, short value) =>
-            BuildResult(IsValid(value), value, propertyName);
-        public AttributeResult<ushort> Validate(object obj, string propertyName, ushort value) =>
-            BuildResult(IsValid(value), value, propertyName);
-        public AttributeResult<int> Validate(object obj, string propertyName, int value) =>
-            BuildResult(IsValid(value), value, propertyName);
-        public AttributeResult<uint> Validate(object obj, string propertyName, uint value) =>
-            BuildResult(IsValid(value), value, propertyName);
-        public AttributeResult<long> Validate(object obj, string propertyName, long value) =>
-            BuildResult(IsValid(value), value, propertyName);
-        public AttributeResult<ulong> Validate(object obj, string propertyName, ulong value) =>
-            BuildResult(IsValid(value), value, propertyName);
-        public AttributeResult<float> Validate(object obj, string propertyName, float value) =>
-            BuildResult(IsValid(value), value, propertyName);
-        public AttributeResult<double> Validate(object obj, string propertyName, double value) =>
-            BuildResult(IsValid(value), value, propertyName);
-        public AttributeResult<decimal> Validate(object obj, string propertyName, decimal value) =>
-            BuildResult(IsValid(value), value, propertyName);
+        public AttributeResult Validate(object obj, string propertyName, byte value, out byte output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _min, _max);
+        }
+        public AttributeResult Validate(object obj, string propertyName, sbyte value, out sbyte output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _min, _max);
+        }
+        public AttributeResult Validate(object obj, string propertyName, short value, out short output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _min, _max);
+        }
+        public AttributeResult Validate(object obj, string propertyName, ushort value, out ushort output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _min, _max);
+        }
+        public AttributeResult Validate(object obj, string propertyName, int value, out int output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _min, _max);
+        }
+        public AttributeResult Validate(object obj, string propertyName, uint value, out uint output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _min, _max);
+        }
+        public AttributeResult Validate(object obj, string propertyName, long value, out long output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _min, _max);
+        }
+        public AttributeResult Validate(object obj, string propertyName, ulong value, out ulong output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _min, _max);
+        }
+        public AttributeResult Validate(object obj, string propertyName, float value, out float output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _min, _max);
+        }
+        public AttributeResult Validate(object obj, string propertyName, double value, out double output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _min, _max);
+        }
+        public AttributeResult Validate(object obj, string propertyName, decimal value, out decimal output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _min, _max);
+        }
 
         // Type-specific range logic
         private bool IsValidRange(long value, long min, long max)
@@ -261,20 +294,6 @@ namespace EasyValidate.Core.Attributes
                 RangeBoundary.ExclusiveMinInclusiveMax => value > min && value <= max,
                 _ => value >= min && value <= max
             };
-        }
-        private AttributeResult<T> BuildResult<T>(bool isValid, T value, string propertyName)
-        {
-            if (isValid)
-                return new AttributeResult<T>(true, value);
-            string boundaryMsg = Boundary switch
-            {
-                RangeBoundary.Inclusive => "inclusive",
-                RangeBoundary.Exclusive => "exclusive",
-                RangeBoundary.InclusiveMinExclusiveMax => "inclusive minimum, exclusive maximum",
-                RangeBoundary.ExclusiveMinInclusiveMax => "exclusive minimum, inclusive maximum",
-                _ => "inclusive"
-            };
-            return new AttributeResult<T>(false, value, propertyName, _min, _max, boundaryMsg);
         }
     }
 }

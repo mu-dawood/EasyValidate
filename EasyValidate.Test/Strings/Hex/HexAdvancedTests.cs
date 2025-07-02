@@ -106,14 +106,9 @@ namespace EasyValidate.Test.Strings.Hex
 
         private class TestFormatter : IFormatter
         {
-            public string Format(string message, params object[] args)
+            public string Format<T>(AttributeResult result, T value)
             {
-                return $"CUSTOM: {string.Format(message, args)}";
-            }
-
-            public string GetFormatedMessage<TInput, TOutput>(IValidationAttribute<TInput, TOutput> attribute, object?[] args)
-            {
-                return $"CUSTOM: {string.Format(attribute.ErrorMessage, args)}";
+                return $"CUSTOM: {string.Format(result.MessageTemplate, result.MessageArgs)}";
             }
         }
     }

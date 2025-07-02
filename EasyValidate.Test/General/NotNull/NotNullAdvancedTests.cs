@@ -1,3 +1,5 @@
+using EasyValidate.Core.Abstraction;
+
 namespace EasyValidate.Test.General.NotNull;
 
 public class NotNullAdvancedTests
@@ -46,7 +48,7 @@ public class NotNullAdvancedTests
         // Assert
         Assert.False(result.IsValid());
         Assert.True(result.HasErrors());
-        Assert.Contains(result.Errors, e => e.Path.Contains("MainProperty") && e.Message.Contains("null"));
+        Assert.Contains(result.Errors, e => e.Path.Contains("MainProperty") && e.FormattedMessage.Contains("null"));
     }
 
     [Fact]
@@ -71,8 +73,8 @@ public class NotNullAdvancedTests
         Assert.False(result.IsValid());
         Assert.True(result.HasErrors());
         Assert.Equal(2, result.Errors.Count());
-        Assert.Contains(result.Errors, e => e.Path.Contains("Name") && e.Message.Contains("null"));
-        Assert.Contains(result.Errors, e => e.Path.Contains("Data") && e.Message.Contains("null"));
+        Assert.Contains(result.Errors, e => e.Path.Contains("Name") && e.FormattedMessage.Contains("null"));
+        Assert.Contains(result.Errors, e => e.Path.Contains("Data") && e.FormattedMessage.Contains("null"));
     }
 
     [Fact]
@@ -166,33 +168,32 @@ public class NotNullAdvancedTests
         Assert.Contains("Error:", formattedMessage);
     }
 
-    private class TestFormatter : EasyValidate.Core.Abstraction.IFormatter
+    public class TestFormatter : EasyValidate.Core.Abstraction.IFormatter
     {
-        public string Format(string message, params object[] args)
-            => string.Join(" | ", args.Select(e => $"Error: {e}"));
-
-        public string GetFormatedMessage<TInput, TOutput>(EasyValidate.Core.Abstraction.IValidationAttribute<TInput, TOutput> attribute, object?[] args)
-            => string.Join(" | ", args.Select(e => $"Error: {e}"));
-    }
-
-    [Fact]
-    public void MixedNullAndValidProperties_ShouldOnlyReportNullErrors()
-    {
-        // Arrange
-        var model = new NotNullModel
+        public string Format<T>(AttributeResult result, T value)
         {
-            Name = "Valid Name", // Valid
-            Data = null,        // Invalid - null
-            Items = new List<string> { "valid" } // Valid
-        };
+            return string.Join(" | ", result.MessageTemplate.Select(e => $"Error: {e}"));
+        }
 
-        // Act
-        var result = model.Validate();
+        [Fact]
+        public void MixedNullAndValidProperties_ShouldOnlyReportNullErrors()
+        {
+            // Arrange
+            var model = new NotNullModel
+            {
+                Name = "Valid Name", // Valid
+                Data = null,        // Invalid - null
+                Items = new List<string> { "valid" } // Valid
+            };
 
-        // Assert
-        Assert.False(result.IsValid());
-        Assert.True(result.HasErrors());
-        Assert.Single(result.Errors);
-        Assert.Contains(result.Errors, e => e.Path.Contains("Data") && e.Message.Contains("null"));
+            // Act
+            var result = model.Validate();
+
+            // Assert
+            Assert.False(result.IsValid());
+            Assert.True(result.HasErrors());
+            Assert.Single(result.Errors);
+            Assert.Contains(result.Errors, e => e.Path.Contains("Data") && e.FormattedMessage.Contains("null"));
+        }
     }
 }

@@ -27,6 +27,6 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "OptionalValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} is optional and can be null.";
+        public string ErrorMessage { get; set; } = "The field {0} is optional and can be null.";
     }
 }

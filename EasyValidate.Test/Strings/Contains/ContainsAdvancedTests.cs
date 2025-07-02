@@ -224,14 +224,9 @@ public class ContainsAdvancedTests
     // Helper test formatter for CustomFormatter_WithContainsErrors_ShouldFormatCorrectly
     private class TestFormatter : IFormatter
     {
-        public string Format(string format, params object[] args)
+        public string Format<T>(AttributeResult result, T value)
         {
-            return $"[TestFormatter] {string.Format(format, args)}";
-        }
-
-        public string GetFormatedMessage<TInput, TOutput>(IValidationAttribute<TInput, TOutput> attribute, object?[] args)
-        {
-            return $"[TestFormatter] {attribute.GetType().Name} failed.";
+            return $"CUSTOM: {string.Format(result.MessageTemplate, result.MessageArgs)}";
         }
     }
 }

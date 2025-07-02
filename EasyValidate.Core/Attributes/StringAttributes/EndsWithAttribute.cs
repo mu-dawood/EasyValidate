@@ -28,8 +28,6 @@ namespace EasyValidate.Core.Attributes
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "EndsWithValidationError";
 
-        /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must end with '{1}'.";
         /// <summary>
         /// The comparison type to use when checking for the substring.
         /// Defaults to <see cref="StringComparison.Ordinal"/>.
@@ -37,10 +35,11 @@ namespace EasyValidate.Core.Attributes
         public StringComparison Comparison { get; set; } = StringComparison.Ordinal;
 
         /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
             bool isValid = value.EndsWith(Suffix, Comparison);
-            return new AttributeResult<string>(isValid, value, propertyName, Suffix);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must end with '{1}'.", propertyName, Suffix);
         }
     }
 }

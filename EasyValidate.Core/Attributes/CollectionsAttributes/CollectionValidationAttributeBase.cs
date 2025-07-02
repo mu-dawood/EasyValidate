@@ -30,10 +30,7 @@ namespace EasyValidate.Core.Attributes
         public abstract string ErrorCode { get; set; }
 
         /// <inheritdoc/>
-        public abstract string ErrorMessage { get; set; }
-
-        // /// <inheritdoc/>
-        public abstract AttributeResult<IEnumerable> Validate(object obj, string propertyName, IEnumerable value);
+        public abstract AttributeResult Validate(object obj, string propertyName, IEnumerable value, out IEnumerable output);
     }
 }
 

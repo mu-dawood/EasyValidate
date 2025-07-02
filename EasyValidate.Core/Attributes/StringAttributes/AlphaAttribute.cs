@@ -26,16 +26,14 @@ namespace EasyValidate.Core.Attributes
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "AlphaValidationError";
 
-        /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must contain only alphabetic characters.";
-
         /// Arguments propertyName
 
         /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
             bool isValid = string.IsNullOrEmpty(value) || IsAlpha(value!);
-            return new AttributeResult<string>(isValid, value, propertyName);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must contain only alphabetic characters.", propertyName);
         }
 
         private static bool IsAlpha(string s)

@@ -47,7 +47,7 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "PowerOfValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be a power of {1}.";
+        public string ErrorMessage { get; set; } = "The {0} field must be a power of {1}.";
 
         // Integer validation
         public bool IsValid(long value) => value >= 1 && IsPowerOfBase(value, _baseValue);
@@ -60,22 +60,46 @@ namespace EasyValidate.Core.Attributes
         public bool IsValid(byte value) => value >= 1 && IsPowerOfBase(value, _baseValue);
 
         // IValidationAttribute implementations
-        public AttributeResult<sbyte> Validate(object obj, string propertyName, sbyte value) =>
-            new(IsValid(value), value, propertyName, _baseValue);
-        public AttributeResult<short> Validate(object obj, string propertyName, short value) =>
-            new(IsValid(value), value, propertyName, _baseValue);
-        public AttributeResult<int> Validate(object obj, string propertyName, int value) =>
-            new(IsValid(value), value, propertyName, _baseValue);
-        public AttributeResult<long> Validate(object obj, string propertyName, long value) =>
-            new(IsValid(value), value, propertyName, _baseValue);
-        public AttributeResult<byte> Validate(object obj, string propertyName, byte value) =>
-            new(IsValid(value), value, propertyName, _baseValue);
-        public AttributeResult<ushort> Validate(object obj, string propertyName, ushort value) =>
-            new(IsValid(value), value, propertyName, _baseValue);
-        public AttributeResult<uint> Validate(object obj, string propertyName, uint value) =>
-            new(IsValid(value), value, propertyName, _baseValue);
-        public AttributeResult<ulong> Validate(object obj, string propertyName, ulong value) =>
-            new(IsValid(value), value, propertyName, _baseValue);
+        public AttributeResult Validate(object obj, string propertyName, sbyte value, out sbyte output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _baseValue);
+        }
+        public AttributeResult Validate(object obj, string propertyName, short value, out short output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _baseValue);
+        }
+        public AttributeResult Validate(object obj, string propertyName, int value, out int output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _baseValue);
+        }
+        public AttributeResult Validate(object obj, string propertyName, long value, out long output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _baseValue);
+        }
+        public AttributeResult Validate(object obj, string propertyName, byte value, out byte output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _baseValue);
+        }
+        public AttributeResult Validate(object obj, string propertyName, ushort value, out ushort output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _baseValue);
+        }
+        public AttributeResult Validate(object obj, string propertyName, uint value, out uint output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _baseValue);
+        }
+        public AttributeResult Validate(object obj, string propertyName, ulong value, out ulong output)
+        {
+            output = value;
+            return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _baseValue);
+        }
 
         /// <summary>
         /// Checks if an integer value is a power of the given base.

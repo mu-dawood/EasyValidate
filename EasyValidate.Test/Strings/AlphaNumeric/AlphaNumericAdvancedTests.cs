@@ -52,8 +52,8 @@ public class AlphaNumericAdvancedTests
         Assert.Equal(2, result.Errors.Count);
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Details", "Username" }));
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Details", "OptionalCode" }));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Username" })), e => e.Message.Contains("must contain only alphanumeric characters"));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "OptionalCode" })), e => e.Message.Contains("must contain only alphanumeric characters"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Username" })), e => e.FormattedMessage.Contains("must contain only alphanumeric characters"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "OptionalCode" })), e => e.FormattedMessage.Contains("must contain only alphanumeric characters"));
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class AlphaNumericAdvancedTests
         Assert.True(result.HasErrors());
         Assert.Single(result.Errors);
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Username" }));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Username" })), e => e.Message.Contains("must contain only alphanumeric characters"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Username" })), e => e.FormattedMessage.Contains("must contain only alphanumeric characters"));
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public class AlphaNumericAdvancedTests
         Assert.True(result.HasErrors());
         Assert.Single(result.Errors);
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Username" }));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Username" })), e => e.Message.Contains("must contain only alphanumeric characters"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Username" })), e => e.FormattedMessage.Contains("must contain only alphanumeric characters"));
     }
 
     [Fact]
@@ -250,9 +250,9 @@ public class AlphaNumericAdvancedTests
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "MainCode" }));
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Details", "Username" }));
         Assert.Contains(result.Errors, e => e.Path.SequenceEqual(new[] { "Details", "OptionalCode" }));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "MainCode" })), e => e.Message.Contains("must contain only alphanumeric characters"));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Username" })), e => e.Message.Contains("must contain only alphanumeric characters"));
-        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "OptionalCode" })), e => e.Message.Contains("must contain only alphanumeric characters"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "MainCode" })), e => e.FormattedMessage.Contains("must contain only alphanumeric characters"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Username" })), e => e.FormattedMessage.Contains("must contain only alphanumeric characters"));
+        Assert.Contains(result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "OptionalCode" })), e => e.FormattedMessage.Contains("must contain only alphanumeric characters"));
     }
 
     [Fact]
@@ -278,13 +278,8 @@ public class AlphaNumericAdvancedTests
 
 public class CustomTestFormatter : IFormatter
 {
-    public string Format(string message, params object[] args)
+    public string Format<T>(AttributeResult result, T value)
     {
-        return $"CUSTOM: {string.Format(message, args)}";
-    }
-
-    public string GetFormatedMessage<TInput, TOutput>(IValidationAttribute<TInput, TOutput> attribute, object?[] args)
-    {
-        return $"CUSTOM: {string.Format(attribute.ErrorMessage, args)}";
+        return $"CUSTOM: {string.Format(result.MessageTemplate, result.MessageArgs)}";
     }
 }

@@ -21,21 +21,22 @@ namespace EasyValidate.Core.Attributes
     public class NotNullAttribute : GeneralValidationAttributeBase
     {
         private static readonly Lazy<NotNullAttribute> _instance = new(() => new NotNullAttribute());
-        public  static  NotNullAttribute Instance => _instance.Value;
+        public static NotNullAttribute Instance => _instance.Value;
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "NotNullValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The field {0} cannot be null.";
+        public string ErrorMessage { get; set; } = "The field {0} cannot be null.";
 
         /// Arguments propertyName
 
         /// <inheritdoc/>
-        public override AttributeResult<object?> Validate(object obj, string propertyName, object? value)
+        public override AttributeResult Validate(object obj, string propertyName, object? value, out object? output)
         {
+            output = value;
             if (value != null)
-                return new AttributeResult<object?>(true, value, propertyName);
-            return new AttributeResult<object?>(false, value, propertyName);
+                return AttributeResult.Success();
+            return AttributeResult.Fail(ErrorMessage, propertyName);
         }
     }
 

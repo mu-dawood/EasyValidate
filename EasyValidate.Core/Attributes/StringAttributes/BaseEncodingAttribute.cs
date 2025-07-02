@@ -37,18 +37,16 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = $"{encodingType}ValidationError";
 
         /// <inheritdoc/>
-        public override string ErrorMessage { get; set; } = "The {0} field must be a valid base encoding.";
-
-        /// <inheritdoc/>
-        public override AttributeResult<string> Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(object obj, string propertyName, string value, out string output)
         {
-            bool isValid = string.IsNullOrEmpty(value) || IsValid(value!, EncodingType);
-            return new AttributeResult<string>(isValid, value , propertyName);
+            bool isValid = string.IsNullOrEmpty(value) || IsBaseEncoded(value!);
+            output = value;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must be a valid base-encoded string.", propertyName);
         }
 
-        private static bool IsValid(string value, BaseType type)
+        private bool IsBaseEncoded(string value)
         {
-            return type switch
+            return EncodingType switch
             {
                 BaseType.Base16 => IsBase16String(value),
                 BaseType.Base32 => IsBase32String(value),

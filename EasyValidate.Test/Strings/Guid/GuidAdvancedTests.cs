@@ -53,7 +53,7 @@ namespace EasyValidate.Test.Strings.Guid
             // Assert
             Assert.False(result.IsValid());
             Assert.True(result.HasErrors());
-            
+
             var userIdErrors = result.Errors.Where(e => e.Path.SequenceEqual(new[] { nameof(model.UserId) })).ToList();
             Assert.Single(userIdErrors);
             Assert.Equal("CUSTOM: The UserId field must be a valid GUID.", userIdErrors[0].FormattedMessage);
@@ -106,14 +106,9 @@ namespace EasyValidate.Test.Strings.Guid
 
         private class TestFormatter : IFormatter
         {
-            public string Format(string message, params object[] args)
+            public string Format<T>(AttributeResult result, T value)
             {
-                return $"CUSTOM: {string.Format(message, args)}";
-            }
-
-            public string GetFormatedMessage<TInput, TOutput>(IValidationAttribute<TInput, TOutput> attribute, object?[] args)
-            {
-                return $"CUSTOM: {string.Format(attribute.ErrorMessage, args)}";
+                return $"CUSTOM: {string.Format(result.MessageTemplate, result.MessageArgs)}";
             }
         }
     }
