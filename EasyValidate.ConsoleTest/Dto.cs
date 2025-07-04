@@ -28,7 +28,7 @@ public partial class Dto
     public Dto? NestedDto { get; set; }
     public void ShouldValidateStartsWith()
     {
-        // this.Validate();
+        this.Validate();
     }
 
 }

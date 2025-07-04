@@ -21,7 +21,8 @@ namespace EasyValidate.Handlers
             foreach (var instance in instances)
             {
                 // Example: public static readonly NotNullAttribute NotNull = NotNullAttribute.Instance;
-                sb.AppendLine($"        private static readonly {instance.Attribute.AttributeClass?.Name} {instance.InstanceName} = {instance.InstanceDeclration};");
+                sb.AppendLine($"        private {instance.Attribute.AttributeClass?.Name}? _{instance.InstanceName};");
+                sb.AppendLine($"        private {instance.Attribute.AttributeClass?.Name} {instance.InstanceName} => _{instance.InstanceName} ??= {instance.InstanceDeclration};");
             }
             sb.AppendLine();
             base.Handle(@params);

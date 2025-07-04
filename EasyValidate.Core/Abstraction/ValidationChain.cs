@@ -1,0 +1,124 @@
+using EasyValidate.Core.Attributes;
+
+namespace EasyValidate.Core.Abstraction
+{
+    public readonly struct ValidationChain
+    {
+        internal ValidationChain(ValidationResult result, object obj, string chainName, string propertyName)
+        {
+            _rersult = result;
+            _obj = obj;
+            _chainName = chainName;
+            _propertyName = propertyName;
+        }
+        private readonly string _chainName;
+        private readonly string _propertyName;
+        private readonly object _obj;
+        private readonly ValidationResult _rersult;
+        public readonly bool AddValidtor<TInput, TOutput>(IValidationAttribute<TInput, TOutput> validator, TInput input, out TOutput output)
+        {
+            switch (validator.Strategy)
+            {
+                case ExecutionStrategy.ConditionalAndStopChain:
+                    if (TryInvokeConditional(validator))
+                        return ValidateAndReportError(validator, input, out output);
+                    output = default!; // Set output to default value if validation is skipped
+                    return false; // Skip validation if conditional method returns false
+                case ExecutionStrategy.ConditionalAndContinue:
+                    if (TryInvokeConditional(validator))
+                        ValidateAndReportError(validator, input, out output);
+                    else
+                        output = default!; // Set output to default value if validation is skipped
+                    return true; // Skip validation but continue the chain
+                case ExecutionStrategy.ValidateAndStop:
+                    return ValidateAndReportError(validator, input, out output);
+                case ExecutionStrategy.ValidateErrorAndContinue:
+                    if (ValidateAndReportError(validator, input, out output))
+                        return true; // Validation passed, continue the chain
+                    return true; // Validation failed, but continue the chain
+                case ExecutionStrategy.SkipErrorAndStop:
+                    var result = validator.Validate(_obj, _propertyName, input, out output);
+                    if (!result.IsValid)
+                        return false;
+                    else
+                        return true;
+                default:
+                    output = default!; // Set output to default value if validation is skipped
+                    return false; // Skip validation if no valid strategy is defined
+            }
+        }
+
+
+        private readonly bool ValidateAndReportError<TInput, TOutput>(IValidationAttribute<TInput, TOutput> validator, TInput input, out TOutput output)
+        {
+            var result = validator.Validate(_obj, _propertyName, input, out output);
+            if (!result.IsValid)
+            {
+                _rersult.AddResult(result, validator.GetType().Name, validator.ErrorCode, input, _propertyName, _chainName);
+                output = default!; // Set output to default value if validation fails
+                return false; // Return false to indicate validation failure
+            }
+            else
+                return true; // Return true if validation is successful
+
+        }
+
+
+        private readonly bool TryInvokeConditional<TInput, TOutput>(IValidationAttribute<TInput, TOutput> validator)
+        {
+            if (string.IsNullOrEmpty(validator.ConditionalMethod))
+                return true; // No conditional method, validation always runs
+
+            var conditionalMethod = _obj.GetType().GetMethod(validator.ConditionalMethod,
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+
+            if (conditionalMethod != null)
+            {
+                var shouldValidate = conditionalMethod.Invoke(_obj, [this]);
+                if (shouldValidate is bool boolResult && !boolResult)
+                    return false; // Skip validation if the condition is false
+            }
+            return true; // Proceed with validation if no condition or condition is true
+        }
+
+
+        public readonly bool AddValidtor<TInput>(NotNullAttribute validator, TInput? input, out TInput output) where TInput : struct
+        {
+            if (AddValidtor<object?, object?>(validator, input, out var output1))
+            {
+                output = (TInput)output1!; // Cast to TOutput
+                return true;
+            }
+            output = default!;
+            return false; // Return false if validation fails
+        }
+
+        public readonly bool AddValidtor<TInput>(NotNullAttribute validator, TInput? input, out TInput output) where TInput : class
+        {
+            if (AddValidtor<object?, object?>(validator, input, out var output1))
+            {
+                output = (TInput)output1!; // Cast to TOutput
+                return true;
+            }
+            output = default!;
+            return false; // Return false if validation fails
+        }
+
+        public readonly bool AddValidtor<TInput>(GeneralValidationAttributeBase validator, TInput input, out TInput output)
+        {
+            if (AddValidtor<object?, object?>(validator, input, out var output1))
+            {
+                if (output1 is null)
+                    output = default!;
+                else
+                    output = (TInput)output1; // Cast to TOutput
+                return true;
+            }
+            output = default!;
+            return false; // Return false if validation fails
+        }
+
+    }
+
+
+}

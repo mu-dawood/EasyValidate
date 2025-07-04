@@ -27,7 +27,7 @@ namespace EasyValidate.Core.Abstraction
         /// </example>
         /// <docs-member>Validate()</docs-member>
         /// <docs-type>Method</docs-type>
-        IValidationResult Validate(IFormatter formatter, IConfigureValidator configureValidator, params string[] parentPath);
+        IValidationResult Validate(IFormatter? formatter, IConfigureValidator? configureValidator, params string[] parentPath);
 
         /// <summary>
         /// Validates the object and returns a ValidationResult using the specified formatter and default configurator.

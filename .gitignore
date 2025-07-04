@@ -225,3 +225,7 @@ EasyValidate-Website/
 *.log
 
 /local-nuget
+
+
+*.nettrace
+*.etlx

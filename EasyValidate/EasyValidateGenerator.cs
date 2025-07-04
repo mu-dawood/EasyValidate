@@ -8,6 +8,7 @@ using System.Collections.Immutable;
 using EasyValidate;
 using System.Collections.Generic;
 using System;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace EasyValidate
 {
@@ -64,7 +65,6 @@ namespace EasyValidate
                 var argumentHandler = new AttributeArgumentHandler();
                 var members = classSymbol.GetMembers();
                 Dictionary<string, string> instanceNames = [];
-                int instanceCounter = 0;
                 foreach (var member in members)
                 {
                     if (member is not IPropertySymbol && member is not IFieldSymbol)
@@ -88,13 +88,22 @@ namespace EasyValidate
                             else
                             {
                                 // Generate a unique instance name for the attribute
-                                var instanceName = $"{attr.AttributeClass.Name.ToLowerInvariant()}_{instanceCounter++}";
+                                var baseName = attr.AttributeClass.Name.ToSakeCase();
+                                var instanceName = baseName;
+                                int suffixIndex = 0;
+                                string[] suffixes = Enumerable.Range('a', 26).Select(i => ((char)i).ToString()).ToArray();
+                                while (instanceNames.Values.Contains(instanceName))
+                                {
+                                    string suffix = suffixIndex < suffixes.Length ? suffixes[suffixIndex] : $"_{suffixIndex}";
+                                    instanceName = $"{baseName}_{suffix}";
+                                    suffixIndex++;
+                                }
                                 instanceNames[instnceDeclration] = instanceName;
                                 info.Attributes.Add(new AttributeInfo(attr, instanceName, instnceDeclration, inputAndOutputTypes));
                             }
                         }
                     }
-                    if (info.RequireNestedValidation || info.Attributes.Count > 0)
+                    if (info.Attributes.Count > 0 || (info.RequireNestedValidation && IsGettingField(classSymbol, member)))
                         memberInfos.Add(info);
                 }
 
@@ -103,7 +112,6 @@ namespace EasyValidate
                     DebuggerUtil.Log($"Skipping class {classSymbol.Name} as it has no properties with validation attributes derived from IValidationAttribute.");
                     return;
                 }
-
                 var sb = new StringBuilder();
                 var chain = new GeneratorChain()
                     .Add(new UsingImportsHandler())
@@ -131,6 +139,39 @@ namespace EasyValidate
             DebuggerUtil.Log($"Successfully generated validation class for: {classSymbol.Name}");
         }
 
+
+        private static bool IsGettingField(INamedTypeSymbol classSymbol, ISymbol member)
+        {
+            if (member is IPropertySymbol prop)
+            {
+                var syntaxRef = prop.DeclaringSyntaxReferences.FirstOrDefault();
+                if (syntaxRef != null)
+                {
+                    var propDecl = syntaxRef.GetSyntax() as PropertyDeclarationSyntax;
+                    // Expression-bodied property: public string Prop => _field;
+                    if (propDecl?.ExpressionBody?.Expression is IdentifierNameSyntax idName)
+                    {
+                        if (classSymbol.GetMembers().OfType<IFieldSymbol>().Any(f => f.Name == idName.Identifier.Text))
+                        {
+                            return true;
+                        }
+                    }
+                    // Block-bodied property: public string Prop { get { return _field; } }
+                    else if (propDecl?.AccessorList != null)
+                    {
+                        var getter = propDecl.AccessorList.Accessors.FirstOrDefault(a => a.IsKind(SyntaxKind.GetAccessorDeclaration));
+                        if (getter?.Body?.Statements.Count == 1 &&
+                            getter.Body.Statements[0] is ReturnStatementSyntax ret &&
+                            ret.Expression is IdentifierNameSyntax idName2 &&
+                            classSymbol.GetMembers().OfType<IFieldSymbol>().Any(f => f.Name == idName2.Identifier.Text))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
 
         /// <summary>
         /// Generates the attribute initialization code with constructor and named arguments.

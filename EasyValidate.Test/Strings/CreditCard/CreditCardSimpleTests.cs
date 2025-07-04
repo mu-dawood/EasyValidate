@@ -120,7 +120,7 @@ namespace EasyValidate.Test.Strings.CreditCard
             };
 
             // Act
-            var result = model.Validate(ValidationResult.GetDefaultConfigureValidator());
+            var result = model.Validate();
 
             // Assert
             Assert.True(result.IsValid());
@@ -139,7 +139,7 @@ namespace EasyValidate.Test.Strings.CreditCard
             };
 
             // Act
-            var result = model.Validate(ValidationResult.GetDefaultFormatter());
+            var result = model.Validate();
 
             // Assert
             Assert.True(result.IsValid());

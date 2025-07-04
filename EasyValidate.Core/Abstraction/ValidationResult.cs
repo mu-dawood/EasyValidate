@@ -14,73 +14,14 @@ namespace EasyValidate.Core.Abstraction
     /// <remarks>
     /// Initializes a new instance of the ValidationResult class.
     /// </remarks>
-    /// <param name="obj">The object being validated.</param>
     /// <param name="parentPath">The parent path for nested validation.</param>
     /// <param name="formatter">The formatter to use for error messages. If null, uses default formatter.</param>
     /// <param name="configureValidator">The validator configurator. If null, uses default configurator.</param>
-    public sealed partial class ValidationResult(object obj, string[] parentPath, IFormatter? formatter, IConfigureValidator? configureValidator) : IValidationResult
+    public sealed partial class ValidationResult(IFormatter? formatter, IConfigureValidator? configureValidator, string[] parentPath) : IValidationResult
     {
-        /// <summary>
-        /// Gets the default formatter instance used for formatting validation messages.
-        /// </summary>
-        /// <returns>An IFormatter instance that provides basic string formatting capabilities.</returns>
-        /// <remarks>
-        /// This method returns a singleton instance of the default formatter implementation
-        /// that uses standard .NET string formatting.
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// var formatter = ValidationResult.GetDefaultFormatter();
-        /// var result = new ValidationResult(obj, [], formatter, null);
-        /// </code>
-        /// </example>
-        /// <docs-member>GetDefaultFormatter()</docs-member>
-        /// <docs-type>Method</docs-type>
-        /// <docs-return-type>IFormatter</docs-return-type>
-        private static readonly IFormatter _defaultFormatter = new DefaultFormatter();
-        public static IFormatter GetDefaultFormatter() => _defaultFormatter;
-
-        /// <summary>
-        /// Gets the default configure validator instance used for configuring validation attributes.
-        /// </summary>
-        /// <returns>An IConfigureValidator instance that provides basic configuration capabilities.</returns>
-        /// <remarks>
-        /// This method returns a singleton instance of the default configure validator implementation
-        /// that returns validators unchanged.
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// var configureValidator = ValidationResult.GetDefaultConfigureValidator();
-        /// var result = new ValidationResult(obj, [], null, configureValidator);
-        /// </code>
-        /// </example>
-        /// <docs-member>GetDefaultConfigureValidator()</docs-member>
-        /// <docs-type>Method</docs-type>
-        /// <docs-return-type>IConfigureValidator</docs-return-type>
-        private static readonly IConfigureValidator _defaultConfigureValidator = new DefaultConfigureValidator();
-        public static IConfigureValidator GetDefaultConfigureValidator() => _defaultConfigureValidator;
-
-        /// <summary>
-        /// Gets the default formatter instance used for formatting validation messages.
-        /// </summary>
-        /// <returns>An IFormatter instance that provides basic string formatting capabilities.</returns>
-        /// <remarks>
-        /// This method returns a singleton instance of the default formatter implementation
-        /// that uses standard .NET string formatting.
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// var formatter = ValidationResult.GetDefaultFormatter();
-        /// var result = new ValidationResult(formatter);
-        /// </code>
-        /// </example>
-        /// <docs-member>GetDefaultFormatter()</docs-member>
-        /// <docs-type>Method</docs-type>
-        /// <docs-return-type>IFormatter</docs-return-type>
-        private readonly IFormatter _formatter = formatter ?? GetDefaultFormatter();
-        private readonly IConfigureValidator _configureValidator = configureValidator ?? GetDefaultConfigureValidator();
-        private readonly string[] _parentPath = parentPath;
-        private readonly object _obj = obj;
+        private readonly IFormatter? _formatter = formatter;
+        private readonly IConfigureValidator? _configureValidator = configureValidator;
+        private readonly string[]? _parentPath = parentPath;
 
         /// <inheritdoc/>
         public bool HasErrors() => Errors.Any();
@@ -141,14 +82,14 @@ namespace EasyValidate.Core.Abstraction
         /// <docs-member>Errors</docs-member>
         /// <docs-type>Property</docs-type>
         /// <docs-return-type>IReadOnlyList of ValidationError</docs-return-type>
-        private readonly List<ValidationError> _errors = [];
-        public IReadOnlyList<ValidationError> Errors => _errors;
+        private List<ValidationError>? _errors;
+        public IReadOnlyList<ValidationError> Errors => _errors ??= [];
 
-        private void AddError(ValidationError error)
+        internal void AddResult<T>(AttributeResult result, string type, string errorCode, T input, string propertyName, string chainName)
         {
-            if (error == null)
-                throw new ArgumentNullException(nameof(error));
 
+            _errors ??= [];
+            var error = new ValidationError(errorCode, type, _formatter?.Format(result, input) ?? string.Format(result.MessageTemplate, result.MessageArgs), _parentPath == null ? [propertyName] : [.. _parentPath, propertyName], chainName);
             _errors.Add(error);
         }
 
@@ -174,7 +115,8 @@ namespace EasyValidate.Core.Abstraction
         /// <docs-return-type>void</docs-return-type>
         public void MergeWith(string memberName, IValidate other)
         {
-            var result = other.Validate(_formatter, _configureValidator, [.. _parentPath, memberName]);
+            var result = other.Validate(_formatter, _configureValidator, _parentPath == null ? [memberName] : [.. _parentPath, memberName]);
+            _errors ??= [];
             _errors.AddRange(result.Errors);
         }
 
@@ -213,35 +155,25 @@ namespace EasyValidate.Core.Abstraction
                 index++;
             }
         }
+        /// <summary>
+        /// Creates a new validation chain for the current object.
+        /// This allows for more complex validation scenarios where multiple validations can be grouped together.
+        /// The chain can be named and associated with a specific property of the object.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="chainName"></param>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
+        public ValidationChain CreateChain(object obj, string chainName, string propertyName)
+        {
+            return new ValidationChain(this, obj, chainName, propertyName);
+        }
 
         public override string ToString()
         {
             return string.Join(Environment.NewLine, _errors.Select(error => error.FormattedMessage));
         }
 
-
-        /// <summary>
-        /// Default formatter implementation that provides basic string formatting using standard .NET string formatting.
-        /// </summary>
-        private class DefaultFormatter : IFormatter
-        {
-
-            public string Format<T>(AttributeResult result, T value)
-            {
-                return string.Format(result.MessageTemplate, result.MessageArgs);
-            }
-
-        }
-        /// <summary>
-        /// Default configure validator implementation that returns validation attributes unchanged.
-        /// </summary>
-        private class DefaultConfigureValidator : IConfigureValidator
-        {
-            public IValidationAttribute<I, O> Configure<I, O>(IValidationAttribute<I, O> validator)
-            {
-                return validator;
-            }
-        }
     }
 
 }

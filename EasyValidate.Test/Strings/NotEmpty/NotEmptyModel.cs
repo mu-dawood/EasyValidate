@@ -4,8 +4,8 @@ namespace EasyValidate.Test.Strings.NotEmpty;
 
 public partial class NotEmptyModel
 {
-    [NotEmpty]
-    public string Name { get; set; } = string.Empty;
+    [Optional, NotEmpty]
+    public string? Name { get; set; } = string.Empty;
 
     [NotEmpty]
     public string Email { get; set; } = string.Empty;
