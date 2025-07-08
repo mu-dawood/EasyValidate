@@ -17,7 +17,10 @@
   <ItemGroup>
     <ProjectReference Include="../EasyValidate.Analyzers/EasyValidate.Analyzers.csproj"
       OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="../EasyValidate.Fixers/EasyValidate.Fixers.csproj"
+      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="../EasyValidate.Core/EasyValidate.Core.csproj" />
-    <ProjectReference Include="../EasyValidate/EasyValidate.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    <ProjectReference Include="../EasyValidate/EasyValidate.csproj" OutputItemType="Analyzer"
+      ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

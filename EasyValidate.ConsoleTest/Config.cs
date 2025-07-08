@@ -1,4 +1,5 @@
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Validators;
 
@@ -10,5 +11,6 @@ public class MinimalConfig : ManualConfig
         AddLogger(ConsoleLogger.Default); // or use new CustomLogger() if needed
         WithOptions(ConfigOptions.DisableLogFile); // Optional: disables .log file creation
         AddValidator(ExecutionValidator.FailOnError); // Prevent silent skipping
+        AddExporter(MarkdownExporter.Default);
     }
 }

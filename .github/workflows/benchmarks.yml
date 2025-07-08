@@ -9,8 +9,11 @@ on:
         default: 'manual'
 
 jobs:
-  build-and-benchmark:
+  benchmark:
     runs-on: ubuntu-latest
+    outputs:
+      artifact-name: ${{ steps.upload.outputs.artifact-name }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,11 +23,55 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Restore dependencies
+      - name: Restore full solution
         run: dotnet restore EasyValidate.sln
 
-      - name: Build
-        run: dotnet build EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release
-        
-      - name: Run FluentFriendlyValidationBenchmarks
+      - name: Build full solution in Release mode
+        run: dotnet build EasyValidate.sln --configuration Release --no-restore
+
+      - name: Run benchmarks
         run: dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build
+
+      - name: Copy benchmark result
+        run: |
+          mkdir -p benchmark-output
+          cp BenchmarkDotNet.Artifacts/results/*-report.md benchmark-output/BenchmarkResults.md
+
+      - name: Upload benchmark result
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-current
+          path: benchmark-output/BenchmarkResults.md
+
+  compare:
+    runs-on: ubuntu-latest
+    needs: benchmark
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download current result
+        uses: actions/download-artifact@v4
+        with:
+          name: benchmark-current
+          path: current
+
+      - name: Download previous result from main branch
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: Run EasyValidate Benchmarks
+          branch: main
+          name: benchmark-current
+          path: previous
+          if_no_artifact_found: warn
+
+      - name: Compare benchmark outputs
+        run: |
+          echo "### Benchmark Comparison" >> $GITHUB_STEP_SUMMARY
+          if [ -f previous/BenchmarkResults.md ]; then
+            echo "Comparing to previous run..." >> $GITHUB_STEP_SUMMARY
+            diff -u previous/BenchmarkResults.md current/BenchmarkResults.md >> $GITHUB_STEP_SUMMARY || true
+          else
+            echo "No previous result found for comparison." >> $GITHUB_STEP_SUMMARY
+          fi
