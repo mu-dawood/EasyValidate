@@ -3,7 +3,7 @@ using EasyValidate.Benchmarks;
 using EasyValidate.ConsoleTest;
 
 
-BenchmarkRunner.Run<AttributeSetupBenchmarks>(new MinimalConfig());
+BenchmarkRunner.Run<AttributeSetupBenchmarks>();
 
 
 // var benchmark = new FluentFriendlyValidationBenchmarks();

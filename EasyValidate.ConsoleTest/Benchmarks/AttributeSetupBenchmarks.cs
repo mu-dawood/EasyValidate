@@ -24,7 +24,7 @@ namespace EasyValidate.Benchmarks
     /// Run with: dotnet run -c Release -- --filter "*AttributeSetup*"
     /// </summary>
     [MemoryDiagnoser]
-    [SimpleJob(launchCount: 1, warmupCount: 1, iterationCount: 1)]
+    [ShortRunJob()]
     public partial class AttributeSetupBenchmarks
     {
         // #region DataAnnotations Attributes
