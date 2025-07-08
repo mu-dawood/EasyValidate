@@ -5,6 +5,7 @@ namespace EasyValidate.Benchmarks
 {
     [MemoryDiagnoser]
     [SimpleJob(launchCount: 1, warmupCount: 1, iterationCount: 10)]
+    [BenchmarkCategory("Friendly")]
     public partial class FluentFriendlyValidationBenchmarks
     {
         // DataAnnotations

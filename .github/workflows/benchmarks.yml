@@ -16,6 +16,8 @@ on:
           - Collection
           - DateTime
           - Other
+          - Friendly
+          - Regular
 
 jobs:
   benchmark:
