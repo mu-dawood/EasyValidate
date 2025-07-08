@@ -3,10 +3,19 @@ name: Run EasyValidate Benchmarks
 on:
   workflow_dispatch:
     inputs:
-      reason:
-        description: 'Trigger reason'
+      category:
+        description: 'Select benchmark category'
         required: true
-        default: 'manual'
+        default: 'All'
+        type: choice
+        options:
+          - All
+          - General
+          - String
+          - Numeric
+          - Collection
+          - DateTime
+          - Other
 
 jobs:
   benchmark:
@@ -30,7 +39,14 @@ jobs:
         run: dotnet build EasyValidate.sln --configuration Release --no-restore
 
       - name: Run benchmarks
-        run: dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build
+        run: |
+          CATEGORY="${{ github.event.inputs.category }}"
+          CMD="dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build"
+          if [ "$CATEGORY" != "All" ]; then
+            CMD="$CMD -- --filter * --category $CATEGORY"
+          fi
+          echo "Running: $CMD"
+          eval $CMD
 
       - name: Copy benchmark result
         run: |
