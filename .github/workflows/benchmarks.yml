@@ -1,0 +1,30 @@
+name: Run EasyValidate Benchmarks
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Trigger reason'
+        required: true
+        default: 'manual'
+
+jobs:
+  build-and-benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore EasyValidate.sln
+
+      - name: Build
+        run: dotnet build EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release
+        
+      - name: Run FluentFriendlyValidationBenchmarks
+        run: dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build
