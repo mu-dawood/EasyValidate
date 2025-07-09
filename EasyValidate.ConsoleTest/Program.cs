@@ -3,10 +3,7 @@ using BenchmarkDotNet.Running;
 using EasyValidate.ConsoleTest;
 
 
-BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args, ManualConfig.CreateEmpty()
-    .WithOptions(ConfigOptions.DisableOptimizationsValidator)
-    .WithOptions(ConfigOptions.JoinSummary)
-    .WithOptions(ConfigOptions.KeepBenchmarkFiles)
+BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args, DefaultConfig.Instance
     .AddLogger(new BeautifulLogger())
     .HideColumns("Job", "Toolchain", "IterationCount", "MaxWarmupIterationCount", "WarmupCount")
 );

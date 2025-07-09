@@ -64,7 +64,7 @@ jobs:
         run: |
           CATEGORY="${{ github.event.inputs.category }}"
           BENCHMARK="${{ github.event.inputs.benchmark }}"
-          CMD="dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build -- --job short --maxWarmupCount 10 --runtimes net9.0 --filter '*$BENCHMARK*' --exporters RPlot GitHub"
+          CMD="dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build -- --job short --maxWarmupCount 10 --runtimes net9.0 --filter '*$BENCHMARK*' --exporters RPlot GitHub Csv"
           if [ "$CATEGORY" != "All" ]; then
             CMD="$CMD --anyCategories $CATEGORY"
           fi
@@ -76,12 +76,10 @@ jobs:
           mkdir -p benchmark-output
           echo "Available files:"
           ls -R BenchmarkDotNet.Artifacts || echo "No artifacts directory"
-          if ls BenchmarkDotNet.Artifacts/results/*-report-github.md 1> /dev/null 2>&1; then
-            cp BenchmarkDotNet.Artifacts/results/*-report-github.md benchmark-output/BenchmarkResults.md
-          elif ls BenchmarkDotNet.Artifacts/results/*-report.md 1> /dev/null 2>&1; then
-            cp BenchmarkDotNet.Artifacts/results/*-report.md benchmark-output/BenchmarkResults.md
+          if [ -d BenchmarkDotNet.Artifacts ]; then
+            cp -r BenchmarkDotNet.Artifacts/* benchmark-output/
           else
-            echo "No benchmark report found"
+            echo "No BenchmarkDotNet.Artifacts directory found"
           fi
 
       - name: Upload benchmark result
@@ -89,7 +87,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: benchmark-current
-          path: benchmark-output/BenchmarkResults.md
+          path: benchmark-output
 
   compare:
     runs-on: ubuntu-latest
@@ -114,12 +112,22 @@ jobs:
           path: previous
           if_no_artifact_found: warn
 
-      - name: Compare benchmark outputs
+      - name: Compare benchmark outputs (Markdown)
         run: |
-          echo "### Benchmark Comparison" >> $GITHUB_STEP_SUMMARY
+          echo "### Benchmark Comparison (Markdown)" >> $GITHUB_STEP_SUMMARY
           if [ -f previous/BenchmarkResults.md ]; then
             echo "Comparing to previous run..." >> $GITHUB_STEP_SUMMARY
             diff -u previous/BenchmarkResults.md current/BenchmarkResults.md >> $GITHUB_STEP_SUMMARY || true
           else
             echo "No previous result found for comparison." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Compare benchmark outputs (CSV)
+        run: |
+          echo "\n### Benchmark Comparison (CSV)" >> $GITHUB_STEP_SUMMARY
+          if [ -f previous/BenchmarkResults.csv ] && [ -f current/BenchmarkResults.csv ]; then
+            echo "Comparing CSV to previous run..." >> $GITHUB_STEP_SUMMARY
+            diff -u previous/BenchmarkResults.csv current/BenchmarkResults.csv >> $GITHUB_STEP_SUMMARY || true
+          else
+            echo "No previous CSV result found for comparison." >> $GITHUB_STEP_SUMMARY
           fi
