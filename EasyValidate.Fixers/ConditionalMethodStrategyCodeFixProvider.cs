@@ -85,7 +85,7 @@ namespace EasyValidate.Fixers
             {
                 var newArg = existing.WithExpression(value);
                 var newArgs = args.Replace(existing, newArg);
-                return attribute.WithArgumentList(attribute.ArgumentList.WithArguments(newArgs));
+                return attribute.WithArgumentList(attribute.ArgumentList?.WithArguments(newArgs));
             }
             else
             {

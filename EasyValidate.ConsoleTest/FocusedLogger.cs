@@ -232,7 +232,7 @@ public partial class FocusLogger : ILogger
             // Restore the original cursor position, adjusted in case the terminal window has scrolled.
             int diff = expectedCursorTop - Console.CursorTop;
             restoreTop -= diff;
-
+            restoreTop = Math.Max(0, restoreTop);
             Console.SetCursorPosition(restoreLeft, restoreTop);
 
 
@@ -275,7 +275,7 @@ public partial class FocusLogger : ILogger
             int expectedCursorTop = restoreTop + 3;
             int diff = expectedCursorTop - Console.CursorTop;
             restoreTop -= diff;
-
+            restoreTop = Math.Max(0, restoreTop);
             Console.SetCursorPosition(restoreLeft, restoreTop);
         }
 
