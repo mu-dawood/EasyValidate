@@ -53,7 +53,7 @@ jobs:
         run: |
           CATEGORY="${{ github.event.inputs.category }}"
           BENCHMARK="${{ github.event.inputs.benchmark }}"
-          CMD="dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build -- --job short --maxWarmupCount 10 --list tree --filter '*$BENCHMARK*'"
+          CMD="dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build --  --maxWarmupCount 10 --list tree --filter '*$BENCHMARK*'"
           if [ "$CATEGORY" != "All" ]; then
             CMD="$CMD --anyCategories $CATEGORY"
           fi
@@ -64,7 +64,7 @@ jobs:
         run: |
           CATEGORY="${{ github.event.inputs.category }}"
           BENCHMARK="${{ github.event.inputs.benchmark }}"
-          CMD="dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build -- --job short --maxWarmupCount 10 --runtimes net9.0 --filter '*$BENCHMARK*'"
+          CMD="dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build -- --job short --maxWarmupCount 10 --runtimes net9.0 --filter '*$BENCHMARK*' --exporters RPlot GitHub"
           if [ "$CATEGORY" != "All" ]; then
             CMD="$CMD --anyCategories $CATEGORY"
           fi
@@ -74,6 +74,7 @@ jobs:
       - name: Copy benchmark result
         run: |
           mkdir -p benchmark-output
+          ls BenchmarkDotNet.Artifacts/results/*-report.md
           cp BenchmarkDotNet.Artifacts/results/*-report.md benchmark-output/BenchmarkResults.md
 
       - name: Upload benchmark result
