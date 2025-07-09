@@ -1,5 +1,4 @@
 using BenchmarkDotNet.Running;
-using EasyValidate.Benchmarks;
 
 
-BenchmarkRunner.Run<AttributeSetupBenchmarks>(args: args);
+BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);

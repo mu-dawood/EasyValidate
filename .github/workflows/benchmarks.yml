@@ -45,7 +45,7 @@ jobs:
           CATEGORY="${{ github.event.inputs.category }}"
           CMD="dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build"
           if [ "$CATEGORY" != "All" ]; then
-            CMD="$CMD -- --filter * --category $CATEGORY"
+            CMD="$CMD -- --filter * --maxWarmupCoun 10 --anyCategories $CATEGORY"
           fi
           echo "Running: $CMD"
           eval $CMD
