@@ -92,7 +92,7 @@ namespace EasyValidate.Benchmarks
         private PositiveAttribute _positiveAttribute = null!;
         private PowerOfAttribute _powerOfAttribute = null!;
         private PrimeAttribute _primeAttribute = null!;
-        private Core.Attributes.RangeAttribute _easyRangeAttribute = null!;
+        private RangeAttribute _easyRangeAttribute = null!;
 
         // Collection Validation Attributes
         private ContainsElementAttribute _containsElementAttribute = null!;

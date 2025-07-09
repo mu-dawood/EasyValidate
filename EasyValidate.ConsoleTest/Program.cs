@@ -7,6 +7,6 @@ BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args, ManualConfig.
     .WithOptions(ConfigOptions.DisableOptimizationsValidator)
     .WithOptions(ConfigOptions.JoinSummary)
     .WithOptions(ConfigOptions.KeepBenchmarkFiles)
-    .AddLogger(new FocusLogger())
+    .AddLogger(new BeautifulLogger())
     .HideColumns("Job", "Toolchain", "IterationCount", "MaxWarmupIterationCount", "WarmupCount")
 );

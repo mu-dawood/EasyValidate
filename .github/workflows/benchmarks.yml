@@ -106,6 +106,7 @@ jobs:
 
       - name: Download previous result from main branch
         uses: dawidd6/action-download-artifact@v2
+        continue-on-error: true
         with:
           workflow: Run EasyValidate Benchmarks
           branch: main
