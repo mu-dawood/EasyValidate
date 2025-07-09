@@ -283,6 +283,6 @@ public partial class FocusLogger : ILogger
         // It is not needed in Unix terminals, or in other Windows terminals like PowerShell or the special terminal that Visual Studio launches when you run a project.
         // In and only in the Windows native terminal, writing the full width of the console causes a line wrap, which breaks our output.
         static int MaxWriteLineWidth 
-            => Console.WindowWidth - 1;
+            => Console.WindowWidth;
     }
 }
