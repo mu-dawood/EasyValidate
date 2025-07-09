@@ -76,7 +76,9 @@ jobs:
           mkdir -p benchmark-output
           echo "Available files:"
           ls -R BenchmarkDotNet.Artifacts || echo "No artifacts directory"
-          if ls BenchmarkDotNet.Artifacts/results/*-report.md 1> /dev/null 2>&1; then
+          if ls BenchmarkDotNet.Artifacts/results/*-report-github.md 1> /dev/null 2>&1; then
+            cp BenchmarkDotNet.Artifacts/results/*-report-github.md benchmark-output/BenchmarkResults.md
+          elif ls BenchmarkDotNet.Artifacts/results/*-report.md 1> /dev/null 2>&1; then
             cp BenchmarkDotNet.Artifacts/results/*-report.md benchmark-output/BenchmarkResults.md
           else
             echo "No benchmark report found"
