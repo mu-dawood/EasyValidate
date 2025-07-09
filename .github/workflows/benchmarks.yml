@@ -1,4 +1,4 @@
-name: Run EasyValidate Benchmarks
+name: Run Benchmarks
 
 on:
   workflow_dispatch:
@@ -64,7 +64,7 @@ jobs:
         run: |
           CATEGORY="${{ github.event.inputs.category }}"
           BENCHMARK="${{ github.event.inputs.benchmark }}"
-          CMD="dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build -- --job short --maxWarmupCount 10 --runtimes net9.0 --filter '*$BENCHMARK*' --exporters RPlot GitHub Csv"
+          CMD="dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build -- --runtimes net9.0 --filter '*$BENCHMARK*'"
           if [ "$CATEGORY" != "All" ]; then
             CMD="$CMD --anyCategories $CATEGORY"
           fi
@@ -106,7 +106,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         continue-on-error: true
         with:
-          workflow: Run EasyValidate Benchmarks
+          workflow: Run Benchmarks
           branch: main
           name: benchmark-current
           path: previous
