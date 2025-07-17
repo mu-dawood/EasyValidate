@@ -37,21 +37,61 @@ namespace EasyValidate.Core.Attributes
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "AgeRangeValidationError";
 
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The field {0} must represent an age between {1} and {2} years.";
 
-        /// Arguments propertyName, MinimumAge, MaximumAge
-
-        /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        /// <summary>
+        /// Validates a DateTime value for age range.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
         {
-            var age = Now.Year - value.Year;
-            if (value.Date > Now.AddYears(-age).Date) age--;
-
+            var now = DateTime.UtcNow;
+            var age = now.Year - value.Year;
+            // Adjust age if birthday hasn't occurred yet this year
+            // now.AddYears(-age) gives the last birthday date in the current year
+            // If the birth date is after the last birthday, subtract one from age
+            if (value.Date > now.AddYears(-age).Date)
+                age--;
             bool isValid = age >= MinimumAge && age <= MaximumAge;
             return isValid
-               ? AttributeResult.Success()
-               : AttributeResult.Fail(ErrorMessage, propertyName, MinimumAge, MaximumAge);
+                ? AttributeResult.Success()
+                : AttributeResult.Fail("The field {0} must represent an age between {1} and {2} years.", propertyName, MinimumAge, MaximumAge);
+        }
+
+        /// <summary>
+        /// Validates a DateOnly value for age range.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        {
+            var now = DateOnly.FromDateTime(DateTime.UtcNow);
+            var age = now.Year - value.Year;
+            // Adjust age if birthday hasn't occurred yet this year
+            // now.AddYears(-age) gives the last birthday date in the current year
+            // If the birth date is after the last birthday, subtract one from age
+            if (value > now.AddYears(-age))
+                age--;
+            bool isValid = age >= MinimumAge && age <= MaximumAge;
+            return isValid
+                ? AttributeResult.Success()
+                : AttributeResult.Fail("The field {0} must represent an age between {1} and {2} years.", propertyName, MinimumAge, MaximumAge);
+        }
+#endif
+
+        /// <summary>
+        /// Validates a DateTimeOffset value for age range.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        {
+            var now = DateTimeOffset.UtcNow;
+            var age = now.Year - value.Year;
+            // Adjust age if birthday hasn't occurred yet this year
+            // now.AddYears(-age) gives the last birthday date in the current year
+            // If the birth date is after the last birthday, subtract one from age
+            if (value.Date > now.AddYears(-age).Date)
+                age--;
+            bool isValid = age >= MinimumAge && age <= MaximumAge;
+            return isValid
+                ? AttributeResult.Success()
+                : AttributeResult.Fail("The field {0} must represent an age between {1} and {2} years.", propertyName, MinimumAge, MaximumAge);
         }
     }
 }

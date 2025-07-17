@@ -21,19 +21,46 @@ namespace EasyValidate.Core.Attributes
     public class NotTodayDateAttribute : DateValidationAttributeBase
     {
         public static readonly Lazy<NotTodayDateAttribute> Instance = new(() => new NotTodayDateAttribute());
-        /// <inheritdoc/>
-        public override string ErrorCode { get; set; } = "NotTodayDateValidationError";
 
         /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The field {0} must not be today's date.";
-
-        /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        private string _errorCode = "NotTodayDateValidationError";
+        public override string ErrorCode
         {
-            bool isValid = value.Date != Now.Date;
-            return isValid
-              ? AttributeResult.Success()
-              : AttributeResult.Fail(ErrorMessage, propertyName);
+            get => _errorCode;
+            set => _errorCode = value;
+        }
+
+        private static AttributeResult ValidateNotToday(string propertyName, DateTime date)
+        {
+            if (date.Date != DateTime.UtcNow.Date)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The field {0} must not be today's date.", propertyName);
+        }
+
+        /// <summary>
+        /// Validates a DateTime value for not today.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        {
+            return ValidateNotToday(propertyName, value);
+        }
+
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Validates a DateOnly value for not today.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        {
+            return ValidateNotToday(propertyName, value.ToDateTime(TimeOnly.MinValue));
+        }
+#endif
+
+        /// <summary>
+        /// Validates a DateTimeOffset value for not today.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        {
+            return ValidateNotToday(propertyName, value.UtcDateTime);
         }
     }
 }

@@ -22,22 +22,44 @@ namespace EasyValidate.Core.Attributes
     {
         public static readonly Lazy<NotInPastAttribute> Instance = new(() => new NotInPastAttribute());
 
-
         /// <inheritdoc/>
-        public override string ErrorCode { get; set; } = "NotInPastValidationError";
-
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The {0} field must not be in the past.";
-
-        /// Arguments propertyName
-
-        /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        private string _errorCode = "NotInPastValidationError";
+        public override string ErrorCode
         {
-            bool isValid = value >= Now;
-            return isValid
-               ? AttributeResult.Success()
-               : AttributeResult.Fail(ErrorMessage, propertyName);
+            get => _errorCode;
+            set => _errorCode = value;
+        }
+
+        /// <summary>
+        /// Validates a DateTime value for not in past.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        {
+            if (value >= DateTime.UtcNow)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The {0} field must not be in the past.", propertyName);
+        }
+
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Validates a DateOnly value for not in past.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        {
+            if (value.ToDateTime(TimeOnly.MinValue) >= DateTime.UtcNow.Date)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The {0} field must not be in the past.", propertyName);
+        }
+#endif
+
+        /// <summary>
+        /// Validates a DateTimeOffset value for not in past.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        {
+            if (value >= DateTimeOffset.UtcNow)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The {0} field must not be in the past.", propertyName);
         }
     }
 }

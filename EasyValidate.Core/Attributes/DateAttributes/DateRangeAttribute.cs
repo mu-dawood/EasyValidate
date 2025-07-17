@@ -20,6 +20,11 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public class DateRangeAttribute : DateValidationAttributeBase
     {
+        private readonly Func<DateTime, AttributeResult> _validateDateTime;
+        private readonly Func<DateTimeOffset, AttributeResult> _validateDateTimeOffset;
+#if NET6_0_OR_GREATER
+        private readonly Func<DateOnly, AttributeResult> _validateDateOnly;
+#endif
         public DateRangeAttribute(string minimum, string maximum)
         {
             if (string.IsNullOrWhiteSpace(minimum))
@@ -27,18 +32,44 @@ namespace EasyValidate.Core.Attributes
             if (string.IsNullOrWhiteSpace(maximum))
                 throw new ArgumentException("Maximum date cannot be null or empty.", nameof(maximum));
 
-            if (!DateTime.TryParse(minimum, out _))
+            if (!DateTime.TryParse(minimum, out DateTime minDate))
                 throw new ArgumentException("Invalid minimum date format.", nameof(minimum));
-            if (!DateTime.TryParse(maximum, out _))
+            if (!DateTime.TryParse(maximum, out DateTime maxDate))
                 throw new ArgumentException("Invalid maximum date format.", nameof(maximum));
+
+            if (minDate > maxDate)
+                throw new ArgumentException("Minimum date cannot be greater than maximum date.");
+
+            _validateDateTime = dt => dt >= minDate && dt <= maxDate ?
+                AttributeResult.Success() :
+                AttributeResult.Fail("The date must be between {0} and {1}.", minDate, maxDate);
+            _validateDateTimeOffset = dto => dto.UtcDateTime >= minDate && dto.UtcDateTime <= maxDate ?
+                AttributeResult.Success() :
+                AttributeResult.Fail("The date must be between {0} and {1}.", minDate, maxDate);
+#if NET6_0_OR_GREATER
+             _validateDateOnly = dateOnly => dateOnly >= DateOnly.FromDateTime(minDate) &&
+                                             dateOnly <= DateOnly.FromDateTime(maxDate) ?
+                AttributeResult.Success() :
+                AttributeResult.Fail("The date must be between {0} and {1}.", minDate, maxDate);
+#endif
+
         }
         public DateRangeAttribute(DateTime minimum, DateTime maximum)
         {
             if (minimum > maximum)
                 throw new ArgumentException("Minimum date cannot be greater than maximum date.");
-
-            Minimum = minimum;
-            Maximum = maximum;
+            _validateDateTime = dt => dt >= minimum && dt <= maximum ?
+                AttributeResult.Success() :
+                AttributeResult.Fail("The date must be between {0} and {1}.", minimum, maximum);
+            _validateDateTimeOffset = dto => dto.UtcDateTime >= minimum && dto.UtcDateTime <= maximum ?
+                AttributeResult.Success() :
+                AttributeResult.Fail("The date must be between {0} and {1}.", minimum, maximum);
+#if NET6_0_OR_GREATER
+            _validateDateOnly = dateOnly => dateOnly >= DateOnly.FromDateTime(minimum) &&
+                                             dateOnly <= DateOnly.FromDateTime(maximum) ?
+                AttributeResult.Success() :
+                AttributeResult.Fail("The date must be between {0} and {1}.", minimum, maximum);
+#endif
         }
 
 #if NET6_0_OR_GREATER
@@ -46,39 +77,37 @@ namespace EasyValidate.Core.Attributes
         {
             if (minimum > maximum)
                 throw new ArgumentException("Minimum date cannot be greater than maximum date.");
-
-            Minimum = minimum.ToDateTime(TimeOnly.FromTimeSpan(Now.TimeOfDay));
-            Maximum = maximum.ToDateTime(TimeOnly.FromTimeSpan(Now.TimeOfDay));
+            _validateDateOnly = dateOnly => dateOnly >= minimum && dateOnly <= maximum ?
+                AttributeResult.Success() :
+                AttributeResult.Fail("The date must be between {0} and {1}.", minimum, maximum);
+            _validateDateTime = dt => dt >= minimum.ToDateTime(TimeOnly.MinValue) && dt <= maximum.ToDateTime(TimeOnly.MinValue) ?
+                AttributeResult.Success() :
+                AttributeResult.Fail("The date must be between {0} and {1}.", minimum, maximum);
+            _validateDateTimeOffset = dto => dto.UtcDateTime >= minimum.ToDateTime(TimeOnly.MinValue) &&
+                                             dto.UtcDateTime <= maximum.ToDateTime(TimeOnly.MinValue) ?
+                AttributeResult.Success() :
+                AttributeResult.Fail("The date must be between {0} and {1}.", minimum, maximum);
         }
 #endif
-        /// <summary>
-        /// Gets or sets the nullable behavior for this attribute. Defaults to NullIsInvalid.
-        /// </summary>
-
-        /// <summary>
-        /// The minimum allowed date (inclusive).
-        /// </summary>
-        public DateTime Minimum { get; private set; }
-        /// <summary>
-        /// The maximum allowed date (inclusive).
-        /// </summary>
-        public DateTime Maximum { get; private set; }
 
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "DateRangeValidationError";
 
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The {0} field must be between {1} and {2}.";
+        /// <summary>
+        /// Validates a DateTime value for range.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value) => _validateDateTime(value);
 
-        /// Arguments propertyName, Minimum, Maximum
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Validates a DateOnly value for range.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value) => _validateDateOnly(value);
+#endif
 
-        /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
-        {
-            bool isValid = value >= Minimum && value <= Maximum;
-            return isValid
-               ? AttributeResult.Success()
-               : AttributeResult.Fail(ErrorMessage, propertyName, Minimum, Maximum);
-        }
+        /// <summary>
+        /// Validates a DateTimeOffset value for range.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value) => _validateDateTimeOffset(value);
     }
 }

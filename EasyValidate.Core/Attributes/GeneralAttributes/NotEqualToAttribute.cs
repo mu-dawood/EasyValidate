@@ -1,4 +1,3 @@
-using System;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -37,9 +36,6 @@ namespace EasyValidate.Core.Attributes
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "NotEqualToValidationError";
 
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The field {0} must not be equal to {1}.";
-
         /// Arguments propertyName, ComparisonValue
 
         /// <inheritdoc/>
@@ -48,7 +44,7 @@ namespace EasyValidate.Core.Attributes
             bool isValid = !Equals(value, ComparisonValue);
             return isValid
                 ? AttributeResult.Success()
-                : AttributeResult.Fail(ErrorMessage, propertyName, ComparisonValue);
+                : AttributeResult.Fail( "The field {0} must not be equal to {1}.", propertyName, ComparisonValue);
         }
     }
 }

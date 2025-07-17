@@ -4,46 +4,45 @@ using FluentValidation.Results;
 namespace EasyValidate.Benchmarks
 {
     [MemoryDiagnoser]
-    [SimpleJob(launchCount: 1, warmupCount: 1, iterationCount: 10)]
     [BenchmarkCategory("Friendly")]
     public partial class FluentFriendlyValidationBenchmarks
     {
         // DataAnnotations
-        private Models.DataAnnotations.SimpleUser _daSimpleValid = new();
-        private Models.DataAnnotations.SimpleUser _daSimpleInvalid = new() { Name = null!, Email = "bad", Age = 10 };
-        private Models.DataAnnotations.HeavyUser _daHeavyValid = new();
-        private Models.DataAnnotations.HeavyUser _daHeavyInvalid = new() { Name = null!, Email = "bad", Age = 10, Address = null!, Phone = null!, JobTitle = null!, Department = null!, Manager = null!, YearsExperience = 100, Salary = -1 };
+        private readonly Models.DataAnnotations.SimpleUser _daSimpleValid = new();
+        private readonly Models.DataAnnotations.SimpleUser _daSimpleInvalid = new() { Name = null!, Email = "bad", Age = 10 };
+        private readonly Models.DataAnnotations.HeavyUser _daHeavyValid = new();
+        private readonly Models.DataAnnotations.HeavyUser _daHeavyInvalid = new() { Name = null!, Email = "bad", Age = 10, Address = null!, Phone = null!, JobTitle = null!, Department = null!, Manager = null!, YearsExperience = 100, Salary = -1 };
         private System.ComponentModel.DataAnnotations.ValidationContext? _ctxSimpleValid;
         private System.ComponentModel.DataAnnotations.ValidationContext? _ctxSimpleInvalid;
         private System.ComponentModel.DataAnnotations.ValidationContext? _ctxHeavyValid;
         private System.ComponentModel.DataAnnotations.ValidationContext? _ctxHeavyInvalid;
 
         // FluentValidation
-        private Models.FluentValidation.SimpleUser _fvSimpleValid = new();
-        private Models.FluentValidation.SimpleUser _fvSimpleInvalid = new() { Name = null!, Email = "bad", Age = 10 };
-        private Models.FluentValidation.HeavyUser _fvHeavyValid = new();
-        private Models.FluentValidation.HeavyUser _fvHeavyInvalid = new() { Name = null!, Email = "bad", Age = 10, Address = null!, Phone = null!, JobTitle = null!, Department = null!, Manager = null!, YearsExperience = 100, Salary = -1 };
-        private Validators.SimpleUserFluentValidator _fvSimpleValidator = new();
-        private Validators.HeavyUserFluentValidator _fvHeavyValidator = new();
+        private readonly Models.FluentValidation.SimpleUser _fvSimpleValid = new();
+        private readonly Models.FluentValidation.SimpleUser _fvSimpleInvalid = new() { Name = null!, Email = "bad", Age = 10 };
+        private readonly Models.FluentValidation.HeavyUser _fvHeavyValid = new();
+        private readonly Models.FluentValidation.HeavyUser _fvHeavyInvalid = new() { Name = null!, Email = "bad", Age = 10, Address = null!, Phone = null!, JobTitle = null!, Department = null!, Manager = null!, YearsExperience = 100, Salary = -1 };
+        private readonly Validators.SimpleUserFluentValidator _fvSimpleValidator = new();
+        private readonly Validators.HeavyUserFluentValidator _fvHeavyValidator = new();
 
         // EasyValidate
-        private Models.EasyValidate.SimpleUser _evSimpleValid = new();
-        private Models.EasyValidate.SimpleUser _evSimpleInvalid = new() { Name = null!, Email = "bad", Age = 10 };
-        private Models.EasyValidate.HeavyUser _evHeavyValid = new();
-        private Models.EasyValidate.HeavyUser _evHeavyInvalid = new() { Name = null!, Email = "bad", Age = 10, Address = null!, Phone = null!, JobTitle = null!, Department = null!, Manager = null!, YearsExperience = 100, Salary = -1 };
+        private readonly Models.EasyValidate.SimpleUser _evSimpleValid = new();
+        private readonly Models.EasyValidate.SimpleUser _evSimpleInvalid = new() { Name = null!, Email = "bad", Age = 10 };
+        private readonly Models.EasyValidate.HeavyUser _evHeavyValid = new();
+        private readonly Models.EasyValidate.HeavyUser _evHeavyInvalid = new() { Name = null!, Email = "bad", Age = 10, Address = null!, Phone = null!, JobTitle = null!, Department = null!, Manager = null!, YearsExperience = 100, Salary = -1 };
 
         // Nested Valid/Invalid objects
-        private Models.DataAnnotations.HeavyUserWithNested _daNestedValid = new();
-        private Models.DataAnnotations.HeavyUserWithNested _daNestedInvalid = new() { Name = null!, Email = "bad", Age = 10, Address = null!, JobTitle = null!, Department = null!, Manager = null!, YearsExperience = 100, Salary = -1 };
+        private readonly Models.DataAnnotations.HeavyUserWithNested _daNestedValid = new();
+        private readonly Models.DataAnnotations.HeavyUserWithNested _daNestedInvalid = new() { Name = null!, Email = "bad", Age = 10, Address = null!, JobTitle = null!, Department = null!, Manager = null!, YearsExperience = 100, Salary = -1 };
         private System.ComponentModel.DataAnnotations.ValidationContext? _ctxNestedValid;
         private System.ComponentModel.DataAnnotations.ValidationContext? _ctxNestedInvalid;
 
-        private Models.FluentValidation.HeavyUserWithNested _fvNestedValid = new();
-        private Models.FluentValidation.HeavyUserWithNested _fvNestedInvalid = new() { Name = null!, Email = "bad", Age = 10, Address = null!, JobTitle = null!, Department = null!, Manager = null!, YearsExperience = 100, Salary = -1 };
-        private Validators.HeavyUserWithNestedValidator _fvNestedValidator = new();
+        private readonly Models.FluentValidation.HeavyUserWithNested _fvNestedValid = new();
+        private readonly Models.FluentValidation.HeavyUserWithNested _fvNestedInvalid = new() { Name = null!, Email = "bad", Age = 10, Address = null!, JobTitle = null!, Department = null!, Manager = null!, YearsExperience = 100, Salary = -1 };
+        private readonly Validators.HeavyUserWithNestedValidator _fvNestedValidator = new();
 
-        private Models.EasyValidate.HeavyUserWithNested _evNestedValid = new();
-        private Models.EasyValidate.HeavyUserWithNested _evNestedInvalid = new() { Name = null!, Email = "bad", Age = 10, Address = null!, JobTitle = null!, Department = null!, Manager = null!, YearsExperience = 100, Salary = -1 };
+        private readonly Models.EasyValidate.HeavyUserWithNested _evNestedValid = new();
+        private readonly Models.EasyValidate.HeavyUserWithNested _evNestedInvalid = new() { Name = null!, Email = "bad", Age = 10, Address = null!, JobTitle = null!, Department = null!, Manager = null!, YearsExperience = 100, Salary = -1 };
 
         [GlobalSetup]
         public void Setup()

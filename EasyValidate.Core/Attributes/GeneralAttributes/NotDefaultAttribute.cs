@@ -29,21 +29,13 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "NotDefaultValidationError";
 
         /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The field {0} must not have the default value.";
-
-        /// Arguments propertyName
-
-        /// <inheritdoc/>
         public override AttributeResult Validate(object obj, string propertyName, object? value)
         {
-            if (value == null)
-                return AttributeResult.Fail(ErrorMessage, propertyName);
 
-
-            bool isValid = !value.Equals(GetDefaultValue(value.GetType()));
+            bool isValid = value != null && !value.Equals(GetDefaultValue(value.GetType()));
             return isValid
                 ? AttributeResult.Success()
-                : AttributeResult.Fail(ErrorMessage, propertyName);
+                : AttributeResult.Fail("The field {0} must not have the default value.", propertyName);
         }
 
         /// <summary>

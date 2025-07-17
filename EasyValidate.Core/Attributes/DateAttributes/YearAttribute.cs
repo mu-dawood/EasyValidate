@@ -25,19 +25,32 @@ namespace EasyValidate.Core.Attributes
         /// </summary>
         public int[] Years { get; } = years;
 
-        /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "YearValidationError";
 
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The field {0} must fall within the specified years: {1}.";
+        private AttributeResult IsValidYear(int year, string propertyName)
+        {
+            if (Array.Exists(Years, y => y == year))
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The field {0} must fall within the specified years: {1}.", propertyName, string.Join(", ", Years));
+        }
 
         /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
         {
-            bool isValid = Array.Exists(Years, year => year == value.Year);
-            return isValid
-              ? AttributeResult.Success()
-              : AttributeResult.Fail(ErrorMessage, propertyName, string.Join(", ", Years));
+            return IsValidYear(value.Year, propertyName);
         }
+
+        /// <inheritdoc/>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        {
+            return IsValidYear(value.Year, propertyName);
+        }
+#if NET6_0_OR_GREATER
+        /// <inheritdoc/>
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        {
+            return IsValidYear(value.Year, propertyName);
+        }
+#endif
     }
 }

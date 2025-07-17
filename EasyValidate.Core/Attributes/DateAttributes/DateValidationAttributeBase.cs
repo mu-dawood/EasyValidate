@@ -20,7 +20,6 @@ namespace EasyValidate.Core.Attributes
         , IValidationAttribute<DateOnly>
 #endif
     {
-        protected DateTime Now = DateTime.UtcNow;
 
         /// <inheritdoc/>
         public virtual string Chain { get; set; } = string.Empty;
@@ -33,28 +32,16 @@ namespace EasyValidate.Core.Attributes
         /// <inheritdoc/>
         public abstract string ErrorCode { get; set; }
 
-        /// <inheritdoc/>
-        protected abstract AttributeResult ValidateUtc(object obj, string propertyName, DateTime value);
+        // /// <inheritdoc/>
+        // protected abstract AttributeResult ValidateUtc(object obj, string propertyName, DateTime value);
 
         /// <inheritdoc/>
-        public AttributeResult Validate(object obj, string propertyName, DateTime value)
-        {
-            var result = ValidateUtc(obj, propertyName, value.ToUniversalTime());
-            return result;
-        }
+        public abstract AttributeResult Validate(object obj, string propertyName, DateTime value);
 
-        public AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
-        {
-            var result = ValidateUtc(obj, propertyName, value.UtcDateTime);
-            return result;
-        }
+        public abstract AttributeResult Validate(object obj, string propertyName, DateTimeOffset value);
 #if NET6_0_OR_GREATER
         /// <inheritdoc/>
-        public AttributeResult Validate(object obj, string propertyName, DateOnly value)
-        {
-            var result = ValidateUtc(obj, propertyName, value.ToDateTime(TimeOnly.FromTimeSpan(Now.TimeOfDay), DateTimeKind.Utc));
-            return result;
-        }
+        public abstract AttributeResult Validate(object obj, string propertyName, DateOnly value);
 #endif
     }
 }

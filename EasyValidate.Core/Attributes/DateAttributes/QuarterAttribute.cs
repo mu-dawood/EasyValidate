@@ -33,26 +33,46 @@ namespace EasyValidate.Core.Attributes
     {
         public Quarter[] Quarters { get; } = quarters;
 
-        /// <summary>
-        /// Gets or sets the nullable behavior for this attribute. Defaults to NullIsInvalid.
-        /// </summary>
-
         /// <inheritdoc/>
-        public override string ErrorCode { get; set; } = "QuarterValidationError";
-
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The field {0} must fall within the specified quarters.";
-
-        /// Arguments propertyName
-
-        /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        private string _errorCode = "QuarterValidationError";
+        public override string ErrorCode
         {
-            int quarter = (value.Month - 1) / 3 + 1;
-            bool isValid = Array.IndexOf(Quarters, (Quarter)quarter) != -1;
-            return isValid
-              ? AttributeResult.Success()
-              : AttributeResult.Fail(ErrorMessage, propertyName);
+            get => _errorCode;
+            set => _errorCode = value;
+        }
+
+        private AttributeResult ValidateQuarter(string propertyName, int month)
+        {
+            int quarter = (month - 1) / 3 + 1;
+            if (Array.IndexOf(Quarters, (Quarter)quarter) != -1)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The field {0} must fall within the specified quarters.", propertyName);
+        }
+
+        /// <summary>
+        /// Validates a DateTime value for allowed quarters.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        {
+            return ValidateQuarter(propertyName, value.Month);
+        }
+
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Validates a DateOnly value for allowed quarters.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        {
+            return ValidateQuarter(propertyName, value.Month);
+        }
+#endif
+
+        /// <summary>
+        /// Validates a DateTimeOffset value for allowed quarters.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        {
+            return ValidateQuarter(propertyName, value.Month);
         }
     }
 }

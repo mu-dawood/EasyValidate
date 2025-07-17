@@ -18,26 +18,29 @@ namespace EasyValidate.Core.Attributes
     /// }
     /// </code>
     /// </example>
-    public class NotUTCAttribute : DateValidationAttributeBase
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
+    public class NotUTCAttribute : Attribute, IValidationAttribute<DateTime>
     {
         public static readonly Lazy<NotUTCAttribute> Instance = new(() => new NotUTCAttribute());
 
-
-        /// <inheritdoc/>
-        public override string ErrorCode { get; set; } = "NotUTCValidationError";
-
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The field {0} must not be in UTC format.";
-
-        /// Arguments propertyName
-
-        /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        private string _errorCode = "NotUTCValidationError";
+        public string ErrorCode
         {
-            bool isValid = value.Kind != DateTimeKind.Utc;
-            return isValid
-              ? AttributeResult.Success()
-              : AttributeResult.Fail(ErrorMessage, propertyName);
+            get => _errorCode;
+            set => _errorCode = value;
+        }
+
+        public string Chain { get; set; } = string.Empty;
+        public string? ConditionalMethod { get; set; }
+        public ExecutionStrategy Strategy { get; set; } = ExecutionStrategy.ValidateAndStop;
+
+        private static bool IsNotUtc(DateTime value) => value.Kind != DateTimeKind.Utc;
+
+        public AttributeResult Validate(object obj, string propertyName, DateTime value)
+        {
+            return IsNotUtc(value)
+                ? AttributeResult.Success()
+                : AttributeResult.Fail("The field {0} must not be in UTC format.", propertyName);
         }
     }
 }

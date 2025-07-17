@@ -26,18 +26,44 @@ namespace EasyValidate.Core.Attributes
         public int[] Months { get; } = months;
 
         /// <inheritdoc/>
-        public override string ErrorCode { get; set; } = "MonthValidationError";
-
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The {0} field must contain a valid month.";
-
-        /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        private string _errorCode = "MonthValidationError";
+        public override string ErrorCode
         {
-            bool isValid = Array.Exists(Months, month => month == value.Month);
-            return isValid
-               ? AttributeResult.Success()
-               : AttributeResult.Fail(ErrorMessage, propertyName, string.Join(", ", Months));
+            get => _errorCode;
+            set => _errorCode = value;
+        }
+
+        private AttributeResult ValidateMonth(string propertyName, int month)
+        {
+            if (Array.Exists(Months, m => m == month))
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The {0} field must contain a valid month: {1}.", propertyName, string.Join(", ", Months));
+        }
+
+        /// <summary>
+        /// Validates a DateTime value for allowed months.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        {
+            return ValidateMonth(propertyName, value.Month);
+        }
+
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Validates a DateOnly value for allowed months.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        {
+            return ValidateMonth(propertyName, value.Month);
+        }
+#endif
+
+        /// <summary>
+        /// Validates a DateTimeOffset value for allowed months.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        {
+            return ValidateMonth(propertyName, value.Month);
         }
     }
 }

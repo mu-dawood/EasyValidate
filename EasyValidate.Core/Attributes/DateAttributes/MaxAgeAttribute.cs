@@ -30,23 +30,53 @@ namespace EasyValidate.Core.Attributes
         public int MaximumAge { get; } = maximumAge;
 
         /// <inheritdoc/>
-        public override string ErrorCode { get; set; } = "MaxAgeValidationError";
-
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The field {0} must represent an age of no more than {1} years.";
-
-        /// Arguments propertyName, MaximumAge
-
-        /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        private string _errorCode = "MaxAgeValidationError";
+        public override string ErrorCode
         {
-            var age = Now.Year - value.Year;
-            if (value.Date > Now.AddYears(-age).Date) age--;
+            get => _errorCode;
+            set => _errorCode = value;
+        }
 
-            bool isValid = age <= MaximumAge;
-            return isValid
-                ? AttributeResult.Success()
-                : AttributeResult.Fail(ErrorMessage, propertyName, MaximumAge);
+        /// <summary>
+        /// Validates a DateTime value for maximum age.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        {
+            var now = DateTime.UtcNow;
+            var age = now.Year - value.Year;
+            if (value.Date > now.AddYears(-age).Date) age--;
+            if (age <= MaximumAge)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The field {0} must represent an age of no more than {1} years.", propertyName, MaximumAge);
+        }
+
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Validates a DateOnly value for maximum age.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        {
+            var now = DateTime.UtcNow;
+            var birthDate = value.ToDateTime(TimeOnly.MinValue);
+            var age = now.Year - birthDate.Year;
+            if (birthDate.Date > now.AddYears(-age).Date) age--;
+            if (age <= MaximumAge)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The field {0} must represent an age of no more than {1} years.", propertyName, MaximumAge);
+        }
+#endif
+
+        /// <summary>
+        /// Validates a DateTimeOffset value for maximum age.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        {
+            var now = DateTimeOffset.UtcNow;
+            var age = now.Year - value.Year;
+            if (value.Date > now.AddYears(-age).Date) age--;
+            if (age <= MaximumAge)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The field {0} must represent an age of no more than {1} years.", propertyName, MaximumAge);
         }
     }
 }

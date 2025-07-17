@@ -1,8 +1,11 @@
 using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Running;
-using EasyValidate.ConsoleTest;
+using EasyValidate.Benchmarks;
+using BenchmarkDotNet.Jobs;
 
+var config = ManualConfig.Create(DefaultConfig.Instance)
+    .AddJob(Job.ShortRun.WithLaunchCount(1)
+                .WithWarmupCount(1)
+                .WithIterationCount(1));
 
-BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args, DefaultConfig
-.Instance);
+BenchmarkRunner.Run<GeneralBenchmarks>(config);

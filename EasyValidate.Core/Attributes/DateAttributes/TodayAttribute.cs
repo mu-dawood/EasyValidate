@@ -22,19 +22,36 @@ namespace EasyValidate.Core.Attributes
     {
         public static readonly Lazy<TodayAttribute> Instance = new(() => new TodayAttribute());
 
-        /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "TodayValidationError";
 
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The {0} field must be today's date.";
+        private static bool IsToday(DateTime value, DateTime utcNow)
+        {
+            return value.Date == utcNow.Date;
+        }
 
         /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
         {
-            bool isValid = value.Date == Now.Date;
-            return isValid
-              ? AttributeResult.Success()
-              : AttributeResult.Fail(ErrorMessage, propertyName);
+            return IsToday(value, DateTime.UtcNow)
+                ? AttributeResult.Success()
+                : AttributeResult.Fail("The {0} field must be today's date.", propertyName);
         }
+
+        /// <inheritdoc/>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        {
+            return IsToday(value.UtcDateTime, DateTime.UtcNow)
+                ? AttributeResult.Success()
+                : AttributeResult.Fail("The {0} field must be today's date.", propertyName);
+        }
+#if NET6_0_OR_GREATER
+        /// <inheritdoc/>
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        {
+            return value == DateOnly.FromDateTime(DateTime.UtcNow)
+                ? AttributeResult.Success()
+                : AttributeResult.Fail("The {0} field must be today's date.", propertyName);
+        }
+#endif
     }
 }

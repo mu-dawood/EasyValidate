@@ -26,18 +26,48 @@ namespace EasyValidate.Core.Attributes
         public DayOfWeek[] Days { get; } = days;
 
         /// <inheritdoc/>
-        public override string ErrorCode { get; set; } = "DayOfWeekValidationError";
-
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The {0} field must be one of the following days: {1}.";
-
-        /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        private string _errorCode = "DayOfWeekValidationError";
+        public override string ErrorCode
         {
-            bool isValid = Array.Exists(Days, day => day == value.DayOfWeek);
-            return isValid
-               ? AttributeResult.Success()
-               : AttributeResult.Fail(ErrorMessage, propertyName, string.Join(", ", Days));
+            get => _errorCode;
+            set => _errorCode = value;
+        }
+
+        // ...existing code...
+
+        /// <summary>
+        /// Validates a DateTime value for allowed days of the week.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        {
+            return ValidateDayOfWeek(propertyName, value.DayOfWeek);
+        }
+
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Validates a DateOnly value for allowed days of the week.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        {
+            // DateOnly does not have DayOfWeek, so convert to DateTime
+            var dayOfWeek = value.ToDateTime(TimeOnly.MinValue).DayOfWeek;
+            return ValidateDayOfWeek(propertyName, dayOfWeek);
+        }
+#endif
+
+        /// <summary>
+        /// Validates a DateTimeOffset value for allowed days of the week.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        {
+            return ValidateDayOfWeek(propertyName, value.DayOfWeek);
+        }
+
+        private AttributeResult ValidateDayOfWeek(string propertyName, DayOfWeek dayOfWeek)
+        {
+            if (Array.Exists(Days, d => d == dayOfWeek))
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The {0} field must be one of the following days: {1}.", propertyName, string.Join(", ", Days));
         }
     }
 }

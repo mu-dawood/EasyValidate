@@ -23,21 +23,38 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// The array of allowed days of the month (1-31).
         /// </summary>
-        public int[] Days { get; } = days;
+        public int[] Days { get; } = days ?? [];
 
         /// <inheritdoc/>
-        public override string ErrorCode { get; set; } = "DayValidationError";
-
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The field {0} must be one of the following days: {1}.";
-
-        /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        private string _errorCode = "DayValidationError";
+        public override string ErrorCode
         {
-            bool isValid = Array.Exists(Days, day => day == value.Day);
-            return isValid
-               ? AttributeResult.Success()
-               : AttributeResult.Fail(ErrorMessage, propertyName, string.Join(", ", Days));
+            get => _errorCode;
+            set => _errorCode = value;
+        }
+
+        /// <summary>
+        /// Validates a DateTime value for allowed days.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value) => ValidateDay(propertyName, value.Day);
+
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Validates a DateOnly value for allowed days.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value) => ValidateDay(propertyName, value.Day);
+#endif
+
+        /// <summary>
+        /// Validates a DateTimeOffset value for allowed days.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value) => ValidateDay(propertyName, value.Day);
+
+        private AttributeResult ValidateDay(string propertyName, int day)
+        {
+            if (Array.Exists(Days, d => d == day))
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The field {0} must be one of the following days: {1}.", propertyName, string.Join(", ", Days));
         }
     }
 }

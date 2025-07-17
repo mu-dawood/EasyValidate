@@ -22,22 +22,44 @@ namespace EasyValidate.Core.Attributes
     {
         public static readonly Lazy<PastDateAttribute> Instance = new(() => new PastDateAttribute());
 
-
         /// <inheritdoc/>
-        public override string ErrorCode { get; set; } = "PastDateValidationError";
-
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The {0} field must be a past date.";
-
-        /// Arguments propertyName
-
-        /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        private string _errorCode = "PastDateValidationError";
+        public override string ErrorCode
         {
-            bool isValid = value < Now;
-            return isValid
-              ? AttributeResult.Success()
-              : AttributeResult.Fail(ErrorMessage, propertyName);
+            get => _errorCode;
+            set => _errorCode = value;
+        }
+
+        /// <summary>
+        /// Validates a DateTime value for past date.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        {
+            if (value < DateTime.UtcNow)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The {0} field must be a past date.", propertyName);
+        }
+
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Validates a DateOnly value for past date.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        {
+            if (value.ToDateTime(TimeOnly.MinValue) < DateTime.UtcNow)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The {0} field must be a past date.", propertyName);
+        }
+#endif
+
+        /// <summary>
+        /// Validates a DateTimeOffset value for past date.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        {
+            if (value < DateTimeOffset.UtcNow)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The {0} field must be a past date.", propertyName);
         }
     }
 }

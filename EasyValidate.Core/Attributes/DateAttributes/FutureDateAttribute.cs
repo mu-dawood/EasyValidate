@@ -23,18 +23,50 @@ namespace EasyValidate.Core.Attributes
         public static readonly Lazy<FutureDateAttribute> Instance = new(() => new FutureDateAttribute());
 
         /// <inheritdoc/>
-        public override string ErrorCode { get; set; } = "FutureDateValidationError";
-
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The {0} field must be a future date.";
-
-        /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        private string _errorCode = "FutureDateValidationError";
+        public override string ErrorCode
         {
-            bool isValid = value > Now;
-            return isValid
-               ? AttributeResult.Success()
-               : AttributeResult.Fail(ErrorMessage, propertyName);
+            get => _errorCode;
+            set => _errorCode = value;
+        }
+
+        /// <summary>
+        /// Validates a DateTime value for future date.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        {
+            bool isFuture = value.Kind switch
+            {
+                DateTimeKind.Utc => value > DateTime.UtcNow,
+                DateTimeKind.Local => value > DateTime.Now,
+                DateTimeKind.Unspecified => value > DateTime.UtcNow,
+                _ => value > DateTime.UtcNow
+            };
+            if (isFuture)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The {0} field must be a future date.", propertyName);
+        }
+
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Validates a DateOnly value for future date.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        {
+            if (value > DateOnly.FromDateTime(DateTime.UtcNow))
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The {0} field must be a future date.", propertyName);
+        }
+#endif
+
+        /// <summary>
+        /// Validates a DateTimeOffset value for future date.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        {
+            if (value > DateTimeOffset.UtcNow)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The {0} field must be a future date.", propertyName);
         }
     }
 }

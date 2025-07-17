@@ -27,10 +27,14 @@ namespace EasyValidate.Core.Attributes
             if (string.IsNullOrWhiteSpace(maximum))
                 throw new ArgumentException("Maximum time cannot be null or empty.", nameof(maximum));
 
-            if (!TimeSpan.TryParse(minimum, out _))
+            if (!TimeSpan.TryParse(minimum, out TimeSpan minTime))
                 throw new ArgumentException("Invalid format for minimum time.", nameof(minimum));
-            if (!TimeSpan.TryParse(maximum, out _))
+            if (!TimeSpan.TryParse(maximum, out TimeSpan maxTime))
                 throw new ArgumentException("Invalid format for maximum time.", nameof(maximum));
+            if (minTime > maxTime)
+                throw new ArgumentException("Minimum time must be less than or equal to maximum time.");
+            Minimum = minTime;
+            Maximum = maxTime;
         }
 
         public TimeRangeAttribute(TimeSpan minimum, TimeSpan maximum)
@@ -56,21 +60,44 @@ namespace EasyValidate.Core.Attributes
         public TimeSpan Maximum { get; }
 
         /// <inheritdoc/>
-        public override string ErrorCode { get; set; } = "TimeRangeValidationError";
-
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The field {0} must be between {1} and {2}.";
-
-        /// Arguments propertyName, Minimum, Maximum
-
-        /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        private string _errorCode = "TimeRangeValidationError";
+        public override string ErrorCode
         {
-            var time = value.TimeOfDay;
-            bool isValid = time >= Minimum && time <= Maximum;
-            return isValid
-              ? AttributeResult.Success()
-              : AttributeResult.Fail(ErrorMessage, propertyName, Minimum, Maximum);
+            get => _errorCode;
+            set => _errorCode = value;
+        }
+
+        private AttributeResult ValidateTime(string propertyName, TimeSpan time)
+        {
+            if (time >= Minimum && time <= Maximum)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The field {0} must be between {1} and {2}.", propertyName, Minimum, Maximum);
+        }
+
+        /// <summary>
+        /// Validates a DateTime value for allowed time range.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        {
+            return ValidateTime(propertyName, value.TimeOfDay);
+        }
+
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Validates a DateOnly value for allowed time range (always valid, as DateOnly has no time).
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        {
+            return ValidateTime(propertyName, TimeSpan.MinValue);
+        }
+#endif
+
+        /// <summary>
+        /// Validates a DateTimeOffset value for allowed time range.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        {
+            return ValidateTime(propertyName, value.TimeOfDay);
         }
     }
 }

@@ -30,23 +30,53 @@ namespace EasyValidate.Core.Attributes
         public int MinimumAge { get; } = minimumAge;
 
         /// <inheritdoc/>
-        public override string ErrorCode { get; set; } = "MinAgeValidationError";
-
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The field {0} must represent an age of at least {1} years.";
-
-        /// Arguments propertyName, MinimumAge
-
-        /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        private string _errorCode = "MinAgeValidationError";
+        public override string ErrorCode
         {
-            var age = Now.Year - value.Year;
-            if (value.Date > Now.AddYears(-age).Date) age--;
+            get => _errorCode;
+            set => _errorCode = value;
+        }
 
-            bool isValid = age >= MinimumAge;
-            return isValid
-                ? AttributeResult.Success()
-                : AttributeResult.Fail(ErrorMessage, propertyName, MinimumAge);
+        /// <summary>
+        /// Validates a DateTime value for minimum age.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        {
+            var now = DateTime.UtcNow;
+            var age = now.Year - value.Year;
+            if (value.Date > now.AddYears(-age).Date) age--;
+            if (age >= MinimumAge)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The field {0} must represent an age of at least {1} years.", propertyName, MinimumAge);
+        }
+
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Validates a DateOnly value for minimum age.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        {
+            var now = DateTime.UtcNow;
+            var birthDate = value.ToDateTime(TimeOnly.MinValue);
+            var age = now.Year - birthDate.Year;
+            if (birthDate.Date > now.AddYears(-age).Date) age--;
+            if (age >= MinimumAge)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The field {0} must represent an age of at least {1} years.", propertyName, MinimumAge);
+        }
+#endif
+
+        /// <summary>
+        /// Validates a DateTimeOffset value for minimum age.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        {
+            var now = DateTimeOffset.UtcNow;
+            var age = now.Year - value.Year;
+            if (value.Date > now.AddYears(-age).Date) age--;
+            if (age >= MinimumAge)
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The field {0} must represent an age of at least {1} years.", propertyName, MinimumAge);
         }
 
     }

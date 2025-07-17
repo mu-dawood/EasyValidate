@@ -22,22 +22,45 @@ namespace EasyValidate.Core.Attributes
     {
         public static readonly Lazy<NotLeapYearAttribute> Instance = new(() => new NotLeapYearAttribute());
 
-
         /// <inheritdoc/>
-        public override string ErrorCode { get; set; } = "NotLeapYearValidationError";
-
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The field {0} must not be in a leap year.";
-
-        /// Arguments propertyName
-
-        /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        private string _errorCode = "NotLeapYearValidationError";
+        public override string ErrorCode
         {
-            bool isValid = !DateTime.IsLeapYear(value.Year);
-            return isValid
-              ? AttributeResult.Success()
-              : AttributeResult.Fail(ErrorMessage, propertyName);
+            get => _errorCode;
+            set => _errorCode = value;
+        }
+
+        private static AttributeResult ValidateNotLeapYear(string propertyName, int year)
+        {
+            if (!DateTime.IsLeapYear(year))
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The field {0} must not be in a leap year.", propertyName);
+        }
+
+        /// <summary>
+        /// Validates a DateTime value for not leap year.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        {
+            return ValidateNotLeapYear(propertyName, value.Year);
+        }
+
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Validates a DateOnly value for not leap year.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        {
+            return ValidateNotLeapYear(propertyName, value.Year);
+        }
+#endif
+
+        /// <summary>
+        /// Validates a DateTimeOffset value for not leap year.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        {
+            return ValidateNotLeapYear(propertyName, value.Year);
         }
     }
 }

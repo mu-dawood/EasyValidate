@@ -22,22 +22,44 @@ namespace EasyValidate.Core.Attributes
     {
         public static readonly Lazy<LeapYearAttribute> Instance = new(() => new LeapYearAttribute());
 
-
-        /// <inheritdoc/>
-        public override string ErrorCode { get; set; } = "LeapYearValidationError";
-
-        /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The field {0} must be in a leap year.";
-
-        /// Arguments propertyName
-
-        /// <inheritdoc/>
-        protected override AttributeResult ValidateUtc(object obj, string propertyName, DateTime value)
+        private string _errorCode = "LeapYearValidationError";
+        public override string ErrorCode
         {
-            bool isValid = DateTime.IsLeapYear(value.Year);
-            return isValid
-               ? AttributeResult.Success()
-               : AttributeResult.Fail(ErrorMessage, propertyName);
+            get => _errorCode;
+            set => _errorCode = value;
+        }
+
+        private static AttributeResult ValidateLeapYear(string propertyName, int year)
+        {
+            if (DateTime.IsLeapYear(year))
+                return AttributeResult.Success();
+            return AttributeResult.Fail("The field {0} must be in a leap year.", propertyName);
+        }
+
+        /// <summary>
+        /// Validates a DateTime value for leap year.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        {
+            return ValidateLeapYear(propertyName, value.Year);
+        }
+
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Validates a DateOnly value for leap year.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        {
+            return ValidateLeapYear(propertyName, value.Year);
+        }
+#endif
+
+        /// <summary>
+        /// Validates a DateTimeOffset value for leap year.
+        /// </summary>
+        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        {
+            return ValidateLeapYear(propertyName, value.Year);
         }
     }
 }

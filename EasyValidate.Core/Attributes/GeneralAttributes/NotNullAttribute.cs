@@ -20,20 +20,20 @@ namespace EasyValidate.Core.Attributes
     /// </example>
     public sealed class NotNullAttribute : GeneralValidationAttributeBase
     {
+        /// <summary>
+        /// Singleton instance for reuse to avoid creating multiple identical instances.
+        /// </summary>
         public static readonly Lazy<NotNullAttribute> Instance = new(() => new NotNullAttribute());
+        
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "NotNullValidationError";
 
         /// <inheritdoc/>
-        public string ErrorMessage { get; set; } = "The field {0} cannot be null.";
-
-
-        /// <inheritdoc/>
         public override AttributeResult Validate(object obj, string propertyName, object? value)
         {
-            if (value != null)
-                return AttributeResult.Success();
-            return AttributeResult.Fail(ErrorMessage, propertyName);
+            return value is not null
+                ? AttributeResult.Success()
+                : AttributeResult.Fail("The field {0} cannot be null.", propertyName);
         }
     }
 
