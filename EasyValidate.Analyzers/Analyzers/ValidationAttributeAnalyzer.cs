@@ -10,7 +10,7 @@ namespace EasyValidate.Analyzers.Analyzers
 /// </summary>
 /// <docs-explanation>
 /// All validation attributes that implement IValidationAttribute must inherit from System.Attribute 
-/// and have AttributeUsage that targets only Property and/or Field with AllowMultiple = false. 
+/// and have AttributeUsage that targets only Property, Field, and/or Parameter with AllowMultiple = false. 
 /// The IValidationAttribute interface contract ensures the Validate method is properly implemented.
 /// This analyzer ensures proper implementation of custom validation attributes by performing 
 /// separate checks for each requirement and providing specific error messages.
@@ -29,7 +29,7 @@ namespace EasyValidate.Analyzers.Analyzers
 /// }
 /// 
 /// // Valid: Property and Field
-/// [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
+/// [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
 /// public class PropertyAndFieldAttribute : Attribute, IValidationAttribute<object>
 /// {
 ///     public NullableBehavior NullableBehavior { get; set; }
@@ -50,6 +50,18 @@ namespace EasyValidate.Analyzers.Analyzers
 ///     public string ErrorMessage { get; set; } = "";
 ///     
 ///     public bool Validate(int value, Type propertyType) => true;
+/// }
+/// 
+/// // Valid: Parameter only  
+/// [AttributeUsage(AttributeTargets.Parameter)]
+/// public class ParameterOnlyAttribute : Attribute, IValidationAttribute<string>
+/// {
+///     public NullableBehavior NullableBehavior { get; set; }
+///     public string NullErrorMessage { get; set; } = "";
+///     public string ErrorCode => "PARAM001";
+///     public string ErrorMessage { get; set; } = "";
+///     
+///     public bool Validate(string value, Type propertyType) => true;
 /// }
 /// </docs-good-example>
 /// <docs-bad-example>
@@ -88,7 +100,7 @@ namespace EasyValidate.Analyzers.Analyzers
 /// }
 /// </docs-bad-example>
 /// <docs-fixes>
-/// VAL001: Inherit from System.Attribute|VAL002: Add proper AttributeUsage with Property/Field targets and AllowMultiple = false
+/// VAL001: Inherit from System.Attribute|VAL002: Add proper AttributeUsage with Property/Field/Parameter targets and AllowMultiple = false
 /// </docs-fixes>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ValidationAttributeAnalyzer : DiagnosticAnalyzer
@@ -104,7 +116,7 @@ public class ValidationAttributeAnalyzer : DiagnosticAnalyzer
     private static readonly DiagnosticDescriptor MustHaveProperAttribute = new(
         id: ErrorIds.MustHaveProperAttributeUsage,
         title: "Validation attribute must have proper AttributeUsage",
-        messageFormat: "Class '{0}' must have [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)] or similar with only Property and/or Field targets",
+        messageFormat: "Class '{0}' must have [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = true)] or similar with only Property, Field, and/or Parameter targets",
         category: "Design",
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true);
@@ -186,29 +198,35 @@ public class ValidationAttributeAnalyzer : DiagnosticAnalyzer
 
     private static bool IsValidAttributeUsage(AttributeData attributeUsageAttribute)
     {
-        // Check if AllowMultiple is set to false (or not specified, which defaults to false)
+        // Check if we have valid targets argument
+        var validTargetsArg = attributeUsageAttribute.ConstructorArguments.FirstOrDefault();
+        if (validTargetsArg.Value == null)
+            return false;
+
+        var targetValue = (AttributeTargets)validTargetsArg.Value;
+        
+        // Check if it contains Property, Field, or Parameter
+        bool hasPropertyFieldOrParameter = targetValue.HasFlag(AttributeTargets.Property) || 
+                                         targetValue.HasFlag(AttributeTargets.Field) || 
+                                         targetValue.HasFlag(AttributeTargets.Parameter);
+        
+        if (!hasPropertyFieldOrParameter)
+            return false;
+        
+        // Check if it only contains Property, Field, and/or Parameter (no other targets)
+        var allowedTargets = AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter;
+        bool onlyHasAllowedTargets = (targetValue & ~allowedTargets) == 0;
+        
+        if (!onlyHasAllowedTargets)
+            return false;
+
+        // Check if AllowMultiple is set to true (or not specified, which defaults to false)
         var allowMultipleArg = attributeUsageAttribute.NamedArguments
             .FirstOrDefault(arg => arg.Key == "AllowMultiple");
         
         bool allowMultiple = allowMultipleArg.Value.Value is true;
-
-        // Check if the target includes Property or Field (and only Property/Field)
-        var validTargetsArg = attributeUsageAttribute.ConstructorArguments.FirstOrDefault();
-        if (validTargetsArg.Value != null)
-        {
-            var targetValue = (AttributeTargets)validTargetsArg.Value;
-            
-            // Check if it contains Property or Field
-            bool hasPropertyOrField = targetValue.HasFlag(AttributeTargets.Property) || targetValue.HasFlag(AttributeTargets.Field);
-            
-            // Check if it only contains Property and/or Field (no other targets)
-            var allowedTargets = AttributeTargets.Property | AttributeTargets.Field;
-            bool onlyHasAllowedTargets = (targetValue & ~allowedTargets) == 0;
-            
-            return allowMultiple && hasPropertyOrField && onlyHasAllowedTargets;
-        }
-
-        return false;
+        
+        return allowMultiple;
     }
 }
 }

@@ -12,7 +12,7 @@ namespace EasyValidate.Core.Attributes
     /// <remarks>
     /// Initializes a new instance of the DateValidationAttributeBase class.
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = true)]
     public abstract class DateValidationAttributeBase : Attribute,
     IValidationAttribute<DateTime>,
     IValidationAttribute<DateTimeOffset>

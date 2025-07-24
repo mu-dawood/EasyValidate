@@ -12,7 +12,7 @@ namespace EasyValidate.Core.Attributes
     /// <remarks>
     /// Derive from this class to implement custom string validation logic. Used for validating user input and text data.
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = true)]
     public abstract class StringValidationAttributeBase : Attribute, IValidationAttribute<string>
     {
         /// <summary>

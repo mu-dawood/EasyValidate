@@ -77,14 +77,38 @@ namespace EasyValidate.Fixers
                 createChangedDocument: ct => AddAttributeUsage(context.Document, root, classDeclaration, "Field", ct),
                 equivalenceKey: "AddAttributeUsageField");
 
+            var parameterOnlyAction = CodeAction.Create(
+                title: "Add [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true)]",
+                createChangedDocument: ct => AddAttributeUsage(context.Document, root, classDeclaration, "Parameter", ct),
+                equivalenceKey: "AddAttributeUsageParameter");
+
             var propertyAndFieldAction = CodeAction.Create(
                 title: "Add [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]",
                 createChangedDocument: ct => AddAttributeUsage(context.Document, root, classDeclaration, "Property | AttributeTargets.Field", ct),
                 equivalenceKey: "AddAttributeUsagePropertyAndField");
 
+            var propertyAndParameterAction = CodeAction.Create(
+                title: "Add [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple = true)]",
+                createChangedDocument: ct => AddAttributeUsage(context.Document, root, classDeclaration, "Property | AttributeTargets.Parameter", ct),
+                equivalenceKey: "AddAttributeUsagePropertyAndParameter");
+
+            var fieldAndParameterAction = CodeAction.Create(
+                title: "Add [AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = true)]",
+                createChangedDocument: ct => AddAttributeUsage(context.Document, root, classDeclaration, "Field | AttributeTargets.Parameter", ct),
+                equivalenceKey: "AddAttributeUsageFieldAndParameter");
+
+            var allTargetsAction = CodeAction.Create(
+                title: "Add [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = true)]",
+                createChangedDocument: ct => AddAttributeUsage(context.Document, root, classDeclaration, "Property | AttributeTargets.Field | AttributeTargets.Parameter", ct),
+                equivalenceKey: "AddAttributeUsageAll");
+
             context.RegisterCodeFix(propertyOnlyAction, diagnostic);
             context.RegisterCodeFix(fieldOnlyAction, diagnostic);
+            context.RegisterCodeFix(parameterOnlyAction, diagnostic);
             context.RegisterCodeFix(propertyAndFieldAction, diagnostic);
+            context.RegisterCodeFix(propertyAndParameterAction, diagnostic);
+            context.RegisterCodeFix(fieldAndParameterAction, diagnostic);
+            context.RegisterCodeFix(allTargetsAction, diagnostic);
         }
 
         private async Task<Document> AddSystemAttributeInheritance(
@@ -144,40 +168,15 @@ namespace EasyValidate.Fixers
 
         private AttributeSyntax CreateAttributeUsageAttribute(string targets)
         {
-            // Create AttributeTargets.Property, AttributeTargets.Field, or both
-            ExpressionSyntax targetsExpression;
-
-            if (targets.Contains("|"))
-            {
-                // Property | Field case
-                var left = SyntaxFactory.MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    SyntaxFactory.IdentifierName("AttributeTargets"),
-                    SyntaxFactory.IdentifierName("Property"));
-
-                var right = SyntaxFactory.MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    SyntaxFactory.IdentifierName("AttributeTargets"),
-                    SyntaxFactory.IdentifierName("Field"));
-
-                targetsExpression = SyntaxFactory.BinaryExpression(
-                    SyntaxKind.BitwiseOrExpression, left, right);
-            }
-            else
-            {
-                // Single target case
-                targetsExpression = SyntaxFactory.MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    SyntaxFactory.IdentifierName("AttributeTargets"),
-                    SyntaxFactory.IdentifierName(targets));
-            }
+            // Create AttributeTargets expression based on the targets string
+            ExpressionSyntax targetsExpression = CreateTargetsExpression(targets);
 
             // Create the attribute arguments
             var arguments = SyntaxFactory.SeparatedList(
             [
                 // First argument: AttributeTargets
                 SyntaxFactory.AttributeArgument(targetsExpression),
-                // Named argument: AllowMultiple = false
+                // Named argument: AllowMultiple = true
                 SyntaxFactory.AttributeArgument(
                     SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression))
                     .WithNameEquals(SyntaxFactory.NameEquals(SyntaxFactory.IdentifierName("AllowMultiple")))
@@ -186,6 +185,42 @@ namespace EasyValidate.Fixers
             return SyntaxFactory.Attribute(
                 SyntaxFactory.IdentifierName("AttributeUsage"),
                 SyntaxFactory.AttributeArgumentList(arguments));
+        }
+
+        private ExpressionSyntax CreateTargetsExpression(string targets)
+        {
+            // Split targets by " | AttributeTargets." to get individual target names
+            var targetParts = targets.Split(new[] { " | AttributeTargets." }, StringSplitOptions.RemoveEmptyEntries);
+            
+            if (targetParts.Length == 1)
+            {
+                // Single target case
+                return SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxFactory.IdentifierName("AttributeTargets"),
+                    SyntaxFactory.IdentifierName(targetParts[0]));
+            }
+            
+            // Multiple targets case - build binary OR expressions
+            ExpressionSyntax result = SyntaxFactory.MemberAccessExpression(
+                SyntaxKind.SimpleMemberAccessExpression,
+                SyntaxFactory.IdentifierName("AttributeTargets"),
+                SyntaxFactory.IdentifierName(targetParts[0]));
+
+            for (int i = 1; i < targetParts.Length; i++)
+            {
+                var rightTarget = SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxFactory.IdentifierName("AttributeTargets"),
+                    SyntaxFactory.IdentifierName(targetParts[i]));
+
+                result = SyntaxFactory.BinaryExpression(
+                    SyntaxKind.BitwiseOrExpression, 
+                    result, 
+                    rightTarget);
+            }
+
+            return result;
         }
 
         private async Task<Document> AddUsingIfNeeded(Document document, string namespaceName, CancellationToken cancellationToken)

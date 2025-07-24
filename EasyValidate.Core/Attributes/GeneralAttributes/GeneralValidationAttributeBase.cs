@@ -9,7 +9,7 @@ namespace EasyValidate.Core.Attributes
     /// <docs-display-name>General Validation Attributes</docs-display-name>
     /// <docs-icon>Settings</docs-icon>
     /// <docs-description>General-purpose validation attributes that work across multiple data types. Includes required field validation, conditional validation, custom validation, and cross-property validation rules.</docs-description>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = true)]
     public abstract class GeneralValidationAttributeBase : Attribute, IValidationAttribute<object?>
     {
 

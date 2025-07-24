@@ -18,7 +18,7 @@ namespace EasyValidate.Core.Attributes
     /// var invalidSite = new Website { Homepage = "not-a-url" }; // Invalid
     /// </code>
     /// </example>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = true)]
     public class UrlAttribute : Attribute, IValidationAttribute<string, Uri>
     {
         public static readonly Lazy<UrlAttribute> Instance = new(() => new UrlAttribute());

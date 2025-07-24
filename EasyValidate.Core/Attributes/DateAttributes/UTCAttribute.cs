@@ -18,7 +18,7 @@ namespace EasyValidate.Core.Attributes
     /// }
     /// </code>
     /// </example>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = true)]
     public class UTCAttribute : Attribute, IValidationAttribute<DateTime>
     {
         public static readonly Lazy<UTCAttribute> Instance = new(() => new UTCAttribute());

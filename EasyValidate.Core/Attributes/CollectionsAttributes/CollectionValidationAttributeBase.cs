@@ -14,7 +14,7 @@ namespace EasyValidate.Core.Attributes
     /// <remarks>
     /// Initializes a new instance of the CollectionValidationAttributeBase class.
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = true)]
     public abstract class CollectionValidationAttributeBase : Attribute, IValidationAttribute<IEnumerable>, IValidationAttribute<string>
     {
 
