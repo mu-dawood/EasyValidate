@@ -8,4 +8,9 @@ using BenchmarkDotNet.Jobs;
 //                 .WithWarmupCount(1)
 //                 .WithIterationCount(1));
 
-BenchmarkRunner.Run<FluentFriendlyValidationBenchmarks>();
+// BenchmarkRunner.Run<FluentFriendlyValidationBenchmarks>();
+
+var x = new FluentFriendlyValidationBenchmarks();
+x.Setup();
+
+x.EasyValidate_Simple_Invalid();

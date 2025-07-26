@@ -48,9 +48,9 @@ namespace EasyValidate.Handlers
                         var awaitKeyword = resolvedType.IsAsync || info.ConditionalMethod?.IsAsync == true ? "await " : string.Empty;
                         if (awaitKeyword == "await ") awaitable = true;
                         if (info.ConditionalMethod != null)
-                            sb.AppendLine($"{indent}if ({awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable}, {info.ConditionalMethod.MethodName}))");
+                            sb.AppendLine($"{indent}if (!{awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable}, {info.ConditionalMethod.MethodName}))");
                         else
-                            sb.AppendLine($"{indent}if ({awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable}))");
+                            sb.AppendLine($"{indent}if (!{awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable}))");
                         sb.AppendLine($"{indent}    return {returnVariable};");
                         var outputVariable = $"{attributeName}Output".ToSakeCase();
                         /// check is currentType conatians 'Value' property like DateTime, Guid, etc.
@@ -81,9 +81,9 @@ namespace EasyValidate.Handlers
                         var awaitKeyword = resolvedType.IsAsync || info.ConditionalMethod?.IsAsync == true ? "await " : string.Empty;
                         if (awaitKeyword == "await ") awaitable = true;
                         if (info.ConditionalMethod != null)
-                            sb.AppendLine($"{indent}if ({awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable}, {info.ConditionalMethod.MethodName}))");
+                            sb.AppendLine($"{indent}if (!{awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable}, {info.ConditionalMethod.MethodName}))");
                         else
-                            sb.AppendLine($"{indent}if ({awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable}))");
+                            sb.AppendLine($"{indent}if (!{awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable}))");
                         sb.AppendLine($"{indent}    return {returnVariable};");
                     }
 
