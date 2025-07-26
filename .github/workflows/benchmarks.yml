@@ -46,6 +46,12 @@ jobs:
       - name: Test local NuGet package
         run: ./test-local-nuget.sh
         
+      - name: Restore ConsoleTest project
+        run: dotnet restore EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj
+
+      - name: Build ConsoleTest project in Release mode
+        run: dotnet build EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-restore
+
       - name: List benchmarks
         run: |
           CATEGORY="${{ github.event.inputs.category }}"
