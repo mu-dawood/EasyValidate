@@ -19,7 +19,7 @@ public class EmailAddressSimpleTests
         // Assert
         Assert.True(result.IsValid());
         Assert.False(result.HasErrors());
-        Assert.Empty(result.Errors);
+       Assert.Equal(0, result.ErrorsCount);
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class EmailAddressSimpleTests
         // Assert
         Assert.True(result.IsValid());
         Assert.False(result.HasErrors());
-        Assert.Empty(result.Errors);
+       Assert.Equal(0, result.ErrorsCount);
     }
 
     [Theory]

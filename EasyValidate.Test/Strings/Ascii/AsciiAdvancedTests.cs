@@ -25,10 +25,10 @@ public class AsciiAdvancedTests
         // Assert
         Assert.False(result.IsValid());
         Assert.True(result.HasErrors());
-        Assert.True(result.HasErrors("Details", "Text"));
-        Assert.False(result.HasErrors(nameof(model.MainText)));
-        Assert.False(result.HasErrors("Details", "Description"));
-        Assert.False(result.HasErrors("Details", "Content"));
+        Assert.True(result.Property("Details")?.HasErrors("Text"));
+        Assert.False(result.Property(nameof(model.MainText))?.HasErrors());
+        Assert.False(result.Property("Details")?.HasErrors("Description"));
+        Assert.False(result.Property("Details")?.HasErrors("Content"));
 
         var detailsTextErrors = result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Text" })).ToList();
         Assert.Single(detailsTextErrors);
@@ -51,7 +51,7 @@ public class AsciiAdvancedTests
         // Assert
         Assert.True(result.IsValid());
         Assert.False(result.HasErrors());
-        Assert.Empty(result.Errors);
+       Assert.Equal(0, result.ErrorsCount);
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class AsciiAdvancedTests
         // Assert
         Assert.True(result.IsValid());
         Assert.False(result.HasErrors());
-        Assert.Empty(result.Errors);
+       Assert.Equal(0, result.ErrorsCount);
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public class AsciiAdvancedTests
         // Assert
         Assert.True(result.IsValid());
         Assert.False(result.HasErrors());
-        Assert.Empty(result.Errors);
+       Assert.Equal(0, result.ErrorsCount);
     }
 
     [Theory]
@@ -185,7 +185,7 @@ public class AsciiAdvancedTests
         // Assert
         Assert.True(result.IsValid());
         Assert.False(result.HasErrors());
-        Assert.Empty(result.Errors);
+       Assert.Equal(0, result.ErrorsCount);
     }
 
     [Fact]
@@ -206,9 +206,9 @@ public class AsciiAdvancedTests
         Assert.False(result.IsValid());
         Assert.True(result.HasErrors());
         Assert.Equal(3, result.Errors.Count);
-        Assert.True(result.HasErrors(nameof(model.Text)));
-        Assert.True(result.HasErrors(nameof(model.Description)));
-        Assert.True(result.HasErrors(nameof(model.Content)));
+        Assert.True(result.Property(nameof(model.Text))?.HasErrors());
+        Assert.True(result.Property(nameof(model.Description))?.HasErrors());
+        Assert.True(result.Property(nameof(model.Content))?.HasErrors());
     }
 }
 

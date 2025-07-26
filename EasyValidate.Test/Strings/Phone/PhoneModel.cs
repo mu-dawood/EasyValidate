@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Strings.Phone
 {
     public  partial class PhoneModel
+ : IValidate
     {
         [Phone]
         public string ContactNumber { get; set; } = string.Empty;
@@ -15,6 +17,7 @@ namespace EasyValidate.Test.Strings.Phone
     }
 
     public partial class PhoneNestedModel
+ : IValidate
     {
         [Phone]
         public string PrimaryPhone { get; set; } = string.Empty;

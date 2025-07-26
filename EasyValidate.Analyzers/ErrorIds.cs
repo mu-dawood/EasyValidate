@@ -16,4 +16,7 @@ public class ErrorIds
     public const string ConditionalMethodInvalidStrategyError = "EASY013"; // Conditional method strategy error
     public const string ConditionalMethodMissingError = "EASY014"; // Conditional method missing error
     public const string ConditionalMethodInvalidNameError = "EASY015"; //Conditional method contains unsupported chars
+    public const string ValidateAttributeUsageAsyncInterface = "EASY016"; // Async interface required
+    public const string ValidateAttributeUsageSyncInterface = "EASY017"; // Sync interface required
+
 }

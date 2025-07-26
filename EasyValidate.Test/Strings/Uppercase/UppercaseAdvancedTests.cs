@@ -25,10 +25,10 @@ public class UppercaseAdvancedTests
         // Assert
         Assert.False(result.IsValid());
         Assert.True(result.HasErrors());
-        Assert.True(result.HasErrors("Details", "Title"));
-        Assert.False(result.HasErrors(nameof(model.MainCode)));
-        Assert.False(result.HasErrors("Details", "Code"));
-        Assert.False(result.HasErrors("Details", "Category"));
+        Assert.True(result.Property("Details")?.HasErrors("Title"));
+        Assert.False(result.Property(nameof(model.MainCode))?.HasErrors());
+        Assert.False(result.Property("Details")?.HasErrors("Code"));
+        Assert.False(result.Property("Details")?.HasErrors("Category"));
 
         var detailsTitleErrors = result.Errors.Where(e => e.Path.SequenceEqual(new[] { "Details", "Title" })).ToList();
         Assert.Single(detailsTitleErrors);
@@ -51,7 +51,7 @@ public class UppercaseAdvancedTests
         // Assert
         Assert.True(result.IsValid());
         Assert.False(result.HasErrors());
-        Assert.Empty(result.Errors);
+       Assert.Equal(0, result.ErrorsCount);
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class UppercaseAdvancedTests
         // Assert
         Assert.True(result.IsValid());
         Assert.False(result.HasErrors());
-        Assert.Empty(result.Errors);
+       Assert.Equal(0, result.ErrorsCount);
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public class UppercaseAdvancedTests
         // Assert
         Assert.True(result.IsValid());
         Assert.False(result.HasErrors());
-        Assert.Empty(result.Errors);
+       Assert.Equal(0, result.ErrorsCount);
     }
 
     [Fact]
@@ -141,9 +141,9 @@ public class UppercaseAdvancedTests
         // Assert
         Assert.False(result.IsValid());
         Assert.True(result.HasErrors());
-        Assert.True(result.HasErrors(nameof(model.Title)));
-        Assert.False(result.HasErrors(nameof(model.Code)));
-        Assert.False(result.HasErrors(nameof(model.Category)));
+        Assert.True(result.Property(nameof(model.Title))?.HasErrors());
+        Assert.False(result.Property(nameof(model.Code))?.HasErrors());
+        Assert.False(result.Property(nameof(model.Category))?.HasErrors());
     }
 
    
@@ -166,7 +166,7 @@ public class UppercaseAdvancedTests
         // Assert
         Assert.True(result.IsValid());
         Assert.False(result.HasErrors());
-        Assert.Empty(result.Errors);
+       Assert.Equal(0, result.ErrorsCount);
     }
 
     [Fact]
@@ -187,9 +187,9 @@ public class UppercaseAdvancedTests
         Assert.False(result.IsValid());
         Assert.True(result.HasErrors());
         Assert.Equal(3, result.Errors.Count);
-        Assert.True(result.HasErrors(nameof(model.Title)));
-        Assert.True(result.HasErrors(nameof(model.Code)));
-        Assert.True(result.HasErrors(nameof(model.Category)));
+        Assert.True(result.Property(nameof(model.Title))?.HasErrors());
+        Assert.True(result.Property(nameof(model.Code))?.HasErrors());
+        Assert.True(result.Property(nameof(model.Category))?.HasErrors());
     }
 }
 

@@ -36,14 +36,14 @@ public class ChainIncompatibilityProcessor : IAttributeUsageChainProcessor
     public ICollection<DiagnosticDescriptor> DiagnosticDescriptors =>
         [ReorderableChainError, NotNullInjectableError, IncompatibleChainError];
 
-    public void Process(SymbolAnalysisContext context, string chainName, IReadOnlyList<AttributeInfo> chain, ITypeSymbol memberType, string memberName)
+    public (bool passed, List<OrderInfo>? order) Process(SymbolAnalysisContext context, string chainName, IReadOnlyList<AttributeInfo> chain, ITypeSymbol memberType, string memberName)
     {
-        if (chain.Count == 0) return;
+        if (chain.Count == 0) return (true, []);
         var chainLabel = string.IsNullOrEmpty(chainName) ? chainName : $"({chainName}) ";
 
         // Sequential processing with optimized early exit
         var currentType = memberType;
-
+        List<OrderInfo> properOrders = [];
         for (int i = 0; i < chain.Count; i++)
         {
             var attribute = chain[i];
@@ -63,7 +63,7 @@ public class ChainIncompatibilityProcessor : IAttributeUsageChainProcessor
                             memberName,
                             string.Join(" -> ", suggestedOrder.Select(a => a.Name))
                         ));
-                        return;
+                        return (false, null);
                     }
                 }
 
@@ -76,7 +76,7 @@ public class ChainIncompatibilityProcessor : IAttributeUsageChainProcessor
                         memberName,
                         i.ToString()
                     ));
-                    return;
+                    return (false, null);
                 }
 
                 // Report as truly incompatible
@@ -87,14 +87,15 @@ public class ChainIncompatibilityProcessor : IAttributeUsageChainProcessor
                     memberName,
                     $"{attribute.Name} expects one of [{string.Join(", ", attribute.InputAndOutputTypes.Select((x) => x.InputType?.ToDisplayString()))}] but got {currentType.ToDisplayString()}"
                 ));
-                return;
+                return (false, null);
             }
             else
             {
-                currentType = info!.ResolveOutPutType();
+                properOrders.Add(new(attribute, info!));
+                currentType = info!.ResolveOutPutType(currentType);
             }
         }
-
+        return (true, properOrders);
     }
 
 

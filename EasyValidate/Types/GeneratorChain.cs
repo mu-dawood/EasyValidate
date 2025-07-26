@@ -1,21 +1,16 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EasyValidate
+namespace EasyValidate.Types
 {
     internal class GeneratorChain(IValidationHandler head)
     {
-        private IValidationHandler _head = head;
-        private IValidationHandler? _tail;
+        private readonly IValidationHandler _head = head;
+        private IValidationHandler _tail = head;
 
         internal GeneratorChain Add(IValidationHandler handler)
         {
-            if (_tail != null)
-            {
-                _tail.WithNext(handler);
-                _tail = handler;
-            }
-
+            _tail = _tail.WithNext(handler);
             return this;
         }
 

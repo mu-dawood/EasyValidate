@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using EasyValidate.Types;
 using Microsoft.CodeAnalysis;
 
 namespace EasyValidate.Handlers
@@ -17,7 +18,7 @@ namespace EasyValidate.Handlers
             var (nextsp, awaitableMembers) = base.Next(@params);
             var sb = new StringBuilder();
             if (awaitableMembers.TryGetValue(currentClassTarget.Symbol.Name, out var awaitableMembersList) && awaitableMembersList.Any())
-                sb.AppendLine("        public ValueTask<IValidationResult> ValidateAsync(IServiceProvider serviceProvider)");
+                sb.AppendLine("        public async ValueTask<IValidationResult> ValidateAsync(IServiceProvider serviceProvider)");
             else
                 sb.AppendLine("        public IValidationResult Validate(IServiceProvider serviceProvider)");
             sb.AppendLine("        {");

@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Strings.StartsWith;
 
 public partial class StartsWithModel
+ : IValidate
 {
     [NotNull, StartsWith("Hello")]
     public string? Greeting { get; set; }
@@ -21,6 +23,7 @@ public partial class StartsWithModel
 }
 
 public partial class StartsWithNestedModel
+ : IValidate
 {
     [Optional, StartsWith("Main")]
     public string? MainProperty { get; set; }

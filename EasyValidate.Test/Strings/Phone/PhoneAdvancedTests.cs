@@ -25,10 +25,10 @@ namespace EasyValidate.Test.Strings.Phone
             // Assert
             Assert.False(result.IsValid());
             Assert.True(result.HasErrors());
-            Assert.False(result.HasErrors(nameof(model.PrimaryPhone)));
-            Assert.True(result.HasErrors("NestedPhones", "ContactNumber"));
-            Assert.False(result.HasErrors("NestedPhones", "EmergencyContact"));
-            Assert.True(result.HasErrors("NestedPhones", "OptionalPhone"));
+            Assert.False(result.Property(nameof(model.PrimaryPhone))?.HasErrors());
+            Assert.True(result.Property("NestedPhones")?.HasErrors("ContactNumber"));
+            Assert.False(result.Property("NestedPhones")?.HasErrors("EmergencyContact"));
+            Assert.True(result.Property("NestedPhones")?.HasErrors("OptionalPhone"));
 
             var nestedContactErrors = result.Errors.Where(e => e.Path.SequenceEqual(new[] { "NestedPhones", "ContactNumber" })).ToList();
             Assert.Single(nestedContactErrors);
@@ -80,10 +80,10 @@ namespace EasyValidate.Test.Strings.Phone
             // Assert
             Assert.False(result.IsValid());
             Assert.True(result.HasErrors());
-            Assert.True(result.HasErrors(nameof(model.PrimaryPhone)));
-            Assert.True(result.HasErrors("NestedPhones", "ContactNumber"));
-            Assert.True(result.HasErrors("NestedPhones", "EmergencyContact"));
-            Assert.False(result.HasErrors("NestedPhones", "OptionalPhone"));
+            Assert.True(result.Property(nameof(model.PrimaryPhone))?.HasErrors());
+            Assert.True(result.Property("NestedPhones")?.HasErrors("ContactNumber"));
+            Assert.True(result.Property("NestedPhones")?.HasErrors("EmergencyContact"));
+            Assert.False(result.Property("NestedPhones")?.HasErrors("OptionalPhone"));
         }
 
         [Fact]

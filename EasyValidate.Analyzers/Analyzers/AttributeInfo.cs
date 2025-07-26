@@ -6,18 +6,37 @@ namespace EasyValidate.Analyzers.Analyzers;
 
 public record AttributeInfo
 {
-    public string Name { get; set; } = default!;
-    public string FullName { get; set; } = default!;
-    public ImmutableArray<InputAndOutputTypes> InputAndOutputTypes { get; set; } = [];
-    public bool IsOptionalNotNullAttribute { get; set; } = false;
+    public string Name { get; }
+    public string FullName { get; }
+    public ImmutableArray<InputAndOutputTypes> InputAndOutputTypes { get; }
+    public bool IsOptionalNotNullAttribute { get; }
+    public INamedTypeSymbol? AttributeClass { get; }
+    public string? ConditionalMethodName { get; }
+    public Location? Location { get; }
+    public ImmutableArray<TypedConstant> ConstructorArguments { get; }
+    public ImmutableArray<KeyValuePair<string, TypedConstant>> NamedArguments { get; }
 
-    public INamedTypeSymbol? AttributeClass { get; set; }
-
-    public Location? Location { get; set; }
-
-    public ImmutableArray<TypedConstant> ConstructorArguments { get; set; } = [];
-    public ImmutableArray<KeyValuePair<string, TypedConstant>> NamedArguments { get; set; } = [];
-
+    public AttributeInfo(
+        string name,
+        string fullName,
+        ImmutableArray<InputAndOutputTypes> inputAndOutputTypes,
+        bool isOptionalNotNullAttribute,
+        INamedTypeSymbol? attributeClass,
+        string? conditionalMethodName,
+        Location? location,
+        ImmutableArray<TypedConstant> constructorArguments,
+        ImmutableArray<KeyValuePair<string, TypedConstant>> namedArguments)
+    {
+        Name = name;
+        FullName = fullName;
+        InputAndOutputTypes = inputAndOutputTypes;
+        IsOptionalNotNullAttribute = isOptionalNotNullAttribute;
+        AttributeClass = attributeClass;
+        ConditionalMethodName = conditionalMethodName;
+        Location = location;
+        ConstructorArguments = constructorArguments;
+        NamedArguments = namedArguments;
+    }
 
     public (bool areCompatible, InputAndOutputTypes?) CanAccept(SymbolAnalysisContext context, ITypeSymbol type)
     {

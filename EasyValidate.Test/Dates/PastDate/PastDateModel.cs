@@ -1,4 +1,5 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Dates.PastDate;
 
@@ -21,6 +22,7 @@ public partial class PastDateModel
 }
 
 public partial class PastDateNestedModel
+ : IValidate
 {
     [PastDate]
     public DateTime MainDate { get; set; }

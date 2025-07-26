@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Strings.Lowercase;
 
 public partial class LowercaseModel
+ : IValidate
 {
     [Lowercase]
     public string Username { get; set; } = string.Empty;
@@ -15,6 +17,7 @@ public partial class LowercaseModel
 }
 
 public partial class LowercaseNestedModel
+ : IValidate
 {
     [Lowercase]
     public string MainSlug { get; set; } = string.Empty;

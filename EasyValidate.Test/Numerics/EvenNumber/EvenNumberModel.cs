@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Numerics.EvenNumber;
 
 public partial class EvenNumberModel
+ : IValidate
 {
     [EvenNumber]
     public int IntValue { get; set; }
@@ -21,6 +23,7 @@ public partial class EvenNumberModel
 }
 
 public partial class EvenNumberNestedModel
+ : IValidate
 {
     [EvenNumber]
     public int MainValue { get; set; }

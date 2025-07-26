@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EasyValidate
+namespace EasyValidate.Types
 {
     /// <summary>
     /// Handles formatting of attribute constructor and named arguments for code generation.

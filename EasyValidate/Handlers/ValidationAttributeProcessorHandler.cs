@@ -1,5 +1,7 @@
+using EasyValidate.Types;
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace EasyValidate.Handlers
@@ -29,7 +31,8 @@ namespace EasyValidate.Handlers
                 {
                     var info = attributes[i];
                     var attr = info.Attribute;
-                    var (canAccept, resolvedType) = attributes[i].InputAndOutputTypes.CanAccept(_compilation, currentType);
+                    var (canAccept, resolvedType) = attr.AttributeClass.IsOptionalOrNotNullAttribute() ?
+                        (true, new(currentType, currentType, false, true)) : info.InputAndOutputTypes.CanAccept(_compilation, currentType);
                     if (!canAccept)
                     {
                         sb.AppendLine($"{indent}// Problem with {attr.AttributeClass?.Name} for {currentInputVariable} as it cannot accept type {currentType.ToDisplayString()}");
@@ -40,8 +43,25 @@ namespace EasyValidate.Handlers
                     // Generate variable name for output (based on attribute type)
                     var attributeName = GetAttributeVariableName(attr);
 
-                    // Directly call Validate method
-                    if (resolvedType!.RequireTransformation)
+                    if (resolvedType!.IsOptionalOrNotNullAttribute)
+                    {
+                        var awaitKeyword = resolvedType.IsAsync || info.ConditionalMethod?.IsAsync == true ? "await " : string.Empty;
+                        if (awaitKeyword == "await ") awaitable = true;
+                        if (info.ConditionalMethod != null)
+                            sb.AppendLine($"{indent}if ({awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable}, {info.ConditionalMethod.MethodName}))");
+                        else
+                            sb.AppendLine($"{indent}if ({awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable}))");
+                        sb.AppendLine($"{indent}    return {returnVariable};");
+                        var outputVariable = $"{attributeName}Output".ToSakeCase();
+                        /// check is currentType conatians 'Value' property like DateTime, Guid, etc.
+                        if (currentType is INamedTypeSymbol namedType && namedType.GetMembers().OfType<IPropertySymbol>().Any(p => p.Name == "HasValue" && p.Type.SpecialType == SpecialType.System_Boolean))
+                            sb.AppendLine($"{indent}var {outputVariable} = {currentInputVariable}.HasValue ? {currentInputVariable}.Value : default!;");
+                        else
+                            sb.AppendLine($"{indent}var {outputVariable} = {currentInputVariable}!;");
+                        currentInputVariable = outputVariable;
+
+                    }
+                    else if (resolvedType!.RequireTransformation)
                     {
                         var outputVariable = $"{attributeName}Output".ToSakeCase();
                         var isValidVariable = $"{attributeName}IsValid".ToSakeCase();
@@ -49,9 +69,9 @@ namespace EasyValidate.Handlers
                         var awaitKeyword = resolvedType.IsAsync || info.ConditionalMethod?.IsAsync == true ? "await " : string.Empty;
                         if (awaitKeyword == "await ") awaitable = true;
                         if (info.ConditionalMethod != null)
-                            sb.AppendLine($"{indent}var ({isValidVariable}, {outputVariable}) = {awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable}, {info.ConditionalMethod.MethodName})");
+                            sb.AppendLine($"{indent}var ({isValidVariable}, {outputVariable}) = {awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable}, {info.ConditionalMethod.MethodName});");
                         else
-                            sb.AppendLine($"{indent}var ({isValidVariable}, {outputVariable}) = {awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable})");
+                            sb.AppendLine($"{indent}var ({isValidVariable}, {outputVariable}) = {awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable});");
                         sb.AppendLine($"{indent}if(!{isValidVariable})");
                         sb.AppendLine($"{indent}    return {returnVariable};");
                         currentInputVariable = outputVariable;
@@ -68,7 +88,7 @@ namespace EasyValidate.Handlers
                     }
 
                     // Update input variable for next iteration
-                    currentType = resolvedType!.ResolveOutPutType();
+                    currentType = resolvedType!.ResolveOutPutType(currentType);
                 }
             }
             return awaitable;

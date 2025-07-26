@@ -8,7 +8,7 @@ using System.Collections.Immutable;
 using System.Collections.Generic;
 using System;
 using Microsoft.CodeAnalysis.CSharp;
-using EasyValidate;
+using EasyValidate.Types;
 
 namespace EasyValidate
 {
@@ -36,6 +36,8 @@ namespace EasyValidate
                 var (classSymbol, compilation) = pair;
 
                 if (classSymbol is not INamedTypeSymbol classSymbolNonNull)
+                    return;
+                if (!classSymbol.ImplementsIAsyncValidate() && !classSymbol.ImplementsIValidate())
                     return;
 
                 DebuggerUtil.Log($"Processing class: {classSymbolNonNull.Name}");
@@ -98,7 +100,7 @@ namespace EasyValidate
                     .Add(new ValidateMethodHandler(compilation))
                     .Add(new MemberValidationMethodHandler(compilation));
 
-               var (sb,_)= chain.Handle(new HandlerParams(targets, context, classSymbol));
+                var (sb, _) = chain.Handle(new HandlerParams(targets, context, classSymbol));
 
                 var namespacePath = classSymbol.ContainingNamespace.ToDisplayString().Replace('.', '/');
                 var fileName = $"{classSymbol.Name}_Validation.g.cs";
@@ -146,7 +148,7 @@ namespace EasyValidate
                             .FirstOrDefault((x) => x.Name == conditionalMethod && x.Parameters.Length == 1 && x.Parameters[0].Type.InheritsFrom("EasyValidate.Core.Abstraction.IChainResult"));
                             if (method != null)
                             {
-                                var (isAsync, _) = method.ReturnType.IsAsyncType();
+                                var (isAsync, _) = method.IsAsyncMethod();
                                 conditionalMethodInfo = new ConditionalMethodInfo(conditionalMethod!, isAsync);
                             }
                         }
@@ -174,12 +176,24 @@ namespace EasyValidate
                         }
                     }
                 }
-                var (requireNested, isCollection) = classSymbol.GetFullName() == type.GetFullName() ? (attributes.Any(), false) : RequiresNestedValidation(type);
-                var info = new MemberInfo(name, attributes, type, isProperty, requireNested, isCollection);
+
+                // Check if nested validation is required
+                NestedConfig? nestedConfig = null;
+                if (type.ImplementsIAsyncValidate())
+                    nestedConfig = new NestedConfig(false, true);
+                else if (type.ImplementsIValidate())
+                    nestedConfig = new NestedConfig(false, false);
+                else if (type.IsCollectionOfIAsyncValidate())
+                    nestedConfig = new NestedConfig(true, true);
+                else if (type.IsCollectionOfIValidate())
+                    nestedConfig = new NestedConfig(true, false);
+
+
+                var info = new MemberInfo(name, attributes, type, isProperty, nestedConfig);
 
                 if (attributes.Count > 0)
                     memberInfos.Add(info);
-                else if (info.RequireNestedValidation)
+                else if (info.NestedConfig != null)
                 {
                     var (isGtterForField, fieldName) = GetterField(classSymbol, member);
                     if (!isGtterForField || !memberInfos.Any(m => m.Name == fieldName))
@@ -326,172 +340,5 @@ namespace EasyValidate
             };
         }
 
-
-
-        /// <summary>
-        /// Determines if a type requires nested validation.
-        /// </summary>
-        private static (bool requireNestedValidation, bool isCollection) RequiresNestedValidation(ITypeSymbol memberType)
-        {
-            if (IsCollection(memberType))
-            {
-                // For collections, check if the element type has validations
-                var elementType = GetCollectionElementType(memberType);
-                if (elementType != null && HasValidations(elementType))
-                {
-                    return (true, true);
-                }
-                return (false, true); // It's a collection but elements don't need validation
-            }
-            return (HasValidations(memberType), false);
-
-
-        }
-
-        /// <summary>
-        /// Gets the element type of a collection.
-        /// </summary>
-        private static ITypeSymbol? GetCollectionElementType(ITypeSymbol type)
-        {
-            // Handle arrays
-            if (type is IArrayTypeSymbol arrayType)
-                return arrayType.ElementType;
-
-            // Handle generic collections (IEnumerable<T>, List<T>, etc.)
-            if (type is INamedTypeSymbol namedType)
-            {
-                // Look for IEnumerable<T> interface
-                var enumerableInterface = namedType.AllInterfaces
-                    .FirstOrDefault(i => i.IsGenericType &&
-                                   i.ConstructedFrom.ToDisplayString() == "System.Collections.Generic.IEnumerable<T>");
-
-                if (enumerableInterface != null && enumerableInterface.TypeArguments.Length > 0)
-                {
-                    return enumerableInterface.TypeArguments[0];
-                }
-
-                // If it's a generic type itself (like List<T>), check its type arguments
-                if (namedType.IsGenericType && namedType.TypeArguments.Length > 0)
-                {
-                    // For most collections, the first type argument is the element type
-                    return namedType.TypeArguments[0];
-                }
-            }
-
-            return null;
-        }
-
-        private static bool HasValidations(ITypeSymbol type)
-        {
-            // Unwrap Nullable<T> to T for value types
-            if (type is INamedTypeSymbol namedType &&
-                namedType.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T &&
-                namedType.TypeArguments.Length == 1)
-            {
-                type = namedType.TypeArguments[0];
-            }
-
-            // For reference types, unwrap nullable reference types (e.g., string?)
-            if (type.NullableAnnotation == NullableAnnotation.Annotated && type is INamedTypeSymbol refType && refType.TypeKind == TypeKind.Class)
-            {
-                // Use the underlying class type (ignore the nullable annotation)
-                type = refType.ConstructedFrom;
-            }
-
-            // Ignore primitive, enum, string, and known types that don't have members
-            if (type.IsValueType && type.TypeKind == TypeKind.Struct && type.SpecialType != SpecialType.None)
-                return false;
-
-            if (type.SpecialType is SpecialType.System_String or SpecialType.System_Object)
-                return false;
-
-            if (type.TypeKind is TypeKind.Enum or TypeKind.Delegate or TypeKind.Pointer or TypeKind.Array)
-                return false;
-
-            // Get members
-            var members = type.GetMembers();
-
-            return HasValidationAttribute(members.OfType<IPropertySymbol>()) ||
-                   HasValidationAttribute(members.OfType<IFieldSymbol>());
-        }
-        private static bool HasValidationAttribute(IEnumerable<ISymbol> members)
-        {
-            return members.Any(member =>
-                member.GetAttributes().Any(attr =>
-                    attr.AttributeClass?.IsValidationAttribute() == true));
-        }
-
-        /// <summary>
-        /// Determines if a type is a collection type.
-        /// </summary>
-        private static bool IsCollection(ITypeSymbol type)
-        {
-            // Exclude string type (even though it implements IEnumerable<char>)
-            if (type.SpecialType == SpecialType.System_String)
-                return false;
-
-            // Check for arrays first
-            if (type is IArrayTypeSymbol)
-                return true;
-
-            // Check if it's a collection type (implements IEnumerable)
-            if (type is INamedTypeSymbol namedType)
-            {
-                // Check if the collection type implements IEnumerable (generic or non-generic)
-                bool isEnumerable = namedType.AllInterfaces.Any(i =>
-                {
-                    var interfaceName = i.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-                    return interfaceName.StartsWith("global::System.Collections.Generic.IEnumerable") ||
-                           interfaceName == "global::System.Collections.IEnumerable";
-                });
-
-                return isEnumerable;
-            }
-
-            return false;
-        }
-
     }
-}
-
-internal class ValidationTarget(ISymbol symbol, TargetType targetType, List<MemberInfo>? members = null)
-{
-
-    public ISymbol Symbol { get; } = symbol;
-    public TargetType TargetType { get; } = targetType;
-    public List<MemberInfo> Members { get; } = members ?? [];
-}
-
-internal enum TargetType
-{
-    CurretClass,
-    Method
-}
-
-internal class MemberInfo(string name, List<AttributeInfo> attributes, ITypeSymbol type, bool isProperty, bool requireNestedValidation, bool isCollection)
-{
-    public string Name { get; } = name;
-    public bool IsCollection { get; } = isCollection;
-    public bool RequireNestedValidation { get; } = requireNestedValidation;
-    public ITypeSymbol Type { get; } = type;
-    public bool IsProperty { get; } = isProperty;
-    public IReadOnlyList<AttributeInfo> Attributes { get; } = attributes;
-}
-
-internal class AttributeInfo(AttributeData attribute, ConditionalMethodInfo? conditionalMethod, string instanceName, string instanceDeclration, ImmutableArray<InputAndOutputTypes> inputAndOutputTypes)
-{
-    public AttributeData Attribute => attribute;
-
-    public string InstanceName => instanceName;
-    public string InstanceDeclration => instanceDeclration;
-
-    public ConditionalMethodInfo? ConditionalMethod => conditionalMethod;
-
-    public ImmutableArray<InputAndOutputTypes> InputAndOutputTypes => inputAndOutputTypes;
-}
-internal class ConditionalMethodInfo(string methodName, bool isAsync)
-{
-    public string MethodName { get; } = methodName;
-    public bool IsAsync { get; } = isAsync;
-
 }

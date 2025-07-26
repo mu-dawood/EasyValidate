@@ -1,9 +1,10 @@
-using EasyValidate.Core.Abstraction;
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.ConsoleTest;
 
 public partial class Dto
+ : IAsyncValidate
 {
 
     [Optional, PastDate]
@@ -37,6 +38,7 @@ public partial class Dto
         return new System.Threading.Tasks.ValueTask<bool>(true);
     }
 
+   
 
 
 

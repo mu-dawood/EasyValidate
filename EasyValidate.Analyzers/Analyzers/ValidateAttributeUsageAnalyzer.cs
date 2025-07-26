@@ -10,6 +10,10 @@ namespace EasyValidate.Analyzers.Analyzers
     {
         private readonly DiagnosticDescriptor ErrorDiagnostic = new(
             ErrorIds.ValidateAttributeUsageDebug, "Chain Processor Error", "{0}: Cause: {1}", "Usage", DiagnosticSeverity.Error, true);
+        private readonly DiagnosticDescriptor AsyncInterfaceDiagnostic = new(
+            ErrorIds.ValidateAttributeUsageAsyncInterface, "Async Validation Interface Error", "{0}", "Usage", DiagnosticSeverity.Error, true);
+        private readonly DiagnosticDescriptor SyncInterfaceDiagnostic = new(
+            ErrorIds.ValidateAttributeUsageSyncInterface, "Sync Validation Interface Error", "{0}", "Usage", DiagnosticSeverity.Error, true);
         private readonly List<IAttributeUsageProcessor> processors = [
             new PowerOfAttributeUsage(),
             new DivisibleByAttributeUsage(),
@@ -28,7 +32,9 @@ namespace EasyValidate.Analyzers.Analyzers
             {
                 var descriptors = new List<DiagnosticDescriptor>
                 {
-                    ErrorDiagnostic
+                    ErrorDiagnostic,
+                    AsyncInterfaceDiagnostic,
+                    SyncInterfaceDiagnostic
                 };
                 foreach (var processor in processors)
                 {
@@ -46,55 +52,120 @@ namespace EasyValidate.Analyzers.Analyzers
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
-
-            context.RegisterSymbolAction(AnalyzeAttributeUsage, SymbolKind.Property);
-            context.RegisterSymbolAction(AnalyzeAttributeUsage, SymbolKind.Field);
+            context.RegisterSymbolAction(AnalyzeAttributeUsage, SymbolKind.NamedType);
         }
 
         private void AnalyzeAttributeUsage(SymbolAnalysisContext context)
         {
+            if (context.Symbol is not INamedTypeSymbol namedTypeSymbol)
+                return;
+            if (namedTypeSymbol.IsAbstract)
+                return;
+            
+            var classType = namedTypeSymbol.TypeKind == TypeKind.Class || namedTypeSymbol.TypeKind == TypeKind.Struct
+                ? namedTypeSymbol
+                : null;
+            if (classType == null)
+                return;
 
-            ITypeSymbol memberType;
-            ImmutableArray<AttributeData> attributes;
-
-            // Handle both properties and fields
-            switch (context.Symbol)
-            {
-                case IPropertySymbol propertySymbol:
-                    memberType = propertySymbol.Type;
-                    attributes = propertySymbol.GetAttributes();
-                    break;
-                case IFieldSymbol fieldSymbol:
-                    memberType = fieldSymbol.Type;
-                    attributes = fieldSymbol.GetAttributes();
-                    break;
-                default:
-                    return; // Not a property or field, skip
-            }
+            var members = classType.GetMembers();
+            bool? hasAsync = null;
             try
             {
-                // Group attributes by Chain parameter value
-                var chainGroups = GroupAttributesByChain(context, attributes, memberType, context.Symbol.Name);
-
-                foreach (var chainGroup in chainGroups)
+                foreach (var member in members)
                 {
-
-                    var value = chainGroup.Value.AsReadOnly();
-                    foreach (var processor in chainProcessors)
+                    ITypeSymbol memberType;
+                    string memberName = member.Name;
+                    ImmutableArray<AttributeData> attributes;
+                    if (member is IPropertySymbol propertySymbol)
                     {
-                        try
+                        memberType = propertySymbol.Type;
+                        attributes = propertySymbol.GetAttributes();
+                    }
+                    else if (member is IFieldSymbol fieldSymbol)
+                    {
+                        memberType = fieldSymbol.Type;
+                        attributes = fieldSymbol.GetAttributes();
+                    }
+                    else
+                        continue; // Skip if not a property or field
+
+                    // Group attributes by Chain parameter value
+                    var chainGroups = GroupAttributesByChain(context, member, attributes, memberType, memberName);
+                    if (chainGroups.Any())
+                        hasAsync = false;
+                    foreach (var chainGroup in chainGroups)
+                    {
+                        var value = chainGroup.Value.AsReadOnly();
+                        foreach (var processor in chainProcessors)
                         {
-                            processor.Process(context, chainGroup.Key, value, memberType, context.Symbol.Name);
+                            try
+                            {
+                                var (passed, order) = processor.Process(context, chainGroup.Key, value, memberType, context.Symbol.Name);
+                                if (!passed) return;
+                                if (order != null && order.Count > 0)
+                                {
+                                    // Check if any order item has async input/output types
+
+                                    foreach (var info in order)
+                                    {
+                                        if (info.Types.IsAsync)
+                                        {
+                                            hasAsync = true;
+                                            break;
+                                        }
+                                        if (string.IsNullOrEmpty(info.Info.ConditionalMethodName))
+                                            continue;
+                                        var method = classType.GetMembers().OfType<IMethodSymbol>()
+                                               .FirstOrDefault(m => m.Name == info.Info.ConditionalMethodName);
+                                        if (method != null && method.IsAsyncMethod().isAsync)
+                                        {
+                                            hasAsync = true;
+                                            break;
+                                        }
+                                    }
+
+
+                                }
+                            }
+                            catch { }
                         }
-                        catch { }
+                    }
+
+                    foreach (var attribute in attributes)
+                    {
+                        var attributeClass = attribute.AttributeClass;
+                        if (!attributeClass.IsValidationAttribute())
+                            continue;
                     }
                 }
 
-                foreach (var attribute in attributes)
+
+                if (classType.ImplementsIAsyncValidate())
+                    hasAsync = true;
+
+                if (classType.IsCollectionOfIAsyncValidate())
+                    hasAsync = true;
+                if (hasAsync.HasValue)
                 {
-                    var attributeClass = attribute.AttributeClass;
-                    if (!attributeClass.IsValidationAttribute())
-                        continue;
+                    bool implementsAsync = classType.ImplementsIAsyncValidate();
+                    bool implementsSync = classType.ImplementsIValidate();
+                    if (hasAsync.Value && !implementsAsync)
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            AsyncInterfaceDiagnostic,
+                            classType.Locations.FirstOrDefault(),
+                            $"Class '{classType.Name}' must implement IAsyncValidate because async validation is required."
+                        ));
+                    }
+                    else if (!hasAsync.Value && !implementsSync)
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            SyncInterfaceDiagnostic,
+                            classType.Locations.FirstOrDefault(),
+                            $"Class '{classType.Name}' must implement IValidate because only sync validation is required."
+                        ));
+                    }
                 }
             }
             catch (Exception ex)
@@ -108,11 +179,12 @@ namespace EasyValidate.Analyzers.Analyzers
                    )
                 );
             }
+
         }
 
 
 
-        private Dictionary<string, List<AttributeInfo>> GroupAttributesByChain(SymbolAnalysisContext context, ImmutableArray<AttributeData> attributes, ITypeSymbol memberType, string memberName)
+        private Dictionary<string, List<AttributeInfo>> GroupAttributesByChain(SymbolAnalysisContext context, ISymbol symbol, ImmutableArray<AttributeData> attributes, ITypeSymbol memberType, string memberName)
         {
             var chainGroups = new Dictionary<string, List<AttributeInfo>>();
             foreach (var attribute in attributes)
@@ -132,19 +204,19 @@ namespace EasyValidate.Analyzers.Analyzers
                     // Handle input/output types from the validation attribute interface
 
                     var location = attribute.ApplicationSyntaxReference?.GetSyntax()?.GetLocation()
-                                              ?? context.Symbol.Locations.FirstOrDefault()
+                                              ?? symbol.Locations.FirstOrDefault()
                                               ?? Location.None;
-                    var info = new AttributeInfo
-                    {
-                        Name = attribute.AttributeClass.Name,
-                        FullName = attribute.AttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-                        InputAndOutputTypes = [.. typeArgs],
-                        Location = location,
-                        ConstructorArguments = attribute.ConstructorArguments,
-                        NamedArguments = attribute.NamedArguments,
-                        IsOptionalNotNullAttribute = attribute.AttributeClass.IsOptionalOrNotNullAttribute(),
-                        AttributeClass = attribute.AttributeClass,
-                    };
+                    var info = new AttributeInfo(
+                        name: attribute.AttributeClass.Name,
+                        fullName: attribute.AttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+                        inputAndOutputTypes: [.. typeArgs],
+                        conditionalMethodName: attribute.NamedArguments.GetArgumentValue<string>("ConditionalMethod"),
+                        location: location,
+                        constructorArguments: attribute.ConstructorArguments,
+                        namedArguments: attribute.NamedArguments,
+                        isOptionalNotNullAttribute: attribute.AttributeClass.IsOptionalOrNotNullAttribute(),
+                        attributeClass: attribute.AttributeClass
+                    );
                     list.Add(info);
 
                     foreach (var processor in processors)

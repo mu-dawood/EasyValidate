@@ -27,15 +27,15 @@ public class AlphaAdvancedTests
         Assert.True(result.HasErrors());
 
         // Check main object error
-        Assert.True(result.HasErrors(nameof(model.Name)));
+        Assert.True(result.Property(nameof(model.Name))?.HasErrors());
 
         // Check nested object errors with proper prefixing
-        Assert.True(result.HasErrors("NestedModel", "FirstName"));
-        Assert.False(result.HasErrors("NestedModel", "LastName"));
-        Assert.True(result.HasErrors("NestedModel", "MiddleName"));
+        Assert.True(result.Property("NestedModel")?.HasErrors("FirstName"));
+        Assert.False(result.Property("NestedModel")?.HasErrors("LastName"));
+        Assert.True(result.Property("NestedModel")?.HasErrors("MiddleName"));
 
         // Verify error count
-        Assert.Equal(3, result.Errors.Count);
+        Assert.Equal(3, result.ErrorsCount);
 
         // Verify error messages contain proper prefixes
         var nestedFirstNameErrors = result.Errors.Where(e => e.Path.SequenceEqual(new[] { "NestedModel", "FirstName" })).ToList();
@@ -82,7 +82,7 @@ public class AlphaAdvancedTests
         // Assert
         Assert.True(result.IsValid());
         Assert.False(result.HasErrors());
-        Assert.Empty(result.Errors);
+        Assert.Equal(0, result.ErrorsCount);
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class AlphaAdvancedTests
 
         // Assert
         Assert.False(result.IsValid());
-        Assert.True(result.HasErrors(nameof(model.FirstName)));
+        Assert.True(result.Property(nameof(model.FirstName))?.HasErrors());
 
         var firstNameErrors = result.Errors.Where(e => e.Path.SequenceEqual(new[] { nameof(model.FirstName) })).ToList();
         Assert.Single(firstNameErrors);
@@ -150,7 +150,7 @@ public class AlphaAdvancedTests
 
         // Assert
         Assert.False(result.IsValid());
-        Assert.True(result.HasErrors(nameof(model.FirstName)));
+        Assert.True(result.Property(nameof(model.FirstName))?.HasErrors());
     }
 
     [Fact]

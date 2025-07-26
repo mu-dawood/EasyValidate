@@ -22,12 +22,12 @@ namespace EasyValidate.Core.Attributes
     /// Initializes a new instance of the <see cref="EqualToAttribute"/> class.
     /// </remarks>
     /// <param name="comparisonValue">The value to compare against.</param>
-    public class EqualToAttribute(object comparisonValue) : GeneralValidationAttributeBase
+    public class EqualToAttribute(object? comparisonValue) : GeneralValidationAttributeBase
     {
         /// <summary>
         /// Gets the value to compare against.
         /// </summary>
-        public object ComparisonValue { get; } = comparisonValue;
+        public object? ComparisonValue { get; } = comparisonValue;
         /// <inheritdoc/>
         public override ExecutionStrategy Strategy { get; set; } = ExecutionStrategy.ValidateAndStop;
 

@@ -1,6 +1,10 @@
+
+/// this file is shared between 2 liberaries so its important to keep these usings even they are not used
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -79,6 +83,63 @@ public static class SharedUtils
         return false;
     }
 
+
+
+    public static bool ImplementsInterface(this ITypeSymbol? type, string interfaceFullName)
+    {
+        if (type == null)
+            return false;
+        var _interface = interfaceFullName.StartsWith("global::")
+        ? interfaceFullName
+        : "global::" + interfaceFullName;
+
+        // Check all interfaces transitively (including interfaces implemented by base classes)
+        foreach (var interfaceType in type.AllInterfaces)
+        {
+            if (interfaceType is INamedTypeSymbol namedInterface && namedInterface.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith(_interface))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static bool IsCollectionOfInterface(this ITypeSymbol? type, string interfaceFullName)
+    {
+        if (type == null)
+            return false;
+
+        ITypeSymbol? elementType = null;
+
+        if (type is IArrayTypeSymbol arrayType)
+        {
+            elementType = arrayType.ElementType;
+        }
+        else if (type is INamedTypeSymbol namedType)
+        {
+            var ienumerable = namedType.AllInterfaces
+                .FirstOrDefault(i => i.Name == "IEnumerable" && i.IsGenericType);
+
+            if (ienumerable?.TypeArguments.Length == 1)
+                elementType = ienumerable.TypeArguments[0];
+        }
+
+        return elementType != null && elementType.ImplementsInterface(interfaceFullName);
+    }
+
+
+    public static bool ImplementsIAsyncValidate(this ITypeSymbol? type) =>
+        type?.ImplementsInterface("EasyValidate.Core.Abstraction.IAsyncValidate") ?? false;
+    public static bool IsCollectionOfIAsyncValidate(this ITypeSymbol? type) =>
+        type?.IsCollectionOfInterface("EasyValidate.Core.Abstraction.IAsyncValidate") ?? false;
+
+    public static bool ImplementsIValidate(this ITypeSymbol? type) =>
+        type?.ImplementsInterface("EasyValidate.Core.Abstraction.IValidate") ?? false;
+    public static bool IsCollectionOfIValidate(this ITypeSymbol? type) =>
+        type?.IsCollectionOfInterface("EasyValidate.Core.Abstraction.IValidate") ?? false;
+
+
     public static bool IsNotNullAttribute(this ITypeSymbol? type) => InheritsFrom(type, "EasyValidate.Core.Attributes.NotNullAttribute");
     public static bool IsOptionalAttribute(this ITypeSymbol? type) => InheritsFrom(type, "EasyValidate.Core.Attributes.OptionalAttribute");
     public static bool IsOptionalOrNotNullAttribute(this ITypeSymbol? type) => type.IsOptionalAttribute() || type.IsNotNullAttribute();
@@ -144,9 +205,11 @@ public static class SharedUtils
 
     }
 
-    public static (bool, ImmutableArray<ITypeSymbol> arguments) IsAsyncType(this ITypeSymbol type)
+    public static (bool isAsync, ImmutableArray<ITypeSymbol> arguments) IsAsyncMethod(this IMethodSymbol type)
     {
-        if (type is INamedTypeSymbol namedTypeSymbol)
+        if (type.IsAsync) return (true, type.TypeArguments);
+
+        if (type.ReturnType is INamedTypeSymbol namedTypeSymbol)
         {
             // Check for GetAwaiter() method
             var getAwaiterMethod = namedTypeSymbol.GetMembers("GetAwaiter").OfType<IMethodSymbol>().FirstOrDefault(m => m.Parameters.Length == 0);
@@ -167,6 +230,72 @@ public static class SharedUtils
         }
         return (false, ImmutableArray<ITypeSymbol>.Empty);
     }
+    public static string ToSakeCase(this string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return input;
+
+        var sb = new StringBuilder();
+        for (int i = 0; i < input.Length; i++)
+        {
+            var c = input[i];
+
+            if (char.IsUpper(c))
+            {
+                if (i > 0)
+                    sb.Append('_');
+
+                sb.Append(char.ToLowerInvariant(c));
+            }
+            else if (c == ' ')
+            {
+                if (i > 0 && sb.Length > 0 && sb[sb.Length - 1] != '_')
+                    sb.Append('_');
+            }
+            else if (c == '-')
+            {
+                if (i > 0 && sb.Length > 0 && sb[sb.Length - 1] != '_')
+                    sb.Append('_');
+            }
+            else if (c == '_')
+            {
+                if (sb.Length > 0 && sb[sb.Length - 1] != '_')
+                    sb.Append('_');
+            }
+            else if (c == '@')
+            {
+                if (i > 0 && sb.Length > 0 && sb[sb.Length - 1] != '_')
+                    sb.Append('_');
+                sb.Append("at_");
+            }
+            else
+            {
+                sb.Append(c);
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    public static string ToPascalCase(this string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return string.Empty;
+
+        var words = name.Split(['_', '@'], StringSplitOptions.RemoveEmptyEntries);
+        var result = new StringBuilder(name.Length);
+
+        foreach (var word in words)
+        {
+            if (word.Length == 0) continue;
+
+            result.Append(char.ToUpperInvariant(word[0]));
+            if (word.Length > 1)
+                result.Append(word.Substring(1).ToLowerInvariant());
+        }
+
+        return result.ToString();
+    }
 
 }
 
@@ -177,23 +306,23 @@ public static class SharedUtils
 public class InputAndOutputTypes(ITypeSymbol inputType, ITypeSymbol outputType, bool isAsync, bool isOptionalOrNotNullAttribute)
 {
     public bool IsAsync { get; } = isAsync;
-    public Microsoft.CodeAnalysis.ITypeSymbol InputType { get; } = inputType;
-    private readonly Microsoft.CodeAnalysis.ITypeSymbol OutputType = outputType;
+    public ITypeSymbol InputType { get; } = inputType;
+    private readonly ITypeSymbol OutputType = outputType;
     public bool IsOptionalOrNotNullAttribute { get; set; } = isOptionalOrNotNullAttribute;
-    public bool RequireTransformation => !Microsoft.CodeAnalysis.SymbolEqualityComparer.Default.Equals(InputType, OutputType);
+    public bool RequireTransformation => !SymbolEqualityComparer.Default.Equals(InputType, OutputType);
 
-    public Microsoft.CodeAnalysis.ITypeSymbol ResolveOutPutType()
+    public ITypeSymbol ResolveOutPutType(ITypeSymbol? previousType)
     {
-        if (!IsOptionalOrNotNullAttribute) return OutputType;
+        if (!IsOptionalOrNotNullAttribute || previousType == null) return OutputType;
         // For value types, strip nullable
-        if (InputType is Microsoft.CodeAnalysis.INamedTypeSymbol namedType &&
+        if (previousType is INamedTypeSymbol namedType &&
             namedType.IsGenericType &&
-            namedType.ConstructedFrom.SpecialType == Microsoft.CodeAnalysis.SpecialType.System_Nullable_T)
+            namedType.ConstructedFrom.SpecialType == SpecialType.System_Nullable_T)
         {
             return namedType.TypeArguments[0];
         }
         // For reference types, remove nullable annotation
-        return InputType.WithNullableAnnotation(Microsoft.CodeAnalysis.NullableAnnotation.NotAnnotated);
+        return previousType.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
     }
 
 }

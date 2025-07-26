@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Strings.CreditCard
 {
     public partial class CreditCardModel
+ : IValidate
     {
         [CreditCard]
         public string CardNumber { get; set; } = string.Empty;
@@ -15,6 +17,7 @@ namespace EasyValidate.Test.Strings.CreditCard
     }
 
     public partial class CreditCardNestedModel
+ : IValidate
     {
         [CreditCard]
         public string PrimaryCard { get; set; } = string.Empty;

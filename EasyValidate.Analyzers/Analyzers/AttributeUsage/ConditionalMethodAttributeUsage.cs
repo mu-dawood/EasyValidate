@@ -158,7 +158,7 @@ namespace EasyValidate.Analyzers.Analyzers.AttributeUsage
             var returnType = conditionalMethod.ReturnType;
             var isBoolReturn = returnType.SpecialType == SpecialType.System_Boolean;
             var isAwaitableBoolReturn = false;
-            var (isAsync, arguments) = returnType.IsAsyncType();
+            var (isAsync, arguments) = conditionalMethod.IsAsyncMethod();
             if (returnType.GetFullName().Contains("System.Threading.Tasks.ValueTask") && isAsync && arguments.Length == 1 && arguments[0].SpecialType == SpecialType.System_Boolean)
             {
                 isAwaitableBoolReturn = true;

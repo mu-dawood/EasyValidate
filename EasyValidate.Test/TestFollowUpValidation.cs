@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.FollowUpValidation
 {
     public partial class TestFollowUpValidation
+ : IValidate
     {
         // This should trigger a warning for missing MinLength attribute
         [NotNull]

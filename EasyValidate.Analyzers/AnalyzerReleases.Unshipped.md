@@ -6,3 +6,5 @@
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
 EASY015 | Usage | Error | ConditionalMethodAttributeUsage
+EASY017 | Usage | Error | ValidateAttributeUsageAnalyzer
+EASY016 | Usage | Error | ValidateAttributeUsageAnalyzer

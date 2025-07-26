@@ -22,13 +22,13 @@ namespace EasyValidate.Core.Attributes
     /// Initializes a new instance of the <see cref="NotEqualToAttribute"/> class.
     /// </remarks>
     /// <param name="comparisonValue">The value to compare against.</param>
-    public class NotEqualToAttribute(object comparisonValue) : GeneralValidationAttributeBase
+    public class NotEqualToAttribute(object? comparisonValue) : GeneralValidationAttributeBase
     {
 
         /// <summary>
         /// Gets the value to compare against.
         /// </summary>
-        public object ComparisonValue { get; } = comparisonValue;
+        public object? ComparisonValue { get; } = comparisonValue;
 
         /// <summary>
         /// Gets or sets the nullable behavior for this attribute.

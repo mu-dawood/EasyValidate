@@ -19,7 +19,7 @@ public class AsciiSimpleTests
         // Assert
         Assert.True(result.IsValid());
         Assert.False(result.HasErrors());
-        Assert.Empty(result.Errors);
+       Assert.Equal(0, result.ErrorsCount);
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public class AsciiSimpleTests
         // Assert
         Assert.True(result.IsValid());
         Assert.False(result.HasErrors());
-        Assert.Empty(result.Errors);
+       Assert.Equal(0, result.ErrorsCount);
     }
 
     [Theory]
@@ -112,7 +112,7 @@ public class AsciiSimpleTests
         // Assert
         Assert.True(result.IsValid());
         Assert.False(result.HasErrors());
-        Assert.Empty(result.Errors);
+       Assert.Equal(0, result.ErrorsCount);
     }
 
     [Theory]

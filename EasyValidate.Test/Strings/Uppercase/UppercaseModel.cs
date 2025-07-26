@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Strings.Uppercase;
 
 public partial class UppercaseModel
+ : IValidate
 {
     [Uppercase]
     public string Title { get; set; } = string.Empty;
@@ -15,6 +17,7 @@ public partial class UppercaseModel
 }
 
 public partial class UppercaseNestedModel
+ : IValidate
 {
     [Uppercase]
     public string MainCode { get; set; } = string.Empty;

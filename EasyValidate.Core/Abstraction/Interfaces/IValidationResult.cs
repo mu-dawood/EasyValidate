@@ -33,23 +33,23 @@ public interface IValidationResult
         bool HasErrors();
 
         /// <summary>
-        /// Determines whether the specified property contains any validation errors.
+        /// Gets the total number of validation errors contained in this result.
         /// </summary>
-        /// <param name="propertyName">The name of the property to check for validation errors.</param>
-        /// <returns>
-        /// <c>true</c> if the specified property has validation errors; otherwise, <c>false</c>.
-        /// </returns>
+        /// <value>
+        /// The number of validation errors found across all properties.
+        /// </value>
         /// <example>
         /// <code>
-        /// if (result.HasErrors("Email")) {
-        ///     Console.WriteLine("Email validation failed!");
+        /// int errorCount = result.ErrorsCount;
+        /// if (errorCount > 0) {
+        ///     Console.WriteLine($"Total errors: {errorCount}");
         /// }
         /// </code>
         /// </example>
-        /// <docs-member>HasErrors(string)</docs-member>
-        /// <docs-type>Method</docs-type>
-        /// <docs-return-type>bool</docs-return-type>
-        bool HasErrors(string propertyName);
+        /// <docs-member>ErrorsCount</docs-member>
+        /// <docs-type>Property</docs-type>
+        /// <docs-return-type>int</docs-return-type>
+        int ErrorsCount { get; }
 
         /// <summary>
         /// Checks if the validation result is valid (i.e., contains no errors).

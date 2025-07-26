@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Numerics.Range;
 
 public partial class RangeModel
+ : IValidate
 {
     [Range(1, 100)]
     public int Age { get; set; }
@@ -18,6 +20,7 @@ public partial class RangeModel
 }
 
 public partial class RangeNestedModel
+ : IValidate
 {
     [Range(1, 50)]
     public int MainValue { get; set; }

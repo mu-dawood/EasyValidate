@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using EasyValidate.Types;
 using Microsoft.CodeAnalysis;
 
 namespace EasyValidate.Handlers
@@ -26,14 +27,14 @@ namespace EasyValidate.Handlers
                     // Generate Validate method with only IFormatter parameter
                     sb.AppendLine($"        public {returnType} {methodName}(IFormatter formatter)");
                     sb.AppendLine("        {");
-                    sb.AppendLine("            return Validate(new DefaultServiceProvider(formatter));");
+                    sb.AppendLine($"            return {methodName}(new DefaultServiceProvider(formatter));");
                     sb.AppendLine("        }");
                     sb.AppendLine();
 
                     // Generate parameterless Validate method
                     sb.AppendLine($"        public {returnType} {methodName}()");
                     sb.AppendLine("        {");
-                    sb.AppendLine("            return Validate(new DefaultServiceProvider());");
+                    sb.AppendLine($"            return {methodName}(new DefaultServiceProvider());");
                     sb.AppendLine("        }");
                 }
                 else if (target.TargetType == TargetType.Method)

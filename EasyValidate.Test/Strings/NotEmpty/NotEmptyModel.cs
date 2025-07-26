@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Strings.NotEmpty;
 
 public partial class NotEmptyModel
+ : IValidate
 {
     [NotNull, NotEmpty]
     public string? Name { get; set; } = string.Empty;
@@ -15,6 +17,7 @@ public partial class NotEmptyModel
 }
 
 public partial class NotEmptyNestedModel
+ : IValidate
 {
     [NotEmpty]
     public string Title { get; set; } = string.Empty;

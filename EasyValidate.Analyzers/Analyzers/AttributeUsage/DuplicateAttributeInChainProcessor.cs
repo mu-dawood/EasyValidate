@@ -45,23 +45,26 @@ public class DuplicateAttributeInChainProcessor : IAttributeUsageChainProcessor
     public ICollection<DiagnosticDescriptor> DiagnosticDescriptors => [Rule];
 
 
-    public void Process(SymbolAnalysisContext context, string chainName, IReadOnlyList<AttributeInfo> chain, ITypeSymbol memberType, string memberName)
+    public (bool passed, List<OrderInfo>? order) Process(SymbolAnalysisContext context, string chainName, IReadOnlyList<AttributeInfo> chain, ITypeSymbol memberType, string memberName)
     {
         // Detect duplicate chain names in the queue
         var processed = new HashSet<string>();
+        bool hasDuplicates = false;
         foreach (var attribute in chain)
         {
             var name = attribute.FullName;
             if (processed.Contains(name))
             {
                 ReportDuplicates(context, attribute, chainName);
+                hasDuplicates = true;
                 continue; // Skip already processed attributes
             }
             processed.Add(name);
         }
+        return (passed: !hasDuplicates, order: null); // No specific order needed for duplicates
     }
 
-   
+
 
     private static void ReportDuplicates(SymbolAnalysisContext context, AttributeInfo attribute, string chainName)
     {

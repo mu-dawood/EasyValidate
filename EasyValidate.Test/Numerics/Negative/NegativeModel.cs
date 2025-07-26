@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Numerics.Negative;
 
 public partial class NegativeModel
+ : IValidate
 {
     [Negative]
     public int IntValue { get; set; } = -1;
@@ -24,6 +26,7 @@ public partial class NegativeModel
 }
 
 public partial class NegativeNestedModel
+ : IValidate
 {
     [Negative]
     public int MainValue { get; set; }

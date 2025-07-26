@@ -1,3 +1,4 @@
+using EasyValidate.Types;
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,22 +42,14 @@ namespace EasyValidate.Handlers
             }
 
 
-            List<string> interfaces = [];
-            var currentClassTarget = @params.Targets.FirstOrDefault(x => x.TargetType == TargetType.CurretClass);
-            if (currentClassTarget != null)
-            {
-                if (awaitableMembers.TryGetValue(currentClassTarget.Symbol.Name, out var awaitableMembersList) && awaitableMembersList.Any())
-                    interfaces = ["IValidate", .. interfaces];
-                else
-                    interfaces = ["IAsyncValidate", .. interfaces];
-            }
+            // List<string> interfaces = [];
 
-            /// add interfaces
-            if (interfaces.Any())
-            {
-                modifiers.Append(" : ");
-                modifiers.Append(string.Join(", ", interfaces));
-            }
+            // /// add interfaces
+            // if (interfaces.Any())
+            // {
+            //     modifiers.Append(" : ");
+            //     modifiers.Append(string.Join(", ", interfaces));
+            // }
 
             sb.AppendLine($"    {modifiers}");
             sb.AppendLine("    {");

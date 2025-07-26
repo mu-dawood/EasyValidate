@@ -18,6 +18,8 @@ namespace EasyValidate.Core.Abstraction
             }
         }
 
+        public int ErrorsCount => _results == null ? 0 : _results.Sum((r) => r.Results.Sum((e) => e.Errors.Count));
+
         public bool HasErrors() => _hasErrors;
 
         public bool HasErrors(string propertyName) => _results != null && _results.Any((a) => a.PropertyName == propertyName && a.HasErrors());

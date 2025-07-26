@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Strings.Contains;
 
 public partial class ContainsModel
+ : IValidate
 {
     [NotNull, Contains("test")]
     public string? BasicContains { get; set; }
@@ -21,6 +23,7 @@ public partial class ContainsModel
 }
 
 public partial class ContainsNestedModel
+ : IValidate
 {
     [Optional, Contains("main")]
     public string? MainProperty { get; set; }

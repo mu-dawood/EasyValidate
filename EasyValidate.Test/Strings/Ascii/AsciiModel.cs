@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Strings.Ascii;
 
 public partial class AsciiModel
+ : IValidate
 {
     [Ascii]
     public string Text { get; set; } = string.Empty;
@@ -15,6 +17,7 @@ public partial class AsciiModel
 }
 
 public partial class AsciiNestedModel
+ : IValidate
 {
     [Ascii]
     public string MainText { get; set; } = string.Empty;

@@ -170,7 +170,7 @@ public interface IPropertyResult
         /// <docs-member>AddNestedResult(IValidate)</docs-member>
         /// <docs-type>Method</docs-type>
         /// <docs-return-type>void</docs-return-type>
-        void AddNestedResult(IValidate other);
+        void AddNestedResult<T>(T other) where T : IValidate;
         /// <summary>
         /// Asynchronously adds a nested validation result for a child object to this property result, prefixing all member names with the specified member name.
         /// </summary>
@@ -188,12 +188,14 @@ public interface IPropertyResult
         /// <docs-member>AddNestedResultAsync(IAsyncValidate)</docs-member>
         /// <docs-type>Method</docs-type>
         /// <docs-return-type>Task</docs-return-type>
-        Task AddNestedResultAsync(IAsyncValidate other);
+        Task AddNestedResultAsync<T>(T other) where T : IAsyncValidate;
+
 
         /// <summary>
         /// Adds nested validation results from a collection to this property result, prefixing all member names with the property name and item index.
         /// </summary>
-        /// <param name="collection">The <see cref="IEnumerable"/> collection to validate and add as nested results.</param>
+        /// <typeparam name="T">The type of the items in the collection, must implement <see cref="IValidate"/>.</typeparam>
+        /// <param name="collection">The <see cref="IEnumerable{T}"/> collection to validate and add as nested results.</param>
         /// <remarks>
         /// This method is useful for validating nested collections where validation errors from child objects need to be included in the parent property result with proper member path prefixes including array indices. All errors from <paramref name="collection"/> will be added and prefixed with the appropriate property name and item index.
         /// </remarks>
@@ -203,10 +205,25 @@ public interface IPropertyResult
         /// // Errors will appear as "Addresses.0.PropertyName", "Addresses.1.PropertyName", etc.
         /// </code>
         /// </example>
-        /// <docs-member>AddNestedResult(IEnumerable)</docs-member>
-        /// <docs-type>Method</docs-type>
-        /// <docs-return-type>void</docs-return-type>
-        void AddNestedResult(IEnumerable collection);
+        void AddNestedResult<T>(IEnumerable<T> collection) where T : IValidate;
+
+        /// <summary>
+        /// Asynchronously adds nested validation results from a collection to this property result, prefixing all member names with the property name and item index.
+        /// </summary>
+        /// <typeparam name="T">The type of the items in the collection, must implement <see cref="IAsyncValidate"/>.</typeparam>
+        /// <param name="collection">The <see cref="IEnumerable{T}"/> collection to validate and add as nested results.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>
+        /// This method is useful for validating nested collections asynchronously. Validation errors from child objects will be included in the parent property result with proper member path prefixes including array indices. All errors from <paramref name="collection"/> will be added and prefixed with the appropriate property name and item index.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// await propertyResult.AddNestedResultAsync(user.Addresses);
+        /// // Errors will appear as "Addresses.0.PropertyName", "Addresses.1.PropertyName", etc.
+        /// </code>
+        /// </example>
+        Task AddNestedResultAsync<T>(IEnumerable<T> collection) where T : IAsyncValidate;
+
         /// <summary>
         /// Adds a chain result to this property result, allowing aggregation of validation results from multiple chains.
         /// </summary>
@@ -219,9 +236,6 @@ public interface IPropertyResult
         /// propertyResult.AddChainResult(chainResult);
         /// </code>
         /// </example>
-        /// <docs-member>AddChainResult()</docs-member>
-        /// <docs-type>Method</docs-type>
-        /// <docs-return-type>void</docs-return-type>
         void AddChainResult(IChainResult result);
 
         /// <summary>
@@ -239,9 +253,6 @@ public interface IPropertyResult
         /// }
         /// </code>
         /// </example>
-        /// <docs-member>Chain(string)</docs-member>
-        /// <docs-type>Method</docs-type>
-        /// <docs-return-type>IChainResult?</docs-return-type>
         IChainResult? Chain(string chainName);
 
 }

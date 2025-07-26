@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Strings.Url
 {
     public partial class UrlModel
+ : IValidate
     {
         [Url]
         public string Homepage { get; set; } = string.Empty;
@@ -15,6 +17,7 @@ namespace EasyValidate.Test.Strings.Url
     }
 
     public partial class UrlNestedModel
+ : IValidate
     {
         [Url]
         public string PrimaryUrl { get; set; } = string.Empty;

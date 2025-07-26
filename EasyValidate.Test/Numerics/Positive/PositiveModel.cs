@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Numerics.Positive;
 
 public partial class PositiveModel
+ : IValidate
 {
     [Positive]
     public int Count { get; set; }
@@ -18,6 +20,7 @@ public partial class PositiveModel
 }
 
 public partial class PositiveNestedModel
+ : IValidate
 {
     [Positive]
     public int MainValue { get; set; }

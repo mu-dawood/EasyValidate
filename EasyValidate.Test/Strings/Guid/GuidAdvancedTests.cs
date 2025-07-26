@@ -25,10 +25,10 @@ namespace EasyValidate.Test.Strings.Guid
             // Assert
             Assert.False(result.IsValid());
             Assert.True(result.HasErrors());
-            Assert.False(result.HasErrors(nameof(model.PrimaryGuid)));
-            Assert.True(result.HasErrors("NestedGuids", "UserId"));
-            Assert.False(result.HasErrors("NestedGuids", "SessionId"));
-            Assert.True(result.HasErrors("NestedGuids", "OptionalGuid"));
+            Assert.False(result.Property(nameof(model.PrimaryGuid))?.HasErrors());
+            Assert.True(result.Property("NestedGuids")?.HasErrors("UserId"));
+            Assert.False(result.Property("NestedGuids")?.HasErrors("SessionId"));
+            Assert.True(result.Property("NestedGuids")?.HasErrors("OptionalGuid"));
 
             var nestedUserIdErrors = result.Errors.Where(e => e.Path.SequenceEqual(new[] { "NestedGuids", "UserId" })).ToList();
             Assert.Single(nestedUserIdErrors);
@@ -80,10 +80,10 @@ namespace EasyValidate.Test.Strings.Guid
             // Assert
             Assert.False(result.IsValid());
             Assert.True(result.HasErrors());
-            Assert.True(result.HasErrors(nameof(model.PrimaryGuid)));
-            Assert.True(result.HasErrors("NestedGuids", "UserId"));
-            Assert.True(result.HasErrors("NestedGuids", "SessionId"));
-            Assert.False(result.HasErrors("NestedGuids", "OptionalGuid"));
+            Assert.True(result.Property(nameof(model.PrimaryGuid))?.HasErrors());
+            Assert.True(result.Property("NestedGuids")?.HasErrors("UserId"));
+            Assert.True(result.Property("NestedGuids")?.HasErrors("SessionId"));
+            Assert.False(result.Property("NestedGuids")?.HasErrors("OptionalGuid"));
         }
 
         [Fact]

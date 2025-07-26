@@ -25,10 +25,10 @@ namespace EasyValidate.Test.Strings.CreditCard
             // Assert
             Assert.False(result.IsValid());
             Assert.True(result.HasErrors());
-            Assert.False(result.HasErrors(nameof(model.PrimaryCard)));
-            Assert.True(result.HasErrors("NestedCards", "CardNumber"));
-            Assert.False(result.HasErrors("NestedCards", "PaymentCard"));
-            Assert.True(result.HasErrors("NestedCards", "OptionalCard"));
+            Assert.False(result.Property(nameof(model.PrimaryCard))?.HasErrors());
+            Assert.True(result.Property("NestedCards")?.HasErrors("CardNumber"));
+            Assert.False(result.Property("NestedCards")?.HasErrors("PaymentCard"));
+            Assert.True(result.Property("NestedCards")?.HasErrors("OptionalCard"));
 
             var nestedCardErrors = result.Errors.Where(e => e.Path.SequenceEqual(new[] { "NestedCards", "CardNumber" })).ToList();
             Assert.Single(nestedCardErrors);
@@ -80,10 +80,10 @@ namespace EasyValidate.Test.Strings.CreditCard
             // Assert
             Assert.False(result.IsValid());
             Assert.True(result.HasErrors());
-            Assert.True(result.HasErrors(nameof(model.PrimaryCard)));
-            Assert.True(result.HasErrors("NestedCards", "CardNumber"));
-            Assert.True(result.HasErrors("NestedCards", "PaymentCard"));
-            Assert.False(result.HasErrors("NestedCards", "OptionalCard"));
+            Assert.True(result.Property(nameof(model.PrimaryCard))?.HasErrors());
+            Assert.True(result.Property("NestedCards")?.HasErrors("CardNumber"));
+            Assert.True(result.Property("NestedCards")?.HasErrors("PaymentCard"));
+            Assert.False(result.Property("NestedCards")?.HasErrors("OptionalCard"));
         }
 
         [Fact]

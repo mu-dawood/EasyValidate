@@ -48,41 +48,9 @@ namespace EasyValidate.Core.Abstraction
 
         public bool IsValid(string chainName) => !HasErrors(chainName);
 
-        public void AddNestedResult(IValidate other)
-        {
-            var result = other.Validate(_provider);
-            _nestedResults ??= [];
-            if (!_hasNestedErrors)
-                _hasNestedErrors = result.HasErrors();
-            _nestedResults.Add(result);
-        }
-        public async Task AddNestedResultAsync(IAsyncValidate other)
-        {
-            var result = await other.ValidateAsync(_provider);
-            _nestedResults ??= [];
-            if (!_hasNestedErrors)
-                _hasNestedErrors = result.HasErrors();
-            _nestedResults.Add(result);
-        }
 
-        public void AddNestedResult(IEnumerable collection)
-        {
-            foreach (var item in collection)
-            {
-                if (item is IValidate validateItem)
-                {
-                    AddNestedResult(validateItem);
-                }
-                if (item is IAsyncValidate validateItemAsync)
-                {
-                    AddNestedResultAsync(validateItemAsync).GetAwaiter().GetResult();
-                }
-                else if (item is IEnumerable enumerableItem)
-                {
-                    AddNestedResult(enumerableItem);
-                }
-            }
-        }
+
+
 
         public void AddChainResult(IChainResult result)
         {
@@ -92,7 +60,39 @@ namespace EasyValidate.Core.Abstraction
             _results.Add(result);
         }
 
+        public void AddNestedResult<T>(T other) where T : IValidate
+        {
+            var result = other.Validate(_provider);
+            _nestedResults ??= [];
+            if (!_hasNestedErrors)
+                _hasNestedErrors = result.HasErrors();
+            _nestedResults.Add(result);
+        }
 
+        public async Task AddNestedResultAsync<T>(T other) where T : IAsyncValidate
+        {
+            var result = await other.ValidateAsync(_provider);
+            _nestedResults ??= [];
+            if (!_hasNestedErrors)
+                _hasNestedErrors = result.HasErrors();
+            _nestedResults.Add(result);
+        }
+
+        public void AddNestedResult<T>(IEnumerable<T> collection) where T : IValidate
+        {
+            foreach (var item in collection)
+            {
+                AddNestedResult(item);
+            }
+        }
+
+        public async Task AddNestedResultAsync<T>(IEnumerable<T> collection) where T : IAsyncValidate
+        {
+            foreach (var item in collection)
+            {
+               await AddNestedResultAsync(item);
+            }
+        }
     }
 
 

@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Strings.EmailAddress;
 
 public partial class EmailAddressModel
+ : IValidate
 {
     [EmailAddress]
     public string Email { get; set; } = string.Empty;
@@ -15,6 +17,7 @@ public partial class EmailAddressModel
 }
 
 public partial class EmailAddressNestedModel
+ : IValidate
 {
     [EmailAddress]
     public string AdminEmail { get; set; } = string.Empty;

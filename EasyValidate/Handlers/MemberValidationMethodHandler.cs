@@ -1,3 +1,4 @@
+using EasyValidate.Types;
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,9 +77,15 @@ namespace EasyValidate.Handlers
                 }
 
             }
-            if (member.RequireNestedValidation)
+            if (member.NestedConfig != null)
             {
-                propertyBuilder.AppendLine($"            if ({member.Name} != null) property_result.AddNestedResult({member.Name});");
+                if (member.NestedConfig.IsAsync)
+                {
+                    awaitable = true;
+                    propertyBuilder.AppendLine($"            if ({member.Name} != null) await property_result.AddNestedResultAsync({member.Name});");
+                }
+                else
+                    propertyBuilder.AppendLine($"            if ({member.Name} != null) property_result.AddNestedResult({member.Name});");
             }
             if (groupedAttributes.Any((a) => string.IsNullOrEmpty(a.Key)))
                 propertyBuilder.AppendLine("            property_result.AddChainResult(default_chain);");
@@ -86,7 +93,7 @@ namespace EasyValidate.Handlers
             propertyBuilder.AppendLine("        }");
             propertyBuilder.AppendLine();
             if (awaitable)
-                sb.AppendLine($"        public ValueTask<IPropertyResult> {methodName}(IServiceProvider serviceProvider)");
+                sb.AppendLine($"        public async ValueTask<IPropertyResult> {methodName}(IServiceProvider serviceProvider)");
             else
                 sb.AppendLine($"        public IPropertyResult {methodName}(IServiceProvider serviceProvider)");
             sb.Append(propertyBuilder);
@@ -109,7 +116,7 @@ namespace EasyValidate.Handlers
             var methodName = $"Validate@{member.Name}@{chain}".ToPascalCase();
             var propsBuilder = new StringBuilder();
             var awaitable = _processor.ProcessPropertyValidation(propsBuilder, member, "result", "result", infos);
-            var returnType = awaitable ? "ValueTask<IChainResult>" : "IChainResult";
+            var returnType = awaitable ? "async ValueTask<IChainResult>" : "IChainResult";
             sb.AppendLine($"        public {returnType} {methodName}(IServiceProvider serviceProvider)");
             sb.AppendLine("        {");
             sb.AppendLine($"            var result = new ChainResult(serviceProvider, nameof({member.Name}), {passedChainValue});");

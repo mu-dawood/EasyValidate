@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Strings.Hex
 {
     public partial class HexModel
+ : IValidate
     {
         [Hex]
         public string ColorCode { get; set; } = string.Empty;
@@ -15,6 +17,7 @@ namespace EasyValidate.Test.Strings.Hex
     }
 
     public partial class HexNestedModel
+ : IValidate
     {
         [Hex]
         public string PrimaryHex { get; set; } = string.Empty;

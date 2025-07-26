@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using EasyValidate.Types;
 
 namespace EasyValidate.Handlers
 {

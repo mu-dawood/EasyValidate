@@ -25,10 +25,10 @@ namespace EasyValidate.Test.Strings.Hex
             // Assert
             Assert.False(result.IsValid());
             Assert.True(result.HasErrors());
-            Assert.False(result.HasErrors(nameof(model.PrimaryHex)));
-            Assert.True(result.HasErrors("NestedHex", "ColorCode"));
-            Assert.False(result.HasErrors("NestedHex", "HashValue"));
-            Assert.True(result.HasErrors("NestedHex", "OptionalHex"));
+            Assert.False(result.Property(nameof(model.PrimaryHex))?.HasErrors());
+            Assert.True(result.Property("NestedHex")?.HasErrors("ColorCode"));
+            Assert.False(result.Property("NestedHex")?.HasErrors("HashValue"));
+            Assert.True(result.Property("NestedHex")?.HasErrors("OptionalHex"));
 
             var nestedColorErrors = result.Errors.Where(e => e.Path.SequenceEqual(new[] { "NestedHex", "ColorCode" })).ToList();
             Assert.Single(nestedColorErrors);
@@ -80,10 +80,10 @@ namespace EasyValidate.Test.Strings.Hex
             // Assert
             Assert.False(result.IsValid());
             Assert.True(result.HasErrors());
-            Assert.True(result.HasErrors(nameof(model.PrimaryHex)));
-            Assert.True(result.HasErrors("NestedHex", "ColorCode"));
-            Assert.True(result.HasErrors("NestedHex", "HashValue"));
-            Assert.False(result.HasErrors("NestedHex", "OptionalHex"));
+            Assert.True(result.Property(nameof(model.PrimaryHex))?.HasErrors());
+            Assert.True(result.Property("NestedHex")?.HasErrors("ColorCode"));
+            Assert.True(result.Property("NestedHex")?.HasErrors("HashValue"));
+            Assert.False(result.Property("NestedHex")?.HasErrors("OptionalHex"));
         }
 
         [Fact]

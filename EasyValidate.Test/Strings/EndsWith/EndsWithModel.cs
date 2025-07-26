@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Strings.EndsWith;
 
 public partial class EndsWithModel
+ : IValidate
 {
     [NotNull, EndsWith(".com")]
     public string? Domain { get; set; }
@@ -21,6 +23,7 @@ public partial class EndsWithModel
 }
 
 public partial class EndsWithNestedModel
+ : IValidate
 {
     [Optional, EndsWith("_main")]
     public string? MainProperty { get; set; }

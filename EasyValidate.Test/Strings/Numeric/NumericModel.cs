@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Strings.Numeric;
 
 public partial class NumericModel
+ : IValidate
 {
     [Numeric]
     public string Amount { get; set; } = string.Empty;
@@ -15,6 +17,7 @@ public partial class NumericModel
 }
 
 public partial class NumericNestedModel
+ : IValidate
 {
     [Numeric]
     public string MainValue { get; set; } = string.Empty;

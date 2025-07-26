@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Strings.AlphaNumeric;
 
 public partial class AlphaNumericModel
+ : IValidate
 {
     [AlphaNumeric]
     public string Username { get; set; } = string.Empty;
@@ -15,6 +17,7 @@ public partial class AlphaNumericModel
 }
 
 public partial class AlphaNumericNestedModel
+ : IValidate
 {
     [AlphaNumeric]
     public string MainCode { get; set; } = string.Empty;

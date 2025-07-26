@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.General.EqualTo;
 
 public partial class EqualToModel
+ : IValidate
 {
     [EqualTo("ExpectedValue")]
     public string? StringProperty { get; set; }
@@ -21,6 +23,7 @@ public partial class EqualToModel
 }
 
 public partial class EqualToNestedModel
+ : IValidate
 {
     [EqualTo("MainValue")]
     public string? MainProperty { get; set; }

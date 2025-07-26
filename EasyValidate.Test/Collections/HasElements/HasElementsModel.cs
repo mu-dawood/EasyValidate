@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Collections.HasElements;
 
 public partial class HasElementsModel
+ : IValidate
 {
     [NotNull, HasElements]
     public List<string>? StringList { get; set; }
@@ -21,6 +23,7 @@ public partial class HasElementsModel
 }
 
 public partial class HasElementsNestedModel
+ : IValidate
 {
     [Optional, HasElements]
     public List<string>? MainList { get; set; }

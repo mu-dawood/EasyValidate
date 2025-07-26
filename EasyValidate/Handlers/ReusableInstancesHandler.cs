@@ -1,3 +1,4 @@
+using EasyValidate.Types;
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 using System.Linq;

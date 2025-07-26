@@ -1,8 +1,10 @@
 using EasyValidate.Core.Attributes;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.General.NotNull;
 
 public partial class NotNullModel
+ : IValidate
 {
     [NotNull]
     public string? Name { get; set; }
@@ -14,6 +16,7 @@ public partial class NotNullModel
 }
 
 public partial class NotNullNestedModel
+ : IValidate
 {
     [NotNull]
     public string? MainProperty { get; set; }
