@@ -1,4 +1,5 @@
 using BenchmarkDotNet.Attributes;
+using EasyValidate.Core.Abstraction;
 using EasyValidate.Core.Attributes;
 
 namespace EasyValidate.Benchmarks
@@ -6,6 +7,11 @@ namespace EasyValidate.Benchmarks
     [MemoryDiagnoser]
     public class GeneralBenchmarks
     {
+        public GeneralBenchmarks()
+        {
+            serviceProvider = new DefaultServiceProvider();
+        }
+        private readonly IServiceProvider serviceProvider;
         private NotNullAttribute _notNullAttribute = null!;
         private NotDefaultAttribute _notDefaultAttribute = null!;
         private OptionalAttribute _optionalAttribute = null!;
@@ -28,33 +34,33 @@ namespace EasyValidate.Benchmarks
 
         [Benchmark]
         [BenchmarkCategory("General")]
-        public bool Required_EasyValidate_Valid() => _notNullAttribute.Validate(this, "Name", _validName).IsValid;
+        public bool Required_EasyValidate_Valid() => _notNullAttribute.Validate(serviceProvider, "Name", _validName).IsValid;
         [Benchmark]
         [BenchmarkCategory("General")]
-        public bool Required_EasyValidate_Invalid() => _notNullAttribute.Validate(this, "Name", _invalidName).IsValid;
+        public bool Required_EasyValidate_Invalid() => _notNullAttribute.Validate(serviceProvider, "Name", _invalidName).IsValid;
         [Benchmark]
         [BenchmarkCategory("General")]
-        public bool NotDefault_EasyValidate_Valid() => _notDefaultAttribute.Validate(this, "Name", _validName).IsValid;
+        public bool NotDefault_EasyValidate_Valid() => _notDefaultAttribute.Validate(serviceProvider, "Name", _validName).IsValid;
         [Benchmark]
         [BenchmarkCategory("General")]
-        public bool NotDefault_EasyValidate_Invalid() => _notDefaultAttribute.Validate(this, "Name", "").IsValid;
+        public bool NotDefault_EasyValidate_Invalid() => _notDefaultAttribute.Validate(serviceProvider, "Name", "").IsValid;
         [Benchmark]
         [BenchmarkCategory("General")]
-        public bool Optional_EasyValidate_Valid() => _optionalAttribute.Validate(this, "Name", null).IsValid;
+        public bool Optional_EasyValidate_Valid() => _optionalAttribute.Validate(serviceProvider, "Name", null).IsValid;
         [Benchmark]
         [BenchmarkCategory("General")]
-        public bool Optional_EasyValidate_Invalid() => _optionalAttribute.Validate(this, "Name", "").IsValid;
+        public bool Optional_EasyValidate_Invalid() => _optionalAttribute.Validate(serviceProvider, "Name", "").IsValid;
         [Benchmark]
         [BenchmarkCategory("General")]
-        public bool EqualTo_EasyValidate_Valid() => _equalToAttribute.Validate(this, "Value", _validValue).IsValid;
+        public bool EqualTo_EasyValidate_Valid() => _equalToAttribute.Validate(serviceProvider, "Value", _validValue).IsValid;
         [Benchmark]
         [BenchmarkCategory("General")]
-        public bool EqualTo_EasyValidate_Invalid() => _equalToAttribute.Validate(this, "Value", _invalidValue).IsValid;
+        public bool EqualTo_EasyValidate_Invalid() => _equalToAttribute.Validate(serviceProvider, "Value", _invalidValue).IsValid;
         [Benchmark]
         [BenchmarkCategory("General")]
-        public bool NotEqualTo_EasyValidate_Valid() => _notEqualToAttribute.Validate(this, "Value", "different").IsValid;
+        public bool NotEqualTo_EasyValidate_Valid() => _notEqualToAttribute.Validate(serviceProvider, "Value", "different").IsValid;
         [Benchmark]
         [BenchmarkCategory("General")]
-        public bool NotEqualTo_EasyValidate_Invalid() => _notEqualToAttribute.Validate(this, "Value", "test").IsValid;
+        public bool NotEqualTo_EasyValidate_Invalid() => _notEqualToAttribute.Validate(serviceProvider, "Value", "test").IsValid;
     }
 }

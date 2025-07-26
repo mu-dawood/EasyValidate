@@ -1,3 +1,4 @@
+using System;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -40,13 +41,13 @@ namespace EasyValidate.Core.Attributes
         /// Arguments propertyName, ComparisonValue
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, object? value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, object? value)
         {
             // Compare the values for equality
             bool isValid = Equals(value, ComparisonValue);
             return isValid
                 ? AttributeResult.Success()
-                : AttributeResult.Fail( "The field {0} must be equal to {1}.", propertyName, ComparisonValue);
+                : AttributeResult.Fail("The field {0} must be equal to {1}.", propertyName, ComparisonValue);
         }
     }
 

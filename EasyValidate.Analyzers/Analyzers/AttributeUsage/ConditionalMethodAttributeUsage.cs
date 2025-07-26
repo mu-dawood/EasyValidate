@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -65,8 +66,16 @@ namespace EasyValidate.Analyzers.Analyzers.AttributeUsage
             defaultSeverity: DiagnosticSeverity.Error,
             isEnabledByDefault: true,
             description: "A conditional execution strategy was specified but no conditional method name was provided.");
+        private static readonly DiagnosticDescriptor InvalidNameRule = new(
+            id: ErrorIds.ConditionalMethodInvalidNameError,
+            title: "Conditional method name is invalid",
+            messageFormat: "Conditional method name '{0}' is not a valid C# method name",
+            category: "Usage",
+            defaultSeverity: DiagnosticSeverity.Error,
+            isEnabledByDefault: true,
+            description: "The ConditionalMethod property must be a valid C# method name without whitespace or invalid characters.");
 
-        public ICollection<DiagnosticDescriptor> DiagnosticDescriptors => new[] { Rule, InvalidStrategyRule, MissingConditionalMethodRule };
+        public ICollection<DiagnosticDescriptor> DiagnosticDescriptors => [Rule, InvalidStrategyRule, MissingConditionalMethodRule, InvalidNameRule];
 
         public void Process(SymbolAnalysisContext context, AttributeInfo attribute, ITypeSymbol memberType, string memberName)
         {
@@ -76,6 +85,12 @@ namespace EasyValidate.Analyzers.Analyzers.AttributeUsage
 
             // Check if ConditionalMethod is specified in named arguments
             var conditionalMethodName = attribute.NamedArguments.GetArgumentValue<string>("ConditionalMethod");
+            var isValid = string.IsNullOrEmpty(conditionalMethodName) || Regex.IsMatch(conditionalMethodName, @"^[_a-zA-Z][_a-zA-Z0-9]*$");
+            if (!isValid)
+            {
+                ReportDiagnostic(context, attribute, InvalidNameRule, conditionalMethodName!);
+                return;
+            }
             var strategy = attribute.NamedArguments.GetArgumentValue<int>("Strategy");
             // 0: Default, 1: ConditionalAndStopChain, 2: ConditionalAndContinue
             var isConditionalStrategy = strategy == 1 || strategy == 2;
@@ -124,25 +139,34 @@ namespace EasyValidate.Analyzers.Analyzers.AttributeUsage
             if (conditionalMethod.Parameters.Length != 1)
             {
                 // Method must have exactly one parameter
-                ReportDiagnostic(context, attribute, Rule, conditionalMethodName ?? "unknown", "must accept exactly one parameter of type IValidationResult");
+                ReportDiagnostic(context, attribute, Rule, conditionalMethodName ?? "unknown", "must accept exactly one parameter of type IChainResult");
                 return;
             }
 
-            // Check if the parameter is of type IValidationResult
+            // Check if the parameter is of type IChainResult
             var parameter = conditionalMethod.Parameters[0];
             var parameterType = parameter.Type;
 
-            // Check if the parameter type is IValidationResult
-            if (!IsIValidationResult(parameterType))
+            // Check if the parameter type is IChainResult
+            if (!parameterType.InheritsFrom("EasyValidate.Core.Abstraction.IChainResult"))
             {
-                ReportDiagnostic(context, attribute, Rule, conditionalMethodName ?? "unknown", "must accept a parameter of type IValidationResult");
+                ReportDiagnostic(context, attribute, Rule, conditionalMethodName ?? "unknown", "must accept a parameter of type IChainResult");
                 return;
             }
 
-            if (conditionalMethod.ReturnType.SpecialType != SpecialType.System_Boolean)
+            // Allow method to return bool, or ValueTask<bool>
+            var returnType = conditionalMethod.ReturnType;
+            var isBoolReturn = returnType.SpecialType == SpecialType.System_Boolean;
+            var isAwaitableBoolReturn = false;
+            var (isAsync, arguments) = returnType.IsAsyncType();
+            if (returnType.GetFullName().Contains("System.Threading.Tasks.ValueTask") && isAsync && arguments.Length == 1 && arguments[0].SpecialType == SpecialType.System_Boolean)
             {
-                // Method doesn't return bool
-                ReportDiagnostic(context, attribute, Rule, conditionalMethodName ?? "unknown", "must return bool");
+                isAwaitableBoolReturn = true;
+            }
+            if (!isBoolReturn && !isAwaitableBoolReturn)
+            {
+                // Method doesn't return bool or a true awaitable type with bool result
+                ReportDiagnostic(context, attribute, Rule, conditionalMethodName ?? "unknown", "must return bool or ValueTask<bool>");
                 return;
             }
 
@@ -166,21 +190,7 @@ namespace EasyValidate.Analyzers.Analyzers.AttributeUsage
             return null;
         }
 
-        private bool IsIValidationResult(ITypeSymbol typeSymbol)
-        {
-            // Check if the type is exactly IValidationResult
-            if (typeSymbol.TypeKind == TypeKind.Interface &&
-                typeSymbol.Name == "IValidationResult" &&
-                typeSymbol.ContainingNamespace?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == "global::EasyValidate.Core.Abstraction")
-            {
-                return true;
-            }
 
-            // Check if the type implements IValidationResult
-            return typeSymbol.AllInterfaces.Any(i =>
-                i.Name == "IValidationResult" &&
-                i.ContainingNamespace?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == "global::EasyValidate.Core.Abstraction");
-        }
 
         private void ReportDiagnostic(SymbolAnalysisContext context, AttributeInfo attribute, DiagnosticDescriptor rule, params object[] args)
         {

@@ -40,7 +40,7 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// Validates a DateTime value for not leap year.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTime value)
         {
             return ValidateNotLeapYear(propertyName, value.Year);
         }
@@ -49,7 +49,7 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// Validates a DateOnly value for not leap year.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider,string propertyName, DateOnly value)
         {
             return ValidateNotLeapYear(propertyName, value.Year);
         }
@@ -58,7 +58,7 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// Validates a DateTimeOffset value for not leap year.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTimeOffset value)
         {
             return ValidateNotLeapYear(propertyName, value.Year);
         }

@@ -15,4 +15,5 @@ public class ErrorIds
     public const string IncompatibleChainTypes = "EASY012"; // Validation chain has incompatible types
     public const string ConditionalMethodInvalidStrategyError = "EASY013"; // Conditional method strategy error
     public const string ConditionalMethodMissingError = "EASY014"; // Conditional method missing error
+    public const string ConditionalMethodInvalidNameError = "EASY015"; //Conditional method contains unsupported chars
 }

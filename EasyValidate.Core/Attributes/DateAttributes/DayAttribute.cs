@@ -36,19 +36,19 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// Validates a DateTime value for allowed days.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateTime value) => ValidateDay(propertyName, value.Day);
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTime value) => ValidateDay(propertyName, value.Day);
 
 #if NET6_0_OR_GREATER
         /// <summary>
         /// Validates a DateOnly value for allowed days.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateOnly value) => ValidateDay(propertyName, value.Day);
+        public override AttributeResult Validate(IServiceProvider serviceProvider,string propertyName, DateOnly value) => ValidateDay(propertyName, value.Day);
 #endif
 
         /// <summary>
         /// Validates a DateTimeOffset value for allowed days.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value) => ValidateDay(propertyName, value.Day);
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTimeOffset value) => ValidateDay(propertyName, value.Day);
 
         private AttributeResult ValidateDay(string propertyName, int day)
         {

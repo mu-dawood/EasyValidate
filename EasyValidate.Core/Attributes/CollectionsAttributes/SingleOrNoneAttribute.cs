@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using EasyValidate.Core.Abstraction;
@@ -43,7 +44,7 @@ namespace EasyValidate.Core.Attributes
         /// Arguments propertyName, Value
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, IEnumerable value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, IEnumerable value)
         {
             bool found = false;
             foreach (var item in value)
@@ -61,7 +62,7 @@ namespace EasyValidate.Core.Attributes
             return AttributeResult.Success();
         }
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
             // For string, we can only check if the value is present or not
             bool isValid = !string.IsNullOrWhiteSpace(value) && value.Count(c => c.ToString() == Value.ToString()) <= 1;

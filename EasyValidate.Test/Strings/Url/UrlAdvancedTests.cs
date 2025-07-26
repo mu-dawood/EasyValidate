@@ -1,4 +1,3 @@
-using System;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Strings.Url

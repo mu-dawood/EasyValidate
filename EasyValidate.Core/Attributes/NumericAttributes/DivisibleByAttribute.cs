@@ -1,5 +1,5 @@
-using EasyValidate.Core.Abstraction;
 using System;
+using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
 {
@@ -61,47 +61,47 @@ namespace EasyValidate.Core.Attributes
         public bool IsValid(decimal value) => _divisor.AsDecimal != 0 && value % _divisor.AsDecimal == 0;
 
         // IValidationAttribute implementations
-        public AttributeResult Validate(object obj, string propertyName, byte value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, byte value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _divisor.AsUInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, sbyte value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, sbyte value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _divisor.AsInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, short value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, short value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _divisor.AsInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, ushort value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, ushort value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _divisor.AsUInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, int value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, int value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _divisor.AsInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, uint value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, uint value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _divisor.AsUInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, long value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, long value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _divisor.AsInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, ulong value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, ulong value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _divisor.AsUInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, float value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, float value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _divisor.AsFloat);
         }
-        public AttributeResult Validate(object obj, string propertyName, double value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, double value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _divisor.AsDouble);
         }
-        public AttributeResult Validate(object obj, string propertyName, decimal value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, decimal value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _divisor.AsDecimal);
         }

@@ -36,12 +36,12 @@ namespace EasyValidate.Core.Attributes
         // protected abstract AttributeResult ValidateUtc(object obj, string propertyName, DateTime value);
 
         /// <inheritdoc/>
-        public abstract AttributeResult Validate(object obj, string propertyName, DateTime value);
+        public abstract AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTime value);
 
-        public abstract AttributeResult Validate(object obj, string propertyName, DateTimeOffset value);
+        public abstract AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTimeOffset value);
 #if NET6_0_OR_GREATER
         /// <inheritdoc/>
-        public abstract AttributeResult Validate(object obj, string propertyName, DateOnly value);
+        public abstract AttributeResult Validate(IServiceProvider serviceProvider,string propertyName, DateOnly value);
 #endif
     }
 }

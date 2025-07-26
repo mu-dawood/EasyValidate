@@ -96,18 +96,18 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// Validates a DateTime value for range.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateTime value) => _validateDateTime(value);
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTime value) => _validateDateTime(value);
 
 #if NET6_0_OR_GREATER
         /// <summary>
         /// Validates a DateOnly value for range.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateOnly value) => _validateDateOnly(value);
+        public override AttributeResult Validate(IServiceProvider serviceProvider,string propertyName, DateOnly value) => _validateDateOnly(value);
 #endif
 
         /// <summary>
         /// Validates a DateTimeOffset value for range.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value) => _validateDateTimeOffset(value);
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTimeOffset value) => _validateDateTimeOffset(value);
     }
 }

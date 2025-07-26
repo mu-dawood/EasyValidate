@@ -1,5 +1,4 @@
 using Microsoft.CodeAnalysis;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,88 +11,113 @@ namespace EasyValidate.Handlers
     {
         private readonly ValidationAttributeProcessorHandler _processor = new(compilation);
 
-        public override void Handle(HandlerParams @params)
+        public override (StringBuilder sb, Dictionary<string, List<string>> awaitableMembers) Next(HandlerParams @params)
         {
+            var currentClassTarget = @params.Targets
+                .FirstOrDefault(t => t.TargetType == TargetType.CurretClass);
+            if (currentClassTarget == null)
+                return base.Next(@params);
+            var (nextsp, awaitableMembers) = base.Next(@params);
+            var sb = new StringBuilder();
+            List<string> awaitableMembersList = [];
             // Process members
-            foreach (var member in @params.Members)
+            foreach (var member in @currentClassTarget.Members)
             {
-                GeneratePropertyValidationMethod(@params.StringBuilder, member);
+                if (GeneratePropertyValidationMethod(sb, member))
+                {
+                    awaitableMembersList.Add(member.Name);
+                }
             }
 
-            base.Handle(@params);
+            if (awaitableMembers.TryGetValue(currentClassTarget.Symbol.Name, out var existingList))
+            {
+                awaitableMembersList.AddRange(existingList);
+            }
+            awaitableMembers[currentClassTarget.Symbol.Name] = [.. awaitableMembersList.Distinct()];
+            sb.Append(nextsp);
+            return (sb, awaitableMembers);
         }
 
         /// <summary>
         /// Generates a private validation method for a specific property.
         /// </summary>
-        private void GeneratePropertyValidationMethod(StringBuilder sb, MemberInfo member)
+        private bool GeneratePropertyValidationMethod(StringBuilder sb, MemberInfo member)
         {
 
-            var groupedAttributes = member.Attributes.GroupBy(GetChainValue).OrderBy(g => string.IsNullOrWhiteSpace(g.Key) ? 1 : 0).ThenBy(g => g.Key).ToList();
+            var groupedAttributes = member.Attributes.GroupBy(GetChainValue).OrderBy(g => string.IsNullOrEmpty(g.Key) ? 1 : 0).ThenBy(g => g.Key).ToList();
 
             var methodName = $"Validate@{member.Name}".ToPascalCase();
-
-            sb.AppendLine($"        private void {methodName}(ValidationResult result)");
-            sb.AppendLine("        {");
-
+            StringBuilder propertyBuilder = new();
+            StringBuilder chainMethodsBuilder = new();
+            var awaitable = false;
+            propertyBuilder.AppendLine("        {");
+            propertyBuilder.AppendLine($"            var property_result = new PropertyResult(serviceProvider, nameof({member.Name}));");
+            if (groupedAttributes.Any((a) => string.IsNullOrEmpty(a.Key)))
+                propertyBuilder.AppendLine($"            var default_chain = new ChainResult(serviceProvider, nameof({member.Name}), string.Empty);");
 
             foreach (var group in groupedAttributes)
             {
-                var passedChainValue = group.Key switch
+                if (string.IsNullOrEmpty(group.Key))
                 {
-                    null => "string.Empty",
-                    "" => "string.Empty",
-                    _ => $"\"{group.Key}\""
-                };
-                if (string.IsNullOrWhiteSpace(group.Key))
-                {
-                    sb.AppendLine($"            // Chain: {group.Key}");
-                    sb.AppendLine($"            var chain = result.CreateChain(this, {passedChainValue}, nameof({member.Name}));");
-                    _processor.ProcessPropertyValidation(sb, member.Type, member.Name, passedChainValue, [.. group]);
-
+                    var infos = group.ToList();
+                    if (_processor.ProcessPropertyValidation(propertyBuilder, member, "default_chain", "property_result", infos))
+                        awaitable = true;
                 }
                 else
                 {
+                    var infos = group.ToList();
                     var method = $"Validate@{member.Name}@{group.Key}".ToPascalCase();
-                    sb.AppendLine($"            {method}(result.CreateChain(this, {passedChainValue}, nameof({member.Name})));");
+                    if (GeneratePropertyChainMethod(chainMethodsBuilder, member, group.Key, infos))
+                    {
+                        method = "await " + method;
+                        awaitable = true;
+                    }
+                    propertyBuilder.AppendLine($"            property_result.AddChainResult({method}(serviceProvider));");
                 }
+
             }
-            _processor.ProcessNestedValidation(sb, member);
-
-            sb.AppendLine("        }");
-            sb.AppendLine();
-
-            foreach (var group in groupedAttributes)
+            if (member.RequireNestedValidation)
             {
-                if (string.IsNullOrWhiteSpace(group.Key)) continue;
-                var chainName = group.Key;
-                var infos = group.ToList();
-
-                // Generate method for each chain
-                if (!string.IsNullOrEmpty(chainName))
-                {
-                    GeneratePropertyChainMethod(sb, member.Type, member.Name, chainName, infos);
-                }
+                propertyBuilder.AppendLine($"            if ({member.Name} != null) property_result.AddNestedResult({member.Name});");
             }
-
+            if (groupedAttributes.Any((a) => string.IsNullOrEmpty(a.Key)))
+                propertyBuilder.AppendLine("            property_result.AddChainResult(default_chain);");
+            propertyBuilder.AppendLine("            return property_result;");
+            propertyBuilder.AppendLine("        }");
+            propertyBuilder.AppendLine();
+            if (awaitable)
+                sb.AppendLine($"        public ValueTask<IPropertyResult> {methodName}(IServiceProvider serviceProvider)");
+            else
+                sb.AppendLine($"        public IPropertyResult {methodName}(IServiceProvider serviceProvider)");
+            sb.Append(propertyBuilder);
+            sb.Append(chainMethodsBuilder);
+            return awaitable;
 
         }
 
 
 
 
-        private void GeneratePropertyChainMethod(StringBuilder sb, ITypeSymbol type, string memberName, string chainName, List<AttributeInfo> infos)
+        private bool GeneratePropertyChainMethod(StringBuilder sb, MemberInfo member, string chain, List<AttributeInfo> infos)
         {
-
-            var methodName = $"Validate@{memberName}@{chainName}".ToPascalCase();
-
-            sb.AppendLine($"        private void {methodName}(ValidationChain chain)");
+            var passedChainValue = chain switch
+            {
+                null => "string.Empty",
+                "" => "string.Empty",
+                _ => $"\"{chain}\""
+            };
+            var methodName = $"Validate@{member.Name}@{chain}".ToPascalCase();
+            var propsBuilder = new StringBuilder();
+            var awaitable = _processor.ProcessPropertyValidation(propsBuilder, member, "result", "result", infos);
+            var returnType = awaitable ? "ValueTask<IChainResult>" : "IChainResult";
+            sb.AppendLine($"        public {returnType} {methodName}(IServiceProvider serviceProvider)");
             sb.AppendLine("        {");
-
-            // Process all validation logic for this property
-            _processor.ProcessPropertyValidation(sb, type, memberName, chainName, infos);
+            sb.AppendLine($"            var result = new ChainResult(serviceProvider, nameof({member.Name}), {passedChainValue});");
+            sb.Append(propsBuilder);
+            sb.AppendLine("            return result;");
             sb.AppendLine("        }");
             sb.AppendLine();
+            return awaitable;
         }
 
 

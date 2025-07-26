@@ -31,7 +31,7 @@ namespace EasyValidate.Core.Attributes
         public string ErrorMessage { get; set; } = "The field {0} must contain at least one element.";
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, IEnumerable value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, IEnumerable value)
         {
 
             foreach (var _ in value)
@@ -42,7 +42,7 @@ namespace EasyValidate.Core.Attributes
             return AttributeResult.Fail(ErrorMessage, propertyName);
         }
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
             bool isValid = !string.IsNullOrWhiteSpace(value) && value.Length > 0;
             return isValid

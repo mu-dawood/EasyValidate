@@ -40,19 +40,17 @@ namespace EasyValidate.Core.Attributes
         public string ErrorCode { get; set; } = "UrlValidationError";
 
         /// <inheritdoc/>
-        public AttributeResult Validate(object obj, string propertyName, string value, out Uri output)
+        public AttributeResult<Uri> Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                output = new Uri("about:blank");
-                return AttributeResult.Fail("The {0} field must be a valid URL.", propertyName);
+                return AttributeResult.Fail<Uri>("The {0} field must be a valid URL.", propertyName);
             }
-            bool isValid = IsUrl(value!, out Uri? uriOutput);
-            output = uriOutput ?? new Uri("about:blank");
-            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must be a valid URL.", propertyName);
+            bool isValid = IsUrl(value!, out Uri uriOutput);
+            return isValid ? AttributeResult.Success(uriOutput) : AttributeResult.Fail<Uri>("The {0} field must be a valid URL.", propertyName);
         }
 
-        private static bool IsUrl(string value, out Uri? output)
+        private static bool IsUrl(string value, out Uri output)
         {
             return Uri.TryCreate(value, UriKind.Absolute, out output);
         }

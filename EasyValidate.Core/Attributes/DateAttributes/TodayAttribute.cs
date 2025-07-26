@@ -30,7 +30,7 @@ namespace EasyValidate.Core.Attributes
         }
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTime value)
         {
             return IsToday(value, DateTime.UtcNow)
                 ? AttributeResult.Success()
@@ -38,7 +38,7 @@ namespace EasyValidate.Core.Attributes
         }
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTimeOffset value)
         {
             return IsToday(value.UtcDateTime, DateTime.UtcNow)
                 ? AttributeResult.Success()
@@ -46,7 +46,7 @@ namespace EasyValidate.Core.Attributes
         }
 #if NET6_0_OR_GREATER
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider,string propertyName, DateOnly value)
         {
             return value == DateOnly.FromDateTime(DateTime.UtcNow)
                 ? AttributeResult.Success()

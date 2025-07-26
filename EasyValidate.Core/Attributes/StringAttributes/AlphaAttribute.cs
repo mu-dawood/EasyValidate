@@ -28,7 +28,7 @@ namespace EasyValidate.Core.Attributes
         /// Arguments propertyName
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
             bool isValid = !string.IsNullOrEmpty(value) && IsAlpha(value!);
             return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must contain only alphabetic characters.", propertyName);

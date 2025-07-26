@@ -38,6 +38,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
   </ItemGroup>
+
   <Target Name="BuildDependencies" BeforeTargets="BeforeBuild;Pack">
     <MSBuild Projects="..\EasyValidate.Core\EasyValidate.Core.csproj" Targets="Build"
       Properties="Configuration=$(Configuration)" />
@@ -63,7 +64,7 @@
       Include="..\EasyValidate.Core\bin\$(Configuration)\netstandard2.0\EasyValidate.Core.dll"
       Pack="true"
       PackagePath="lib/netstandard2.0" />
-    <Content Include="..\EasyValidate.Core\bin\$(Configuration)\net6.0\EasyValidate.Core.dll"
+    <!-- <Content Include="..\EasyValidate.Core\bin\$(Configuration)\net6.0\EasyValidate.Core.dll"
       Pack="true"
       PackagePath="lib/net6.0" />
     <Content Include="..\EasyValidate.Core\bin\$(Configuration)\net7.0\EasyValidate.Core.dll"
@@ -74,7 +75,7 @@
       PackagePath="lib/net8.0" />
     <Content Include="..\EasyValidate.Core\bin\$(Configuration)\net9.0\EasyValidate.Core.dll"
       Pack="true"
-      PackagePath="lib/net9.0" />
+      PackagePath="lib/net9.0" /> -->
 
     <Content Include="$(OutputPath)\$(AssemblyName).dll"
       Pack="true"

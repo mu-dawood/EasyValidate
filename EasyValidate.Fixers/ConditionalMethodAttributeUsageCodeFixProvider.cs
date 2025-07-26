@@ -43,19 +43,19 @@ namespace EasyValidate.Fixers
 
             // First try to find if we're directly on an attribute
             attributeNode = node?.AncestorsAndSelf().OfType<AttributeSyntax>().FirstOrDefault();
-            
+
             if (attributeNode == null)
             {
                 // If not on attribute, we might be on the member itself, find the member
                 memberNode = node?.AncestorsAndSelf().OfType<MemberDeclarationSyntax>()
                     .FirstOrDefault(m => m is PropertyDeclarationSyntax || m is FieldDeclarationSyntax);
-                
+
                 if (memberNode != null)
                 {
                     // Find the attribute with ConditionalMethod on this member
                     var attributes = memberNode.AttributeLists.SelectMany(al => al.Attributes);
-                    attributeNode = attributes.FirstOrDefault(attr => 
-                        attr.ArgumentList?.Arguments.Any(arg => 
+                    attributeNode = attributes.FirstOrDefault(attr =>
+                        attr.ArgumentList?.Arguments.Any(arg =>
                             arg.NameEquals?.Name.Identifier.ValueText == "ConditionalMethod") == true);
                 }
             }
@@ -82,20 +82,26 @@ namespace EasyValidate.Fixers
 
             // Register different fixes based on the issue
             var diagnosticMessage = diagnostic.GetMessage();
-            
+
             if (diagnosticMessage.Contains("does not exist"))
             {
-                var action = CodeAction.Create(
-                    title: $"Create conditional method '{methodName}'",
-                    createChangedDocument: c => CreateConditionalMethodAsync(context.Document, classNode, methodName, c),
-                    equivalenceKey: $"CreateMethod_{methodName}");
+                var boolAction = CodeAction.Create(
+                    title: $"Create conditional method '{methodName}' (bool)",
+                    createChangedDocument: c => CreateConditionalMethodAsync(context.Document, classNode, methodName, c, useValueTask: false),
+                    equivalenceKey: $"CreateMethodBool_{methodName}");
 
-                context.RegisterCodeFix(action, diagnostic);
+                var valueTaskAction = CodeAction.Create(
+                    title: $"Create conditional method '{methodName}' (ValueTask<bool>)",
+                    createChangedDocument: c => CreateConditionalMethodAsync(context.Document, classNode, methodName, c, useValueTask: true),
+                    equivalenceKey: $"CreateMethodValueTask_{methodName}");
+
+                context.RegisterCodeFix(boolAction, diagnostic);
+                context.RegisterCodeFix(valueTaskAction, diagnostic);
             }
             else if (diagnosticMessage.Contains("must accept exactly one parameter") || diagnosticMessage.Contains("must accept a parameter of type IValidationResult"))
             {
                 var action = CodeAction.Create(
-                    title: $"Fix method '{methodName}' signature (add IValidationResult parameter)",
+                    title: $"Fix method '{methodName}' signature (add IChainResult parameter)",
                     createChangedDocument: c => FixMethodSignatureAsync(context.Document, classNode, methodName, c),
                     equivalenceKey: $"FixSignature_{methodName}");
 
@@ -103,12 +109,19 @@ namespace EasyValidate.Fixers
             }
             else if (diagnosticMessage.Contains("must return bool"))
             {
-                var action = CodeAction.Create(
+                // Offer both bool and ValueTask<bool> as code fixes
+                var boolAction = CodeAction.Create(
                     title: $"Fix method '{methodName}' return type (change to bool)",
-                    createChangedDocument: c => FixMethodReturnTypeAsync(context.Document, classNode, methodName, c),
-                    equivalenceKey: $"FixReturnType_{methodName}");
+                    createChangedDocument: c => FixMethodReturnTypeAsync(context.Document, classNode, methodName, c, useValueTask: false),
+                    equivalenceKey: $"FixReturnTypeBool_{methodName}");
 
-                context.RegisterCodeFix(action, diagnostic);
+                var valueTaskAction = CodeAction.Create(
+                    title: $"Fix method '{methodName}' return type (change to ValueTask<bool>)",
+                    createChangedDocument: c => FixMethodReturnTypeAsync(context.Document, classNode, methodName, c, useValueTask: true),
+                    equivalenceKey: $"FixReturnTypeValueTask_{methodName}");
+
+                context.RegisterCodeFix(boolAction, diagnostic);
+                context.RegisterCodeFix(valueTaskAction, diagnostic);
             }
         }
 
@@ -128,7 +141,7 @@ namespace EasyValidate.Fixers
                         return literal.Token.ValueText;
                     }
                 }
-                
+
                 // Check for named colon argument: ConditionalMethod: "MethodName" (less common)
                 if (argument.NameColon?.Name.Identifier.ValueText == "ConditionalMethod")
                 {
@@ -146,24 +159,50 @@ namespace EasyValidate.Fixers
             Document document,
             ClassDeclarationSyntax classDeclaration,
             string methodName,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            bool useValueTask)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             if (root == null) return document;
 
-            // Create the conditional method with IValidationResult parameter
-            var methodDeclaration = SyntaxFactory.MethodDeclaration(
-                SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)),
+            MethodDeclarationSyntax methodDeclaration;
+            TypeSyntax? parmterType = null;
+            TypeSyntax? returnType = null;
+
+            if (useValueTask && root is CompilationUnitSyntax compilationUnit)
+            {
+                if (!compilationUnit.Usings.Any(u => u.Name?.ToString() == "EasyValidate.Core.Abstraction"))
+                    parmterType = SyntaxFactory.IdentifierName("EasyValidate.Core.Abstraction.IChainResult");
+                else
+                    parmterType = SyntaxFactory.IdentifierName("IChainResult");
+                if (useValueTask && !compilationUnit.Usings.Any(u => u.Name?.ToString() == "System.Threading.Tasks"))
+                    returnType = SyntaxFactory.ParseTypeName("System.Threading.Tasks.ValueTask<bool>");
+            }
+            parmterType ??= SyntaxFactory.IdentifierName("EasyValidate.Core.Abstraction.IChainResult");
+            returnType ??= useValueTask
+                            ? SyntaxFactory.ParseTypeName("System.Threading.Tasks.ValueTask<bool>")
+                            : SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword));
+
+
+
+            methodDeclaration = SyntaxFactory.MethodDeclaration(
+                returnType,
                 SyntaxFactory.Identifier(methodName))
                 .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PrivateKeyword)))
                 .WithParameterList(SyntaxFactory.ParameterList(
                     SyntaxFactory.SingletonSeparatedList(
                         SyntaxFactory.Parameter(SyntaxFactory.Identifier("result"))
-                            .WithType(SyntaxFactory.IdentifierName("EasyValidate.Core.Abstraction.IValidationResult")))))
+                            .WithType(parmterType))))
                 .WithBody(SyntaxFactory.Block(
                     SyntaxFactory.SingletonList<StatementSyntax>(
                         SyntaxFactory.ReturnStatement(
-                            SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression)))))
+                            SyntaxFactory.ObjectCreationExpression(
+                                returnType)
+                                .WithArgumentList(
+                                    SyntaxFactory.ArgumentList(
+                                        SyntaxFactory.SingletonSeparatedList(
+                                            SyntaxFactory.Argument(
+                                                SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression)))))))))
                 .WithLeadingTrivia(
                     SyntaxFactory.Comment("/// <summary>"),
                     SyntaxFactory.EndOfLine("\n"),
@@ -173,16 +212,16 @@ namespace EasyValidate.Fixers
                     SyntaxFactory.EndOfLine("\n"),
                     SyntaxFactory.Comment("/// <param name=\"result\">The current validation result.</param>"),
                     SyntaxFactory.EndOfLine("\n"),
-                    SyntaxFactory.Comment("/// <returns>True if validation should be performed; otherwise, false.</returns>"),
+                    SyntaxFactory.Comment("/// <returns>A ValueTask containing true if validation should be performed; otherwise, false.</returns>"),
                     SyntaxFactory.EndOfLine("\n"));
 
-            // Add the method to the class
+
+
             var newClassDeclaration = classDeclaration.AddMembers(methodDeclaration);
             var newRoot = root.ReplaceNode(classDeclaration, newClassDeclaration);
-
             return document.WithSyntaxRoot(newRoot);
         }
-       
+
         private static async Task<Document> FixMethodSignatureAsync(
             Document document,
             ClassDeclarationSyntax classDeclaration,
@@ -198,11 +237,11 @@ namespace EasyValidate.Fixers
 
             if (method == null) return document;
 
-            // Create a new method with IValidationResult parameter
+            // Create a new method with IChainResult parameter
             var newMethod = method.WithParameterList(SyntaxFactory.ParameterList(
                 SyntaxFactory.SingletonSeparatedList(
                     SyntaxFactory.Parameter(SyntaxFactory.Identifier("result"))
-                        .WithType(SyntaxFactory.IdentifierName("EasyValidate.Core.Abstraction.IValidationResult")))));
+                        .WithType(SyntaxFactory.IdentifierName("EasyValidate.Core.Abstraction.IChainResult")))));
 
             var newClassDeclaration = classDeclaration.ReplaceNode(method, newMethod);
             var newRoot = root.ReplaceNode(classDeclaration, newClassDeclaration);
@@ -214,7 +253,8 @@ namespace EasyValidate.Fixers
             Document document,
             ClassDeclarationSyntax classDeclaration,
             string methodName,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            bool useValueTask)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             if (root == null) return document;
@@ -225,16 +265,33 @@ namespace EasyValidate.Fixers
 
             if (method == null) return document;
 
-            // Create a new method with bool return type
-            var newMethod = method.WithReturnType(
-                SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)));
-            
+            MethodDeclarationSyntax newMethod;
+            if (useValueTask)
+            {
+                // Add using for System.Threading.Tasks if not present
+                var compilationUnit = root as CompilationUnitSyntax;
+                if (compilationUnit != null &&
+                    !compilationUnit.Usings.Any(u => u.Name?.ToString() == "System.Threading.Tasks"))
+                {
+                    compilationUnit = compilationUnit.AddUsings(
+                        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Threading.Tasks")));
+                    root = compilationUnit;
+                }
+                newMethod = method.WithReturnType(
+                    SyntaxFactory.ParseTypeName("ValueTask<bool>"));
+            }
+            else
+            {
+                newMethod = method.WithReturnType(
+                    SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)));
+            }
+
             var newClassDeclaration = classDeclaration.ReplaceNode(method, newMethod);
             var newRoot = root.ReplaceNode(classDeclaration, newClassDeclaration);
 
             return document.WithSyntaxRoot(newRoot);
         }
 
-       
+
     }
 }

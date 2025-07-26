@@ -1,3 +1,4 @@
+using System;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -32,17 +33,17 @@ namespace EasyValidate.Core.Attributes
     {
         private readonly NumericValue _comparisonValue;
 
-        public GreaterThanOrEqualToAttribute(int value)    { _comparisonValue = value; }
-        public GreaterThanOrEqualToAttribute(long value)   { _comparisonValue = value; }
+        public GreaterThanOrEqualToAttribute(int value) { _comparisonValue = value; }
+        public GreaterThanOrEqualToAttribute(long value) { _comparisonValue = value; }
         public GreaterThanOrEqualToAttribute(double value) { _comparisonValue = value; }
-        public GreaterThanOrEqualToAttribute(decimal value){ _comparisonValue = value; }
-        public GreaterThanOrEqualToAttribute(float value)  { _comparisonValue = value; }
-        public GreaterThanOrEqualToAttribute(short value)  { _comparisonValue = value; }
+        public GreaterThanOrEqualToAttribute(decimal value) { _comparisonValue = value; }
+        public GreaterThanOrEqualToAttribute(float value) { _comparisonValue = value; }
+        public GreaterThanOrEqualToAttribute(short value) { _comparisonValue = value; }
         public GreaterThanOrEqualToAttribute(ushort value) { _comparisonValue = value; }
-        public GreaterThanOrEqualToAttribute(uint value)   { _comparisonValue = value; }
-        public GreaterThanOrEqualToAttribute(ulong value)  { _comparisonValue = value; }
-        public GreaterThanOrEqualToAttribute(byte value)   { _comparisonValue = value; }
-        public GreaterThanOrEqualToAttribute(sbyte value)  { _comparisonValue = value; }
+        public GreaterThanOrEqualToAttribute(uint value) { _comparisonValue = value; }
+        public GreaterThanOrEqualToAttribute(ulong value) { _comparisonValue = value; }
+        public GreaterThanOrEqualToAttribute(byte value) { _comparisonValue = value; }
+        public GreaterThanOrEqualToAttribute(sbyte value) { _comparisonValue = value; }
 
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "GreaterThanOrEqualToValidationError";
@@ -66,47 +67,47 @@ namespace EasyValidate.Core.Attributes
         public bool IsValid(decimal value) => value >= _comparisonValue.AsDecimal;
 
         // IValidationAttribute implementations
-        public AttributeResult Validate(object obj, string propertyName, byte value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, byte value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsUInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, sbyte value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, sbyte value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, short value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, short value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, ushort value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, ushort value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsUInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, int value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, int value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, uint value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, uint value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsUInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, long value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, long value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, ulong value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, ulong value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsUInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, float value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, float value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsFloat);
         }
-        public AttributeResult Validate(object obj, string propertyName, double value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, double value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsDouble);
         }
-        public AttributeResult Validate(object obj, string propertyName, decimal value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, decimal value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _comparisonValue.AsDecimal);
         }

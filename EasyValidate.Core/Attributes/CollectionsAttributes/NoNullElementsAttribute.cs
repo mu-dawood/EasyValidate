@@ -33,7 +33,7 @@ namespace EasyValidate.Core.Attributes
         /// Arguments propertyName
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, IEnumerable value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, IEnumerable value)
         {
             foreach (var item in value)
             {
@@ -45,9 +45,9 @@ namespace EasyValidate.Core.Attributes
             return AttributeResult.Success();
         }
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
-            
+
             if (string.IsNullOrWhiteSpace(value))
             {
                 return AttributeResult.Success(); // Empty string is valid

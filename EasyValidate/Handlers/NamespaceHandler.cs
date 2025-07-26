@@ -1,25 +1,31 @@
+using System.Collections.Generic;
+using System.Text;
+
 namespace EasyValidate.Handlers
 {
     internal class NamespaceHandler : ValidationHandlerBase
     {
-        public override void Handle(HandlerParams @params)
+        public override (StringBuilder sb, Dictionary<string, List<string>> awaitableMembers) Next(HandlerParams @params)
         {
             var namespaceName = @params.ClassSymbol.ContainingNamespace.IsGlobalNamespace
                 ? string.Empty
                 : @params.ClassSymbol.ContainingNamespace.ToDisplayString();
 
+            var (nextsp, awaitableMembers) = base.Next(@params);
+            var sb = new StringBuilder();
             if (!string.IsNullOrEmpty(namespaceName))
             {
-                @params.StringBuilder.AppendLine($"namespace {namespaceName}");
-                @params.StringBuilder.AppendLine("{");
+                sb.AppendLine($"namespace {namespaceName}");
+                sb.AppendLine("{");
             }
 
-            base.Handle(@params);
+            sb.Append(nextsp);
 
             if (!string.IsNullOrEmpty(namespaceName))
             {
-                @params.StringBuilder.AppendLine("}");
+                sb.AppendLine("}");
             }
+            return (sb, awaitableMembers);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace EasyValidate.Core.Attributes
         /// </summary>
         public StringComparison Comparison { get; set; } = StringComparison.Ordinal;
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
             bool isValid = value.StartsWith(Prefix, Comparison);
             return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must start with '{1}'.", propertyName, Prefix);

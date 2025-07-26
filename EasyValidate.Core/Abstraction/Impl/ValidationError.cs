@@ -8,13 +8,13 @@ namespace EasyValidate.Core.Abstraction
     /// <docs-description>Detailed validation error information including error codes, messages, and attribute context for comprehensive error reporting.</docs-description>
     public sealed class ValidationError
     {
-        internal ValidationError(string errorCode, string attributeName, string formattedMessage, string[] path, string chain)
+        internal ValidationError(string errorCode, string attributeName, string formattedMessage, string propertyName, string chainName)
         {
             ErrorCode = errorCode;
             AttributeName = attributeName;
             FormattedMessage = formattedMessage;
-            Path = path;
-            Chain = chain;
+            PropertyName = propertyName;
+            ChainName = chainName;
         }
         /// <summary>
         /// Gets or sets the error code associated with this validation error.
@@ -72,12 +72,42 @@ namespace EasyValidate.Core.Abstraction
         /// <docs-return-type>string</docs-return-type>
         public string FormattedMessage { get; }
 
-        public string[] Path { get; } = [];
-        public string Chain { get; }
+        /// <summary>
+        /// Gets the name of the property associated with this validation error.
+        /// </summary>
+        /// <value>A string representing the property name for which the validation error was generated.</value>
+        /// <remarks>
+        /// Useful for identifying which property failed validation, especially in complex or nested objects.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// if (error.PropertyName == "Email") {
+        ///     // Handle email property error
+        /// }
+        /// </code>
+        /// </example>
+        /// <docs-member>PropertyName</docs-member>
+        /// <docs-type>Property</docs-type>
+        /// <docs-return-type>string</docs-return-type>
+        public string PropertyName { get; }
 
-        internal ValidationError WithPath(string[] path)
-        {
-            return new ValidationError(ErrorCode, AttributeName, FormattedMessage, path, Chain);
-        }
+        /// <summary>
+        /// Gets the name of the validation chain associated with this error, if any.
+        /// </summary>
+        /// <value>A string representing the chain name for which the validation error was generated.</value>
+        /// <remarks>
+        /// Useful for distinguishing errors that occur in different validation chains or strategies.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// if (error.ChainName == "primary") {
+        ///     // Handle errors from the primary validation chain
+        /// }
+        /// </code>
+        /// </example>
+        /// <docs-member>ChainName</docs-member>
+        /// <docs-type>Property</docs-type>
+        /// <docs-return-type>string</docs-return-type>
+        public string ChainName { get; }
     }
 }

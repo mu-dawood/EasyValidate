@@ -24,12 +24,12 @@ namespace EasyValidate.Core.Attributes
         /// Singleton instance for reuse to avoid creating multiple identical instances.
         /// </summary>
         public static readonly Lazy<NotNullAttribute> Instance = new(() => new NotNullAttribute());
-        
+
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "NotNullValidationError";
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, object? value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, object? value)
         {
             return value is not null
                 ? AttributeResult.Success()

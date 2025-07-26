@@ -16,65 +16,62 @@ namespace EasyValidate.Handlers
         /// <summary>
         /// Processes all validation for a property including attributes and nested validation.
         /// </summary>
-        public void ProcessPropertyValidation(StringBuilder sb, ITypeSymbol type, string memberName, string chainName, List<AttributeInfo> attributes)
+        public bool ProcessPropertyValidation(StringBuilder sb, MemberInfo member, string chainVariableName, string returnVariable, List<AttributeInfo> attributes)
         {
-            DebuggerUtil.Log($"Processing member: {memberName} with chain: {chainName}");
             string indent = "            ";
-
+            bool awaitable = false;
             if (attributes.Count > 0)
             {
-                // Generate validation chain with flow control
-                string currentInputVariable = memberName;
-                var currentType = type;
+                // Generate validation with flow control
+                string currentInputVariable = member.Name;
+                var currentType = member.Type;
                 for (int i = 0; i < attributes.Count; i++)
                 {
-                    var attr = attributes[i].Attribute;
-                    var (canAccept, resolvedType) = attributes[i].CanAccept(_compilation, currentType);
+                    var info = attributes[i];
+                    var attr = info.Attribute;
+                    var (canAccept, resolvedType) = attributes[i].InputAndOutputTypes.CanAccept(_compilation, currentType);
                     if (!canAccept)
                     {
-                        sb.AppendLine($"{indent}// Proplem with chain for {attr.AttributeClass?.Name} for {currentInputVariable} as it cannot accept type {currentType.ToDisplayString()}");
+                        sb.AppendLine($"{indent}// Problem with {attr.AttributeClass?.Name} for {currentInputVariable} as it cannot accept type {currentType.ToDisplayString()}");
                         sb.AppendLine($"{indent}throw new InvalidOperationException($\"Attribute {attr.AttributeClass?.Name} cannot accept type {currentType.ToDisplayString()} for {currentInputVariable}.\");");
                         continue;
                     }
 
                     // Generate variable name for output (based on attribute type)
                     var attributeName = GetAttributeVariableName(attr);
-                    var outputVariable = $"{attributeName}Output".ToSakeCase();
 
-                    // Generate the AddValidtor call with flow control
-                    if (attr.AttributeClass.IsOptionalOrNotNullAttribute())
+                    // Directly call Validate method
+                    if (resolvedType!.RequireTransformation)
                     {
-                        sb.AppendLine($"{indent}if (!chain.AddValidtor<{resolvedType!.ResolveOutPutType().GetFullName()}>({attributes[i].InstanceName}, {currentInputVariable}, out {resolvedType!.ResolveOutPutType().GetFullName()} {outputVariable}))");
-                        currentInputVariable = outputVariable;
-                    }
-                    else if (attr.AttributeClass.IsOptionalOrNotNullAttribute())
-                    {
-                        sb.AppendLine($"{indent}if (!chain.AddValidtor<{resolvedType!.ResolveOutPutType().GetFullName()}>({attributes[i].InstanceName}, {currentInputVariable}, out {resolvedType!.ResolveOutPutType().GetFullName()} {outputVariable}))");
-                        currentInputVariable = outputVariable;
-                    }
-                    else if (resolvedType!.RequireTransformation)
-                    {
-                        sb.AppendLine($"{indent}if (!chain.AddValidtor<{resolvedType!.InputType.GetFullName()}, {resolvedType!.ResolveOutPutType().GetFullName()}>({attributes[i].InstanceName}, {currentInputVariable}, out {resolvedType!.ResolveOutPutType().GetFullName()} {outputVariable}))");
+                        var outputVariable = $"{attributeName}Output".ToSakeCase();
+                        var isValidVariable = $"{attributeName}IsValid".ToSakeCase();
+
+                        var awaitKeyword = resolvedType.IsAsync || info.ConditionalMethod?.IsAsync == true ? "await " : string.Empty;
+                        if (awaitKeyword == "await ") awaitable = true;
+                        if (info.ConditionalMethod != null)
+                            sb.AppendLine($"{indent}var ({isValidVariable}, {outputVariable}) = {awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable}, {info.ConditionalMethod.MethodName})");
+                        else
+                            sb.AppendLine($"{indent}var ({isValidVariable}, {outputVariable}) = {awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable})");
+                        sb.AppendLine($"{indent}if(!{isValidVariable})");
+                        sb.AppendLine($"{indent}    return {returnVariable};");
                         currentInputVariable = outputVariable;
                     }
                     else
-                        sb.AppendLine($"{indent}if (!chain.AddValidtor({attributes[i].InstanceName}, {currentInputVariable}))");
-                    sb.AppendLine($"{indent}    return;");
+                    {
+                        var awaitKeyword = resolvedType.IsAsync || info.ConditionalMethod?.IsAsync == true ? "await " : string.Empty;
+                        if (awaitKeyword == "await ") awaitable = true;
+                        if (info.ConditionalMethod != null)
+                            sb.AppendLine($"{indent}if ({awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable}, {info.ConditionalMethod.MethodName}))");
+                        else
+                            sb.AppendLine($"{indent}if ({awaitKeyword}{attributes[i].InstanceName}.IsValid({chainVariableName}, {currentInputVariable}))");
+                        sb.AppendLine($"{indent}    return {returnVariable};");
+                    }
 
                     // Update input variable for next iteration
                     currentType = resolvedType!.ResolveOutPutType();
                 }
             }
-
-        }
-
-        public void ProcessNestedValidation(StringBuilder sb, MemberInfo member)
-        {
-            // If the member requires nested validation, generate the call
-            if (member.RequireNestedValidation)
-            {
-                sb.AppendLine($"            if ({member.Name} != null) result.MergeWith(nameof({member.Name}), {member.Name});");
-            }
+            return awaitable;
         }
 
 

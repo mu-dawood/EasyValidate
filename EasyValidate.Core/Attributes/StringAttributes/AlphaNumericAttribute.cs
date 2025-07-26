@@ -29,7 +29,7 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "AlphaNumericValidationError";
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
             bool isValid = !string.IsNullOrEmpty(value) && IsAlphaNumeric(value!);
             return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must contain only alphanumeric characters.", propertyName);

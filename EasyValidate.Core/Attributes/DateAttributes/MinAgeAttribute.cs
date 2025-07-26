@@ -40,7 +40,7 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// Validates a DateTime value for minimum age.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTime value)
         {
             var now = DateTime.UtcNow;
             var age = now.Year - value.Year;
@@ -54,7 +54,7 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// Validates a DateOnly value for minimum age.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider,string propertyName, DateOnly value)
         {
             var now = DateTime.UtcNow;
             var birthDate = value.ToDateTime(TimeOnly.MinValue);
@@ -69,7 +69,7 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// Validates a DateTimeOffset value for minimum age.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTimeOffset value)
         {
             var now = DateTimeOffset.UtcNow;
             var age = now.Year - value.Year;

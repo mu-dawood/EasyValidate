@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -26,7 +25,7 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "UppercaseValidationError";
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
             bool isValid = value.ToUpperInvariant().Equals(value, StringComparison.InvariantCulture);
             return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must be uppercase.", propertyName);

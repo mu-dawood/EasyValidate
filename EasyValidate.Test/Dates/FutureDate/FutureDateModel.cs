@@ -1,4 +1,3 @@
-using EasyValidate.Core.Abstraction;
 using EasyValidate.Core.Attributes;
 
 namespace EasyValidate.Test.Dates.FutureDate;

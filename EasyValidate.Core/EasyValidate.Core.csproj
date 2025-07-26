@@ -1,24 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
   <Target Name="BuildAnalyzersFirst" BeforeTargets="BeforeBuild">
-    <MSBuild
-      Projects="..\EasyValidate.Analyzers\EasyValidate.Analyzers.csproj"
-      Targets="Build"
-      Properties="TargetFramework=netstandard2.0;Configuration=Debug" />
-    <MSBuild
-      Projects="..\EasyValidate.Fixers\EasyValidate.Fixers.csproj"
-      Targets="Build"
-      Properties="TargetFramework=netstandard2.0;Configuration=Debug" />
+    <MSBuild Projects="..\EasyValidate.Analyzers\EasyValidate.Analyzers.csproj" Targets="Build" Properties="TargetFramework=netstandard2.0;Configuration=Debug" />
+    <MSBuild Projects="..\EasyValidate.Fixers\EasyValidate.Fixers.csproj" Targets="Build" Properties="TargetFramework=netstandard2.0;Configuration=Debug" />
   </Target>
   <ItemGroup>
-    <Analyzer
-      Include="..\EasyValidate.Analyzers\bin\Debug\netstandard2.0\EasyValidate.Analyzers.dll" />
+    <Analyzer Include="..\EasyValidate.Analyzers\bin\Debug\netstandard2.0\EasyValidate.Analyzers.dll" />
     <Analyzer Include="..\EasyValidate.Fixers\bin\Debug\netstandard2.0\EasyValidate.Fixers.dll" />
   </ItemGroup>
 </Project>

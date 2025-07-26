@@ -38,25 +38,25 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "EmailAddressValidationError";
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
             // Fast path: Quick checks before expensive regex
             if (string.IsNullOrWhiteSpace(value))
                 return AttributeResult.Fail("The {0} field must be a valid email address.", propertyName);
-            
+
             // Quick length and basic character checks
             if (value.Length < 5 || value.Length > 254) // RFC 5321 limit
                 return AttributeResult.Fail("The {0} field must be a valid email address.", propertyName);
-            
+
             // Quick @ symbol validation
             int atIndex = value.IndexOf('@');
             if (atIndex <= 0 || atIndex == value.Length - 1 || value.IndexOf('@', atIndex + 1) != -1)
                 return AttributeResult.Fail("The {0} field must be a valid email address.", propertyName);
-            
+
             // Quick dot after @ check
             if (value.IndexOf('.', atIndex) == -1)
                 return AttributeResult.Fail("The {0} field must be a valid email address.", propertyName);
-            
+
             // Only use regex for final validation after quick checks pass
             bool isValid = MyRegex().IsMatch(value);
             return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must be a valid email address.", propertyName);

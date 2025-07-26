@@ -29,7 +29,7 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "NotDefaultValidationError";
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, object? value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, object? value)
         {
 
             bool isValid = value != null && !value.Equals(GetDefaultValue(value.GetType()));

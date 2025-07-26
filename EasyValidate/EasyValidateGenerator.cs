@@ -5,10 +5,10 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
 using EasyValidate.Handlers;
 using System.Collections.Immutable;
-using EasyValidate;
 using System.Collections.Generic;
 using System;
 using Microsoft.CodeAnalysis.CSharp;
+using EasyValidate;
 
 namespace EasyValidate
 {
@@ -26,7 +26,7 @@ namespace EasyValidate
             var candidates = context.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: static (node, _) => node is ClassDeclarationSyntax,
-                    transform: static (ctx, _) => ctx.SemanticModel.GetDeclaredSymbol((ClassDeclarationSyntax)ctx.Node) as INamedTypeSymbol
+                    transform: static (ctx, _) => ctx.SemanticModel.GetDeclaredSymbol((ClassDeclarationSyntax)ctx.Node)
                 )
                 .Where(static symbol => symbol != null)
                 .Combine(compilationProvider);
@@ -59,68 +59,38 @@ namespace EasyValidate
 
             try
             {
+                List<ValidationTarget> targets = [];
                 // Skip classes that have no properties with validation attributes
                 // Check if the class has any properties with attributes derived from IValidationAttribute
-                List<MemberInfo> memberInfos = [];
                 var argumentHandler = new AttributeArgumentHandler();
-                var members = classSymbol.GetMembers().OrderBy(m => m is IFieldSymbol ? 0 : 1); // Order properties first, then fields
+                var members = classSymbol.GetMembers().OrderBy(m => m is IFieldSymbol ? 0 : 1).ToList(); // Order properties first, then fields
                 Dictionary<string, string> instanceNames = [];
-                foreach (var member in members)
-                {
-                    if (member is not IPropertySymbol && member is not IFieldSymbol)
-                        continue;
-                    if (IsBackingField(member)) continue; // Skip backing fields
-                    bool isProperty = member is IPropertySymbol;
-                    var type = isProperty ? ((IPropertySymbol)member).Type : ((IFieldSymbol)member).Type;
-                    var name = member.Name;
-                    var (requireNested, isCollection) = RequiresNestedValidation(type);
-                    var info = new MemberInfo(name, type, isProperty, requireNested, isCollection);
+                var memberInfos = GetMembers(members, instanceNames, argumentHandler, classSymbol);
+                if (memberInfos.Count > 0)
+                    targets.Add(new ValidationTarget(classSymbol, TargetType.CurretClass, memberInfos));
 
-                    foreach (var attr in member.GetAttributes())
+                foreach (var member in classSymbol.GetMembers())
+                {
+                    /// get parmters for methods to make validation for it
+                    if (member is IMethodSymbol method)
                     {
-                        if (attr.AttributeClass?.IsValidationAttribute(out var inputAndOutputTypes) == true)
+                        var methodParameters = method.Parameters;
+                        if (methodParameters.Length > 0)
                         {
-                            var instnceDeclration = GenerateAttributeInitialization(attr, argumentHandler);
-                            if (instanceNames.ContainsKey(instnceDeclration))
-                            {
-                                info.Attributes.Add(new AttributeInfo(attr, instanceNames[instnceDeclration], instnceDeclration, inputAndOutputTypes));
-                            }
-                            else
-                            {
-                                // Generate a unique instance name for the attribute
-                                var baseName = attr.AttributeClass.Name.ToSakeCase();
-                                var instanceName = baseName;
-                                int suffixIndex = 0;
-                                string[] suffixes = Enumerable.Range('a', 26).Select(i => ((char)i).ToString()).ToArray();
-                                while (instanceNames.Values.Contains(instanceName))
-                                {
-                                    string suffix = suffixIndex < suffixes.Length ? suffixes[suffixIndex] : $"_{suffixIndex}";
-                                    instanceName = $"{baseName}_{suffix}";
-                                    suffixIndex++;
-                                }
-                                instanceNames[instnceDeclration] = instanceName;
-                                info.Attributes.Add(new AttributeInfo(attr, instanceName, instnceDeclration, inputAndOutputTypes));
-                            }
+                            var methodInfos = GetMembers(members, instanceNames, argumentHandler, classSymbol);
+                            if (methodInfos.Count > 0)
+                                targets.Add(new ValidationTarget(method, TargetType.Method, methodInfos));
                         }
                     }
-                    if (info.Attributes.Count > 0)
-                        memberInfos.Add(info);
-                    else if (info.RequireNestedValidation)
-                    {
-                        var (isGtterForField, fieldName) = GetterField(classSymbol, member);
-                        if (!isGtterForField || !memberInfos.Any(m => m.Name == fieldName))
-                            memberInfos.Add(info);
-                    }
+
                 }
 
-                if (memberInfos.Count == 0)
+                if (targets.Count == 0)
                 {
                     DebuggerUtil.Log($"Skipping class {classSymbol.Name} as it has no properties with validation attributes derived from IValidationAttribute.");
                     return;
                 }
-                var sb = new StringBuilder();
-                var chain = new GeneratorChain()
-                    .Add(new UsingImportsHandler())
+                var chain = new GeneratorChain(new UsingImportsHandler())
                     .Add(new NamespaceHandler())
                     .Add(new ClassDeclarationHandler())
                     .Add(new ReusableInstancesHandler())
@@ -128,7 +98,7 @@ namespace EasyValidate
                     .Add(new ValidateMethodHandler(compilation))
                     .Add(new MemberValidationMethodHandler(compilation));
 
-                chain.Handle(new HandlerParams(memberInfos, context, sb, classSymbol));
+               var (sb,_)= chain.Handle(new HandlerParams(targets, context, classSymbol));
 
                 var namespacePath = classSymbol.ContainingNamespace.ToDisplayString().Replace('.', '/');
                 var fileName = $"{classSymbol.Name}_Validation.g.cs";
@@ -145,6 +115,80 @@ namespace EasyValidate
             DebuggerUtil.Log($"Successfully generated validation class for: {classSymbol.Name}");
         }
 
+
+        private static List<MemberInfo> GetMembers(List<ISymbol> members, Dictionary<string, string> instanceNames, AttributeArgumentHandler argumentHandler, INamedTypeSymbol classSymbol)
+        {
+            List<MemberInfo> memberInfos = [];
+            foreach (var member in members)
+            {
+                if (member is not IPropertySymbol && member is not IFieldSymbol && member is not IParameterSymbol)
+                    continue;
+                if (member is not IParameterSymbol && IsBackingField(member)) continue; // Skip backing fields
+                bool isProperty = member is IPropertySymbol;
+                var type = isProperty ? ((IPropertySymbol)member).Type : ((IFieldSymbol)member).Type;
+                var name = member.Name;
+
+                List<AttributeInfo> attributes = [];
+
+                foreach (var attr in member.GetAttributes())
+                {
+                    if (attr.AttributeClass?.IsValidationAttribute(out var inputAndOutputTypes) == true)
+                    {
+                        var instnceDeclration = GenerateAttributeInitialization(attr, argumentHandler);
+
+                        var conditionalMethod = attr.NamedArguments.GetArgumentValue<string>("ConditionalMethod");
+                        ConditionalMethodInfo? conditionalMethodInfo = null;
+                        if (!string.IsNullOrWhiteSpace(conditionalMethod))
+                        {
+                            /// get conditional method by the class ref
+                            var method = classSymbol.GetMembers()
+                            .OfType<IMethodSymbol>()
+                            .FirstOrDefault((x) => x.Name == conditionalMethod && x.Parameters.Length == 1 && x.Parameters[0].Type.InheritsFrom("EasyValidate.Core.Abstraction.IChainResult"));
+                            if (method != null)
+                            {
+                                var (isAsync, _) = method.ReturnType.IsAsyncType();
+                                conditionalMethodInfo = new ConditionalMethodInfo(conditionalMethod!, isAsync);
+                            }
+                        }
+
+
+                        if (instanceNames.ContainsKey(instnceDeclration))
+                        {
+                            attributes.Add(new AttributeInfo(attr, conditionalMethodInfo, instanceNames[instnceDeclration], instnceDeclration, inputAndOutputTypes));
+                        }
+                        else
+                        {
+                            // Generate a unique instance name for the attribute
+                            var baseName = attr.AttributeClass.Name.ToSakeCase();
+                            var instanceName = baseName;
+                            int suffixIndex = 0;
+                            string[] suffixes = Enumerable.Range('a', 26).Select(i => ((char)i).ToString()).ToArray();
+                            while (instanceNames.Values.Contains(instanceName))
+                            {
+                                string suffix = suffixIndex < suffixes.Length ? suffixes[suffixIndex] : $"_{suffixIndex}";
+                                instanceName = $"{baseName}_{suffix}";
+                                suffixIndex++;
+                            }
+                            instanceNames[instnceDeclration] = instanceName;
+                            attributes.Add(new AttributeInfo(attr, conditionalMethodInfo, instanceName, instnceDeclration, inputAndOutputTypes));
+                        }
+                    }
+                }
+                var (requireNested, isCollection) = classSymbol.GetFullName() == type.GetFullName() ? (attributes.Any(), false) : RequiresNestedValidation(type);
+                var info = new MemberInfo(name, attributes, type, isProperty, requireNested, isCollection);
+
+                if (attributes.Count > 0)
+                    memberInfos.Add(info);
+                else if (info.RequireNestedValidation)
+                {
+                    var (isGtterForField, fieldName) = GetterField(classSymbol, member);
+                    if (!isGtterForField || !memberInfos.Any(m => m.Name == fieldName))
+                        memberInfos.Add(info);
+                }
+            }
+
+            return memberInfos;
+        }
 
         private static (bool found, string? fieldName) GetterField(INamedTypeSymbol classSymbol, ISymbol member)
         {
@@ -410,22 +454,44 @@ namespace EasyValidate
     }
 }
 
-public class MemberInfo(string name, ITypeSymbol type, bool isProperty, bool requireNestedValidation, bool isCollection)
+internal class ValidationTarget(ISymbol symbol, TargetType targetType, List<MemberInfo>? members = null)
+{
+
+    public ISymbol Symbol { get; } = symbol;
+    public TargetType TargetType { get; } = targetType;
+    public List<MemberInfo> Members { get; } = members ?? [];
+}
+
+internal enum TargetType
+{
+    CurretClass,
+    Method
+}
+
+internal class MemberInfo(string name, List<AttributeInfo> attributes, ITypeSymbol type, bool isProperty, bool requireNestedValidation, bool isCollection)
 {
     public string Name { get; } = name;
     public bool IsCollection { get; } = isCollection;
     public bool RequireNestedValidation { get; } = requireNestedValidation;
     public ITypeSymbol Type { get; } = type;
     public bool IsProperty { get; } = isProperty;
-    public List<AttributeInfo> Attributes { get; } = [];
+    public IReadOnlyList<AttributeInfo> Attributes { get; } = attributes;
 }
 
-public class AttributeInfo(AttributeData attribute, string instanceName, string instanceDeclration, ImmutableArray<InputAndOutputTypes> inputAndOutputTypes)
+internal class AttributeInfo(AttributeData attribute, ConditionalMethodInfo? conditionalMethod, string instanceName, string instanceDeclration, ImmutableArray<InputAndOutputTypes> inputAndOutputTypes)
 {
     public AttributeData Attribute => attribute;
 
     public string InstanceName => instanceName;
     public string InstanceDeclration => instanceDeclration;
 
+    public ConditionalMethodInfo? ConditionalMethod => conditionalMethod;
+
     public ImmutableArray<InputAndOutputTypes> InputAndOutputTypes => inputAndOutputTypes;
+}
+internal class ConditionalMethodInfo(string methodName, bool isAsync)
+{
+    public string MethodName { get; } = methodName;
+    public bool IsAsync { get; } = isAsync;
+
 }

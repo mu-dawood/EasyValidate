@@ -1,4 +1,3 @@
-using System;
 using BenchmarkDotNet.Loggers;
 using System.Text.RegularExpressions;
 

@@ -26,7 +26,7 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "OptionalValidationError";
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, object? value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, object? value)
         {
             return AttributeResult.Success();
         }

@@ -1,4 +1,3 @@
-using System.Linq;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Test.Strings.Contains;

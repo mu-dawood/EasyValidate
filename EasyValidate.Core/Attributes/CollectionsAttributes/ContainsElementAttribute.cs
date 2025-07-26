@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -45,7 +43,7 @@ namespace EasyValidate.Core.Attributes
 
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, IEnumerable value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, IEnumerable value)
         {
             foreach (var item in value)
             {
@@ -54,12 +52,12 @@ namespace EasyValidate.Core.Attributes
                     return AttributeResult.Success();
                 }
             }
-           return AttributeResult.Fail(ErrorMessage, propertyName, ExpectedValue);
+            return AttributeResult.Fail(ErrorMessage, propertyName, ExpectedValue);
         }
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
-#if NET6_0_OR_GREATER
+#if NET5_0_OR_GREATER
             bool isValid = value.Contains(ExpectedValue?.ToString() ?? "", StringComparison.OrdinalIgnoreCase);
 #else
             bool isValid = value.IndexOf(ExpectedValue.ToString(), StringComparison.OrdinalIgnoreCase) >= 0;

@@ -1,3 +1,4 @@
+using System;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -44,31 +45,31 @@ namespace EasyValidate.Core.Attributes
         public static bool IsValid(decimal value) => value < 0;
 
         // IValidationAttribute implementations
-        public AttributeResult Validate(object obj, string propertyName, sbyte value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, sbyte value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
         }
-        public AttributeResult Validate(object obj, string propertyName, short value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, short value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
         }
-        public AttributeResult Validate(object obj, string propertyName, int value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, int value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
         }
-        public AttributeResult Validate(object obj, string propertyName, long value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, long value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
         }
-        public AttributeResult Validate(object obj, string propertyName, float value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, float value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
         }
-        public AttributeResult Validate(object obj, string propertyName, double value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, double value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
         }
-        public AttributeResult Validate(object obj, string propertyName, decimal value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, decimal value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
         }

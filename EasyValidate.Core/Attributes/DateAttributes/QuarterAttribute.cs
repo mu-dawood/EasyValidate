@@ -52,7 +52,7 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// Validates a DateTime value for allowed quarters.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTime value)
         {
             return ValidateQuarter(propertyName, value.Month);
         }
@@ -61,7 +61,7 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// Validates a DateOnly value for allowed quarters.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider,string propertyName, DateOnly value)
         {
             return ValidateQuarter(propertyName, value.Month);
         }
@@ -70,7 +70,7 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// Validates a DateTimeOffset value for allowed quarters.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTimeOffset value)
         {
             return ValidateQuarter(propertyName, value.Month);
         }

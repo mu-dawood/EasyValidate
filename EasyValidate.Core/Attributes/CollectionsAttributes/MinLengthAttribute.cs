@@ -1,5 +1,5 @@
+using System;
 using System.Collections;
-using System.Linq;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -42,7 +42,7 @@ namespace EasyValidate.Core.Attributes
         public string ErrorMessage { get; set; } = "The field {0} must have a minimum length of {1}.";
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, IEnumerable value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, IEnumerable value)
         {
             if (value is ICollection collection)
             {
@@ -64,7 +64,7 @@ namespace EasyValidate.Core.Attributes
             return AttributeResult.Fail(ErrorMessage, propertyName, Minimum);
         }
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
             bool isValid = value.Length >= Minimum;
             return isValid

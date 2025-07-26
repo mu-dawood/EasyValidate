@@ -7,7 +7,8 @@ namespace EasyValidate
     internal interface IValidationHandler
     {
         IValidationHandler WithNext(IValidationHandler handler);
-        void Handle(HandlerParams @params);
+        // public List<string> AwaitbleMembers { get; } = [];
+        (StringBuilder sb, Dictionary<string, List<string>> awaitableMembers) Next(HandlerParams @params);
     }
 
     internal abstract class ValidationHandlerBase : IValidationHandler
@@ -20,17 +21,21 @@ namespace EasyValidate
             return handler;
         }
 
-        public virtual void Handle(HandlerParams @params)
+        public virtual (StringBuilder sb, Dictionary<string, List<string>> awaitableMembers) Next(HandlerParams @params)
         {
-            _nextHandler?.Handle(@params);
+            if (_nextHandler == null)
+            {
+                return (new(), []);
+            }
+            return _nextHandler.Next(@params);
         }
     }
 }
 
-public class HandlerParams(List<MemberInfo> members, SourceProductionContext context, StringBuilder stringBuilder, INamedTypeSymbol classSymbol)
+internal class HandlerParams(List<ValidationTarget> targets, SourceProductionContext context, INamedTypeSymbol classSymbol)
 {
-    public List<MemberInfo> Members { get; } = members;
+    public List<ValidationTarget> Targets { get; } = targets;
     public SourceProductionContext Context { get; } = context;
-    public StringBuilder StringBuilder { get; } = stringBuilder;
     public INamedTypeSymbol ClassSymbol { get; } = classSymbol;
+
 }

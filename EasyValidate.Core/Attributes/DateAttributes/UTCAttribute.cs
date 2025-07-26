@@ -36,7 +36,7 @@ namespace EasyValidate.Core.Attributes
 
         private static bool IsUtc(DateTime value) => value.Kind == DateTimeKind.Utc;
 
-        public AttributeResult Validate(object obj, string propertyName, DateTime value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTime value)
         {
             return IsUtc(value)
                 ? AttributeResult.Success()

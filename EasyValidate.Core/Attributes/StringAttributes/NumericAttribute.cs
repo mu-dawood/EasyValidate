@@ -44,17 +44,16 @@ namespace EasyValidate.Core.Attributes
         public string ErrorCode { get; set; } = "NumericValidationError";
 
         /// <inheritdoc/>
-        public AttributeResult Validate(object obj, string propertyName, string value, out double output)
+        public AttributeResult<double> Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                output = default;
-                return AttributeResult.Fail($"The {propertyName} field must contain only numeric characters.");
+                return AttributeResult.Fail<double>("The {0} field must contain only numeric characters.", [propertyName]);
             }
-            bool isValid = IsNumeric(value, out output);
+            bool isValid = IsNumeric(value, out double output);
             return isValid
-                ? AttributeResult.Success()
-                : AttributeResult.Fail($"The {propertyName} field must contain only numeric characters.");
+                ? AttributeResult.Success(output)
+                : AttributeResult.Fail<double>("The {0} field must contain only numeric characters.", [propertyName]);
         }
 
         /// <summary>

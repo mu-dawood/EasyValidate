@@ -33,17 +33,17 @@ namespace EasyValidate.Core.Attributes
     {
         private readonly NumericValue _factor;
 
-        public MultipleOfAttribute(int value)    { _factor = value; }
-        public MultipleOfAttribute(long value)   { _factor = value; }
+        public MultipleOfAttribute(int value) { _factor = value; }
+        public MultipleOfAttribute(long value) { _factor = value; }
         public MultipleOfAttribute(double value) { _factor = value; }
-        public MultipleOfAttribute(decimal value){ _factor = value; }
-        public MultipleOfAttribute(float value)  { _factor = value; }
-        public MultipleOfAttribute(short value)  { _factor = value; }
+        public MultipleOfAttribute(decimal value) { _factor = value; }
+        public MultipleOfAttribute(float value) { _factor = value; }
+        public MultipleOfAttribute(short value) { _factor = value; }
         public MultipleOfAttribute(ushort value) { _factor = value; }
-        public MultipleOfAttribute(uint value)   { _factor = value; }
-        public MultipleOfAttribute(ulong value)  { _factor = value; }
-        public MultipleOfAttribute(byte value)   { _factor = value; }
-        public MultipleOfAttribute(sbyte value)  { _factor = value; }
+        public MultipleOfAttribute(uint value) { _factor = value; }
+        public MultipleOfAttribute(ulong value) { _factor = value; }
+        public MultipleOfAttribute(byte value) { _factor = value; }
+        public MultipleOfAttribute(sbyte value) { _factor = value; }
 
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "MultipleOfValidationError";
@@ -67,47 +67,47 @@ namespace EasyValidate.Core.Attributes
         public bool IsValid(decimal value) => _factor.AsDecimal != 0 && value % _factor.AsDecimal == 0;
 
         // IValidationAttribute implementations
-        public AttributeResult Validate(object obj, string propertyName, byte value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, byte value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsUInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, sbyte value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, sbyte value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, short value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, short value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, ushort value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, ushort value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsUInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, int value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, int value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, uint value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, uint value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsUInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, long value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, long value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, ulong value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, ulong value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsUInt64);
         }
-        public AttributeResult Validate(object obj, string propertyName, float value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, float value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsFloat);
         }
-        public AttributeResult Validate(object obj, string propertyName, double value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, double value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsDouble);
         }
-        public AttributeResult Validate(object obj, string propertyName, decimal value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, decimal value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, _factor.AsDecimal);
         }

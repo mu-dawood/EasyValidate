@@ -26,7 +26,7 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "AsciiValidationError";
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
             bool valid = !string.IsNullOrEmpty(value) && !value.Any(c => c > 127);
             return valid ? AttributeResult.Success() : AttributeResult.Fail("The field {0} must contain only ASCII characters.", propertyName);

@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -30,9 +29,9 @@ namespace EasyValidate.Core.Attributes
         public abstract string ErrorCode { get; set; }
 
         /// <inheritdoc/>
-        public abstract AttributeResult Validate(object obj, string propertyName, IEnumerable value);
+        public abstract AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, IEnumerable value);
 
-        public abstract AttributeResult Validate(object obj, string propertyName, string value);
+        public abstract AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value);
     }
 }
 

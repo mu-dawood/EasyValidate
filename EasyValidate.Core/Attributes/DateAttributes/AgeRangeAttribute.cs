@@ -41,7 +41,7 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// Validates a DateTime value for age range.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTime value)
         {
             var now = DateTime.UtcNow;
             var age = now.Year - value.Year;
@@ -56,11 +56,11 @@ namespace EasyValidate.Core.Attributes
                 : AttributeResult.Fail("The field {0} must represent an age between {1} and {2} years.", propertyName, MinimumAge, MaximumAge);
         }
 
+#if NET6_0_OR_GREATER
         /// <summary>
         /// Validates a DateOnly value for age range.
         /// </summary>
-#if NET6_0_OR_GREATER
-        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider,string propertyName, DateOnly value)
         {
             var now = DateOnly.FromDateTime(DateTime.UtcNow);
             var age = now.Year - value.Year;
@@ -79,7 +79,7 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// Validates a DateTimeOffset value for age range.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTimeOffset value)
         {
             var now = DateTimeOffset.UtcNow;
             var age = now.Year - value.Year;

@@ -1,4 +1,6 @@
+using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace EasyValidate.Core.Abstraction
 {
@@ -63,29 +65,67 @@ namespace EasyValidate.Core.Abstraction
 
 
         /// <summary>
-        /// Validates the specified value and potentially transforms it.
+        /// Validates the specified value and potentially transforms it, using the provided service provider for dependency resolution.
         /// </summary>
-        /// <param name="obj">The main object being validated.</param>
+        /// <param name="serviceProvider">The <see cref="IServiceProvider"/> used to resolve dependencies or services for validation.</param>
         /// <param name="propertyName">The name of the property being validated.</param>
         /// <param name="value">The value to validate.</param>
-        /// <param name="output">The output value after validation and transformation. If validation fails, this will be set to <c>default</c>.</param>
         /// <returns>
-        /// An <see cref="AttributeResult"/> indicating success or failure. If successful, <paramref name="output"/> contains the transformed value; otherwise, it is <c>default</c>.
+        /// An <see cref="AttributeResult{TOutput}"/> containing the validation result and the transformed value (or <c>default</c> if validation fails).
         /// </returns>
-        AttributeResult Validate(object obj, string propertyName, TInput value, out TOutput output);
+        AttributeResult<TOutput> Validate(IServiceProvider serviceProvider, string propertyName, TInput value);
     }
 
     public interface IValidationAttribute<TInput> : IValidationAttribute
     {
         /// <summary>
-        /// Validates the specified value without transforming it.
+        /// Validates the specified value without transforming it, using the provided service provider for dependency resolution.
         /// </summary>
-        /// <param name="obj">The main object being validated.</param>
+        /// <param name="serviceProvider">The <see cref="IServiceProvider"/> used to resolve dependencies or services for validation.</param>
         /// <param name="propertyName">The name of the property being validated.</param>
         /// <param name="value">The value to validate.</param>
         /// <returns>
         /// An <see cref="AttributeResult"/> indicating whether the value is valid or not.
         /// </returns>
-        AttributeResult Validate(object obj, string propertyName, TInput value);
+        AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, TInput value);
+    }
+
+
+    /// <summary>
+    /// Async validation attribute interface for operations that do not transform output.
+    /// </summary>
+    /// <typeparam name="TInput">The input type to validate.</typeparam>
+    public interface IAsyncValidationAttribute<TInput> : IValidationAttribute
+    {
+        /// <summary>
+        /// Asynchronously validates the specified value without transforming it, using the provided service provider for dependency resolution.
+        /// </summary>
+        /// <param name="serviceProvider">The <see cref="IServiceProvider"/> used to resolve dependencies or services for validation.</param>
+        /// <param name="propertyName">The name of the property being validated.</param>
+        /// <param name="value">The value to validate.</param>
+        /// <returns>
+        /// A <see cref="Task{AttributeResult}"/> indicating whether the value is valid or not.
+        /// </returns>
+        Task<AttributeResult> ValidateAsync(IServiceProvider serviceProvider, string propertyName, TInput value);
+    }
+
+    /// <summary>
+    /// Async validation attribute interface for operations that transform output.
+    /// </summary>
+    /// <typeparam name="TInput">The input type to validate.</typeparam>
+    /// <typeparam name="TOutput">The output type after validation and potential transformation.</typeparam>
+    public interface IAsyncValidationAttribute<TInput, TOutput> : IValidationAttribute
+    {
+        /// <summary>
+        /// Asynchronously validates the specified value and potentially transforms it, using the provided service provider for dependency resolution.
+        /// </summary>
+        /// <param name="serviceProvider">The <see cref="IServiceProvider"/> used to resolve dependencies or services for validation.</param>
+        /// <param name="propertyName">The name of the property being validated.</param>
+        /// <param name="value">The value to validate.</param>
+        /// <returns>
+        /// A Task containing an <see cref="AttributeResult{TOutput}"/> with the validation result and the transformed value (or <c>default</c> if validation fails).
+        /// </returns>
+        Task<AttributeResult<TOutput>> ValidateAsync(IServiceProvider serviceProvider, string propertyName, TInput value);
+
     }
 }

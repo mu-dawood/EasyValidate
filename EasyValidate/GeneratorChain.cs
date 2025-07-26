@@ -1,18 +1,16 @@
+using System.Collections.Generic;
+using System.Text;
+
 namespace EasyValidate
 {
-    internal class GeneratorChain
+    internal class GeneratorChain(IValidationHandler head)
     {
-        private IValidationHandler? _head;
+        private IValidationHandler _head = head;
         private IValidationHandler? _tail;
 
         internal GeneratorChain Add(IValidationHandler handler)
         {
-            if (_head == null)
-            {
-                _head = handler;
-                _tail = handler;
-            }
-            else if (_tail != null)
+            if (_tail != null)
             {
                 _tail.WithNext(handler);
                 _tail = handler;
@@ -21,9 +19,9 @@ namespace EasyValidate
             return this;
         }
 
-        internal void Handle(HandlerParams @params)
+        internal (StringBuilder sb, Dictionary<string, List<string>> awaitableMembers) Handle(HandlerParams @params)
         {
-            _head?.Handle(@params);
+            return _head.Next(@params);
         }
     }
 }

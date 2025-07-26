@@ -21,7 +21,7 @@ public record AttributeInfo
 
     public (bool areCompatible, InputAndOutputTypes?) CanAccept(SymbolAnalysisContext context, ITypeSymbol type)
     {
-        if (IsOptionalNotNullAttribute) return (true, new(type, type, true));
+        if (IsOptionalNotNullAttribute) return (true, new(type, type, false, true));
         return InputAndOutputTypes.CanAccept(context.Compilation, type);
     }
 }

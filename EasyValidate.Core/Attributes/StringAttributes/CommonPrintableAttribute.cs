@@ -26,7 +26,7 @@ namespace EasyValidate.Core.Attributes
         public override string ErrorCode { get; set; } = "CommonPrintableValidationError";
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
             bool valid = !value.Any(c => !IsCommonPrintable(c));
             return valid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must contain only common printable characters.", propertyName);

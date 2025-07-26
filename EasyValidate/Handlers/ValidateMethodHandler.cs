@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
 
 namespace EasyValidate.Handlers
@@ -6,27 +9,33 @@ namespace EasyValidate.Handlers
     {
         private readonly ValidationAttributeProcessorHandler _processor = new(compilation);
 
-        public override void Handle(HandlerParams @params)
+        public override (StringBuilder sb, Dictionary<string, List<string>> awaitableMembers) Next(HandlerParams @params)
         {
-            var sb = @params.StringBuilder;
-
-            sb.AppendLine("        public IValidationResult Validate(IFormatter? formatter, IConfigureValidator? configureValidator, params string[] parentPath)");
+            var currentClassTarget = @params.Targets
+                .FirstOrDefault(t => t.TargetType == TargetType.CurretClass);
+            if (currentClassTarget == null) return base.Next(@params);
+            var (nextsp, awaitableMembers) = base.Next(@params);
+            var sb = new StringBuilder();
+            if (awaitableMembers.TryGetValue(currentClassTarget.Symbol.Name, out var awaitableMembersList) && awaitableMembersList.Any())
+                sb.AppendLine("        public ValueTask<IValidationResult> ValidateAsync(IServiceProvider serviceProvider)");
+            else
+                sb.AppendLine("        public IValidationResult Validate(IServiceProvider serviceProvider)");
             sb.AppendLine("        {");
-            sb.AppendLine("            var result = new ValidationResult(formatter, configureValidator, parentPath);");
-
+            sb.AppendLine("            var result = new ValidationResult();");
+            awaitableMembersList ??= [];
             // Process members and generate validation methods
-            foreach (var member in @params.Members)
+            foreach (var member in currentClassTarget.Members)
             {
-
+                var awitKeyWord = awaitableMembersList.Contains(member.Name) ? "await " : "";
                 var methodName = $"Validate@{member.Name}".ToPascalCase();
-                sb.AppendLine($"            {methodName}(result);");
-
+                sb.AppendLine($"            result.AddPropertyResult({awitKeyWord}{methodName}(serviceProvider));");
             }
 
             sb.AppendLine("            return result;");
             sb.AppendLine("        }");
             sb.AppendLine();
-            base.Handle(@params);
+            sb.Append(nextsp);
+            return (sb, awaitableMembers);
         }
     }
 }

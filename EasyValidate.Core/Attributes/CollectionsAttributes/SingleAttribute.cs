@@ -1,5 +1,5 @@
+using System;
 using System.Collections;
-using System.Linq;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -44,7 +44,7 @@ namespace EasyValidate.Core.Attributes
         /// Arguments propertyName, Value
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, IEnumerable value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, IEnumerable value)
         {
             bool found = false;
             foreach (var item in value)
@@ -63,7 +63,7 @@ namespace EasyValidate.Core.Attributes
                 : AttributeResult.Fail(ErrorMessage, propertyName, Value);
         }
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
             bool found = false;
             foreach (var item in value.Split(','))

@@ -1,5 +1,5 @@
+using System;
 using System.Collections;
-using System.Linq;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -41,7 +41,7 @@ namespace EasyValidate.Core.Attributes
         public string ErrorMessage { get; set; } = "The field {0} must not exceed a length of {1}.";
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, IEnumerable value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, IEnumerable value)
         {
             if (value is ICollection collection)
             {
@@ -64,7 +64,7 @@ namespace EasyValidate.Core.Attributes
             return AttributeResult.Success();
         }
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
             return value.Length <= Maximum
                 ? AttributeResult.Success()

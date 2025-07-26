@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -35,7 +34,7 @@ namespace EasyValidate.Core.Attributes
         /// Arguments propertyName
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, IEnumerable value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, IEnumerable value)
         {
             var seen = new HashSet<object>();
             foreach (var item in value)
@@ -48,7 +47,7 @@ namespace EasyValidate.Core.Attributes
             return AttributeResult.Success(); // All elements are unique
         }
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
             // For string, we can only check if the characters are unique
             var seen = new HashSet<char>();

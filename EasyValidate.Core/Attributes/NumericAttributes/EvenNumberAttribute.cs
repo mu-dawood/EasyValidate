@@ -49,35 +49,35 @@ namespace EasyValidate.Core.Attributes
         public static bool IsValid(sbyte value) => value % 2 == 0;
 
         // IValidationAttribute implementations
-        public AttributeResult Validate(object obj, string propertyName, byte value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, byte value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
         }
-        public AttributeResult Validate(object obj, string propertyName, sbyte value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, sbyte value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
         }
-        public AttributeResult Validate(object obj, string propertyName, short value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, short value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
         }
-        public AttributeResult Validate(object obj, string propertyName, ushort value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, ushort value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
         }
-        public AttributeResult Validate(object obj, string propertyName, int value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, int value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
         }
-        public AttributeResult Validate(object obj, string propertyName, uint value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, uint value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
         }
-        public AttributeResult Validate(object obj, string propertyName, long value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, long value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
         }
-        public AttributeResult Validate(object obj, string propertyName, ulong value)
+        public AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, ulong value)
         {
             return IsValid(value) ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName);
         }

@@ -23,6 +23,6 @@ namespace EasyValidate.Core.Attributes
         public abstract string ErrorCode { get; set; }
 
         // /// <inheritdoc/>
-        public abstract AttributeResult Validate(object obj, string propertyName, object? value);
+        public abstract AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, object? value);
     }
 }

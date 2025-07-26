@@ -33,7 +33,7 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// Validates a DateTime value for future date.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateTime value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTime value)
         {
             bool isFuture = value.Kind switch
             {
@@ -51,7 +51,7 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// Validates a DateOnly value for future date.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateOnly value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider,string propertyName, DateOnly value)
         {
             if (value > DateOnly.FromDateTime(DateTime.UtcNow))
                 return AttributeResult.Success();
@@ -62,7 +62,7 @@ namespace EasyValidate.Core.Attributes
         /// <summary>
         /// Validates a DateTimeOffset value for future date.
         /// </summary>
-        public override AttributeResult Validate(object obj, string propertyName, DateTimeOffset value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, DateTimeOffset value)
         {
             if (value > DateTimeOffset.UtcNow)
                 return AttributeResult.Success();

@@ -32,7 +32,7 @@ namespace EasyValidate.Core.Attributes
         /// Arguments propertyName
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
             bool isValid = !string.IsNullOrWhiteSpace(value) && value.All(c => IsHexChar(c));
             return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must be a valid hexadecimal value.", propertyName);

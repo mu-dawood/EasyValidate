@@ -16,33 +16,33 @@ namespace EasyValidate.Core.Attributes
     public abstract class StringValidationAttributeBase : Attribute, IValidationAttribute<string>
     {
         /// <summary>
-        /// Gets or sets the name of the validation chain this attribute belongs to.
+        /// Gets or sets the name of the validation chain this attribute belongs to. Used to group related validations for advanced scenarios.
         /// </summary>
         public virtual string Chain { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the name of a method that determines if this validation should be executed. The method must be parameterless and return bool. If null or empty, validation always executes.
+        /// Gets or sets the name of a method that determines if this validation should be executed. The method must be parameterless and return <c>bool</c>. If null or empty, validation always executes.
         /// </summary>
         public virtual string? ConditionalMethod { get; set; }
 
         /// <summary>
-        /// Gets or sets the execution strategy for this validation attribute. Determines how this validation interacts with the validation chain.
+        /// Gets or sets the execution strategy for this validation attribute. Determines how this validation interacts with the validation chain (e.g., stop on failure, continue, or run conditionally).
         /// </summary>
         public virtual ExecutionStrategy Strategy { get; set; } = ExecutionStrategy.ValidateAndStop;
 
         /// <summary>
-        /// Gets or sets the error code for this validation attribute.
+        /// Gets or sets the error code for this validation attribute. Used to identify the type of validation error.
         /// </summary>
         public abstract string ErrorCode { get; set; }
 
         /// <summary>
-        /// Validates the specified string value.
+        /// Validates the specified string value using the provided service provider for dependency resolution.
         /// </summary>
-        /// <param name="obj">The main object being validated.</param>
+        /// <param name="serviceProvider">The <see cref="IServiceProvider"/> used to resolve dependencies or services for validation.</param>
         /// <param name="propertyName">The name of the property being validated.</param>
         /// <param name="value">The string value to validate.</param>
         /// <returns>An <see cref="AttributeResult"/> indicating success or failure.</returns>
-        public abstract AttributeResult Validate(object obj, string propertyName, string value);
+        public abstract AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value);
     }
 
 }

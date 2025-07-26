@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Linq;
 using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Core.Attributes
@@ -42,7 +41,7 @@ namespace EasyValidate.Core.Attributes
         public string ErrorMessage { get; set; } = "The field {0} must not contain the value {1}.";
 
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, IEnumerable value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, IEnumerable value)
         {
             foreach (var item in value)
             {
@@ -55,9 +54,9 @@ namespace EasyValidate.Core.Attributes
             return AttributeResult.Success();
         }
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
-#if NET6_0_OR_GREATER
+#if NET5_0_OR_GREATER
             bool isValid = string.IsNullOrEmpty(value) || !value.Contains(ForbiddenValue?.ToString() ?? "", StringComparison.OrdinalIgnoreCase);
 #else
             bool isValid = string.IsNullOrEmpty(value) || value!.IndexOf(ForbiddenValue.ToString(), StringComparison.OrdinalIgnoreCase) == 0;

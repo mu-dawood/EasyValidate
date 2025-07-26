@@ -34,9 +34,9 @@ namespace EasyValidate.Core.Attributes
         /// </summary>
         public StringComparison Comparison { get; set; } = StringComparison.Ordinal;
         /// <inheritdoc/>
-        public override AttributeResult Validate(object obj, string propertyName, string value)
+        public override AttributeResult Validate(IServiceProvider serviceProvider, string propertyName, string value)
         {
-#if NET6_0_OR_GREATER
+#if NET5_0_OR_GREATER
             bool isValid = value.Contains(Substring, Comparison);
 #else
             bool isValid = value!.IndexOf(Substring, Comparison) >= 0;

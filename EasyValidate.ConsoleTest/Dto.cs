@@ -1,3 +1,4 @@
+using EasyValidate.Core.Abstraction;
 using EasyValidate.Core.Attributes;
 
 namespace EasyValidate.ConsoleTest;
@@ -10,7 +11,7 @@ public partial class Dto
     public DateTime? BirthDate { get; set; }
 
     // Test case: Simple single attribute for testing
-    [NotNull]
+    [NotNull, Numeric]
     public string? TestSimple { get; set; }
 
     // Test case: Additional attribute to trigger analyzer
@@ -24,16 +25,38 @@ public partial class Dto
     // [NotEmpty,NotNull]
     public string? Name { get; set; }
 
-    // [NotDefault]
+    [NotDefault(ConditionalMethod = "ShouldValidateStartsWith", Strategy = EasyValidate.Core.Abstraction.ExecutionStrategy.ConditionalAndStopChain)]
     public Dto? NestedDto { get; set; }
-    public void ShouldValidateStartsWith()
+    /// <summary>
+    /// Determines whether validation should be performed.
+    /// </summary>
+    /// <param name="result">The current validation result.</param>
+    /// <returns>A ValueTask containing true if validation should be performed; otherwise, false.</returns>
+    private ValueTask<bool> ShouldValidateStartsWith(IChainResult result)
     {
-        this.Validate();
+        return new System.Threading.Tasks.ValueTask<bool>(true);
     }
 
+
+
+
+    // private void ValidateBirthdate(ValidationResult result)
+    // {
+    //     ValidationChain chain = new ValidationChain("chain1", nameof(BirthDate), null, null);
+    //     var optional_attribute_result = optional_attribute.Validate(nameof(BirthDate), BirthDate);
+    //     if (!optional_attribute_result.IsValid)
+    //     {
+    //         result.AddResult(optional_attribute_result, optional_attribute.GetType().Name, optional_attribute.ErrorCode, BirthDate, nameof(BirthDate), "chain1");
+    //         return;
+    //     }
+    //     var past_date_attribute_result = past_date_attribute.Validate("BirthDate", BirthDate);
+    //     if (!past_date_attribute_result.IsValid)
+    //     {
+    //         return;
+    //     }
+    // }
+
 }
-
-
 
 
 
