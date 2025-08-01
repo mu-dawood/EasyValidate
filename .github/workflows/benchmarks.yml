@@ -2,31 +2,6 @@ name: Run Benchmarks
 
 on:
   workflow_dispatch:
-    inputs:
-      category:
-        description: 'Select benchmark category'
-        required: true
-        default: 'All'
-        type: choice
-        options:
-          - All
-          - General
-          - String
-          - Numeric
-          - Collection
-          - DateTime
-          - Other
-          - Friendly
-          - Regular
-      benchmark:
-        description: 'Select benchmark category'
-        required: true
-        default: 'AttributeSetupBenchmarks'
-        type: choice
-        options:
-          - AttributeSetupBenchmarks
-          - FluentFriendlyValidationBenchmarks
-          - ValidationBenchmarks
 
 jobs:
   benchmark:
@@ -54,25 +29,11 @@ jobs:
 
       - name: List benchmarks
         run: |
-          CATEGORY="${{ github.event.inputs.category }}"
-          BENCHMARK="${{ github.event.inputs.benchmark }}"
-          CMD="dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build --  --maxWarmupCount 10 --list tree --filter '*$BENCHMARK*'"
-          if [ "$CATEGORY" != "All" ]; then
-            CMD="$CMD --anyCategories $CATEGORY"
-          fi
-          echo "Running: $CMD"
-          eval $CMD
+          dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build --maxWarmupCount 10 --list tree
 
       - name: Run benchmarks
         run: |
-          CATEGORY="${{ github.event.inputs.category }}"
-          BENCHMARK="${{ github.event.inputs.benchmark }}"
-          CMD="dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build -- --runtimes net9.0 --filter '*$BENCHMARK*'"
-          if [ "$CATEGORY" != "All" ]; then
-            CMD="$CMD --anyCategories $CATEGORY"
-          fi
-          echo "Running: $CMD"
-          eval $CMD
+          dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build --runtimes net9.0
 
       - name: Copy benchmark result
         run: |
