@@ -3,16 +3,39 @@ using Microsoft.CodeAnalysis;
 
 namespace EasyValidate.Types;
 
-internal class ValidationTarget(ISymbol symbol, TargetType targetType, List<MemberInfo>? members = null)
+internal class ValidationTarget(INamedTypeSymbol symbol)
 {
 
-    public ISymbol Symbol { get; } = symbol;
-    public TargetType TargetType { get; } = targetType;
-    public List<MemberInfo> Members { get; } = members ?? [];
+    internal INamedTypeSymbol Symbol { get; private set; } = symbol;
+    internal IReadOnlyCollection<MemberInfo> Members { get; private set; } = [];
+    internal IReadOnlyCollection<MethodTarget> Methods { get; private set; } = [];
+
+    internal ValidationTarget WithMembers(List<MemberInfo> members)
+    {
+        return new ValidationTarget(Symbol)
+        {
+            Symbol = Symbol,
+            Members = members,
+            Methods = Methods,
+        };
+    }
+    internal ValidationTarget WithMethods(List<MethodTarget> methods)
+    {
+        return new ValidationTarget(Symbol)
+        {
+            Symbol = Symbol,
+            Members = Members,
+            Methods = methods,
+        };
+    }
+
+    internal bool NeedGeneration => Members.Count > 0 || Methods.Count > 0;
 }
 
-internal enum TargetType
+internal class MethodTarget(IMethodSymbol symbol, List<MemberInfo> members)
 {
-    CurretClass,
-    Method
+    internal IMethodSymbol Symbol { get; } = symbol;
+
+    internal IReadOnlyCollection<MemberInfo> Members { get; } = members;
+
 }
