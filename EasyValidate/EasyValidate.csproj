@@ -1,0 +1,89 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>EasyValidate</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <Authors>Mohamed dawood</Authors>
+    <Company>Mohamed dawood's Company</Company>
+    <Description>EasyValidate is a modern, attribute-based validation library and source generator
+      for .NET. It enables powerful, composable, and type-safe validation using Roslyn analyzers and
+      source generators.</Description>
+    <PackageTags>validation;source-generator;roslyn;dotnet;attributes;analyzer</PackageTags>
+    <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+    <IsRoslynAnalyzer>true</IsRoslynAnalyzer>
+    <RepositoryUrl>https://github.com/mu-dawood/EasyValidate</RepositoryUrl>
+    <PackageProjectUrl>https://easy-validate.netlify.app/</PackageProjectUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageReadmeFile>nuget-readme.md</PackageReadmeFile>
+    <PackageReleaseNotes>See https://github.com/mu-dawood/EasyValidate/releases</PackageReleaseNotes>
+    <RepositoryType>git</RepositoryType>
+    <PackageSourceUrl>https://github.com/mu-dawood/EasyValidate</PackageSourceUrl>
+    <PackageDocumentationUrl>https://easy-validate.netlify.app/</PackageDocumentationUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <Copyright>Copyright © 2025 Mohamed dawood</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="4.14.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="4.14.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+  </ItemGroup>
+
+  <Target Name="BuildDependencies" BeforeTargets="BeforeBuild;Pack">
+    <MSBuild Projects="..\EasyValidate.Core\EasyValidate.Core.csproj" Targets="Build"
+      Properties="Configuration=$(Configuration)" />
+    <MSBuild Projects="..\EasyValidate.Analyzers\EasyValidate.Analyzers.csproj" Targets="Build"
+      Properties="Configuration=$(Configuration)" />
+    <MSBuild Projects="..\EasyValidate.Fixers\EasyValidate.Fixers.csproj" Targets="Build"
+      Properties="Configuration=$(Configuration)" />
+  </Target>
+  <ItemGroup>
+    <Content
+      Include="..\EasyValidate.Analyzers\bin\$(Configuration)\netstandard2.0\EasyValidate.Analyzers.dll"
+      Pack="true"
+      PackagePath="analyzers/dotnet/cs" />
+    <Content
+      Include="..\EasyValidate.Fixers\bin\$(Configuration)\netstandard2.0\EasyValidate.Fixers.dll"
+      Pack="true"
+      PackagePath="analyzers/dotnet/cs" />
+    <Content
+      Include="..\EasyValidate.Core\bin\$(Configuration)\netstandard2.0\EasyValidate.Core.xml"
+      Pack="true"
+      PackagePath="lib/netstandard2.0/" />
+    <Content
+      Include="..\EasyValidate.Core\bin\$(Configuration)\netstandard2.0\EasyValidate.Core.dll"
+      Pack="true"
+      PackagePath="lib/netstandard2.0" />
+    <Content Include="..\EasyValidate.Core\bin\$(Configuration)\net5.0\EasyValidate.Core.dll"
+      Pack="true"
+      PackagePath="lib/net5.0" />
+    <Content Include="..\EasyValidate.Core\bin\$(Configuration)\net6.0\EasyValidate.Core.dll"
+      Pack="true"
+      PackagePath="lib/net6.0" />
+    <Content Include="..\EasyValidate.Core\bin\$(Configuration)\net7.0\EasyValidate.Core.dll"
+      Pack="true"
+      PackagePath="lib/net7.0" />
+    <Content Include="..\EasyValidate.Core\bin\$(Configuration)\net8.0\EasyValidate.Core.dll"
+      Pack="true"
+      PackagePath="lib/net8.0" />
+    <Content Include="..\EasyValidate.Core\bin\$(Configuration)\net9.0\EasyValidate.Core.dll"
+      Pack="true"
+      PackagePath="lib/net9.0" />
+
+    <Content Include="$(OutputPath)\$(AssemblyName).dll"
+      Pack="true"
+      PackagePath="analyzers/dotnet/cs" />
+    <None Include="../docs/nuget-readme.md" Pack="true" PackagePath="\" />
+    <None Include="../docs/icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>
