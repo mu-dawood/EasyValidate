@@ -4,71 +4,71 @@ on:
   workflow_dispatch:
 
 jobs:
-  # benchmark:
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     artifact-name: ${{ steps.upload.outputs.artifact-name }}
+  benchmark:
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-name: ${{ steps.upload.outputs.artifact-name }}
 
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  #     - name: Setup .NET
-  #       uses: actions/setup-dotnet@v4
-  #       with:
-  #         dotnet-version: '9.0.x'
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
 
-  #     - name: Test local NuGet package
-  #       run: ./test-local-nuget.sh
+      - name: Test local NuGet package
+        run: ./test-local-nuget.sh
         
-  #     - name: Restore ConsoleTest project
-  #       run: dotnet restore EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj
+      - name: Restore ConsoleTest project
+        run: dotnet restore EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj
 
-  #     - name: Build ConsoleTest project in Release mode
-  #       run: dotnet build EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-restore
+      - name: Build ConsoleTest project in Release mode
+        run: dotnet build EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-restore
 
-  #     - name: List benchmarks
-  #       run: |
-  #         dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build --maxWarmupCount 10 --list tree
+      - name: List benchmarks
+        run: |
+          dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build --maxWarmupCount 10 --list tree
 
-  #     - name: Run benchmarks
-  #       run: |
-  #         dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build --runtimes net9.0
+      - name: Run benchmarks
+        run: |
+          dotnet run --project EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj --configuration Release --no-build --runtimes net9.0
 
-  #     - name: Copy benchmark result
-  #       run: |
-  #         mkdir -p benchmark-output
-  #         echo "Available files:"
-  #         ls -R BenchmarkDotNet.Artifacts || echo "No artifacts directory"
-  #         if [ -d BenchmarkDotNet.Artifacts ]; then
-  #           cp -r BenchmarkDotNet.Artifacts/* benchmark-output/
-  #         else
-  #           echo "No BenchmarkDotNet.Artifacts directory found"
-  #         fi
+      - name: Copy benchmark result
+        run: |
+          mkdir -p benchmark-output
+          echo "Available files:"
+          ls -R BenchmarkDotNet.Artifacts || echo "No artifacts directory"
+          if [ -d BenchmarkDotNet.Artifacts ]; then
+            cp -r BenchmarkDotNet.Artifacts/* benchmark-output/
+          else
+            echo "No BenchmarkDotNet.Artifacts directory found"
+          fi
 
-  #     - name: Ensure CSV(s) are available for comparison
-  #       run: |
-  #         shopt -s nullglob
-  #         CSVFILES=(benchmark-output/results/*.csv)
-  #         if [ ${#CSVFILES[@]} -gt 0 ]; then
-  #           for f in "${CSVFILES[@]}"; do
-  #             cp "$f" benchmark-output/
-  #             echo "Copied $f to benchmark-output root."
-  #           done
-  #         else
-  #           echo "No CSV files found in results folder."
-  #         fi
+      - name: Ensure CSV(s) are available for comparison
+        run: |
+          shopt -s nullglob
+          CSVFILES=(benchmark-output/results/*.csv)
+          if [ ${#CSVFILES[@]} -gt 0 ]; then
+            for f in "${CSVFILES[@]}"; do
+              cp "$f" benchmark-output/
+              echo "Copied $f to benchmark-output root."
+            done
+          else
+            echo "No CSV files found in results folder."
+          fi
 
-  #     - name: Upload benchmark result
-  #       id: upload
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: benchmark-current
-  #         path: benchmark-output
+      - name: Upload benchmark result
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-current
+          path: benchmark-output
 
   compare:
     runs-on: ubuntu-latest
-    # needs: benchmark
+    needs: benchmark
     steps:
       - name: Install GitHub CLI
         run: sudo apt-get update && sudo apt-get install -y gh
@@ -106,6 +106,7 @@ jobs:
 
 
       - name: Download previous benchmark-current artifact
+        if: ${{ steps.get_artifact_id.outputs.artifact_id != '' }}
         run: |
           gh api \
             -H "Accept: application/vnd.github+json" \
@@ -115,12 +116,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_PAT }} 
 
       - name: Download current result
+        if: ${{ steps.get_artifact_id.outputs.artifact_id != '' }}
         uses: actions/download-artifact@v4
         with:
           name: benchmark-current
           path: current
 
       - name: Summarize benchmark diff with OpenAI
+        if: ${{ steps.get_artifact_id.outputs.artifact_id != '' }}
         run: |
           pip install google-generativeai
           shopt -s nullglob
