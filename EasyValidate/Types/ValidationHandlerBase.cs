@@ -32,6 +32,7 @@ internal abstract class ValidationHandlerBase : IValidationHandler
 }
 
 
+
 internal class HandlerParams(ValidationTarget target, SourceProductionContext context, INamedTypeSymbol classSymbol)
 {
     public ValidationTarget Target { get; } = target;

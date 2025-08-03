@@ -32,10 +32,10 @@ internal class ValidationTarget(INamedTypeSymbol symbol)
     internal bool NeedGeneration => Members.Count > 0 || Methods.Count > 0;
 }
 
-internal class MethodTarget(IMethodSymbol symbol, List<MemberInfo> members)
+internal class MethodTarget(IMethodSymbol symbol, List<MemberInfo> parameters)
 {
     internal IMethodSymbol Symbol { get; } = symbol;
 
-    internal IReadOnlyCollection<MemberInfo> Members { get; } = members;
+    internal IReadOnlyCollection<MemberInfo> Parmters { get; } = parameters;
 
 }

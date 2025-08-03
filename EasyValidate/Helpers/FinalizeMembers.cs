@@ -8,17 +8,37 @@ namespace EasyValidate.Helpers;
 
 public static class FinalizeMembersExtensions
 {
-    internal static List<MemberInfo> FinalizeMembers(this List<ISymbol> members, Dictionary<string, string> instanceNames, AttributeArgumentHandler argumentHandler, INamedTypeSymbol classSymbol)
+    internal static List<MemberInfo> FinalizeMembers(this IEnumerable<ISymbol> members, Dictionary<string, string> instanceNames, AttributeArgumentHandler argumentHandler, INamedTypeSymbol classSymbol)
     {
         List<MemberInfo> memberInfos = [];
         foreach (var member in members)
         {
-            if (member is not IPropertySymbol && member is not IFieldSymbol && member is not IParameterSymbol)
-                continue;
-            if (member is not IParameterSymbol && member.IsBackingField()) continue; // Skip backing fields
-            bool isProperty = member is IPropertySymbol;
-            var type = isProperty ? ((IPropertySymbol)member).Type : ((IFieldSymbol)member).Type;
-            var name = member.Name;
+            MemberType memberType;
+            string name;
+            ITypeSymbol type;
+            if (member is IFieldSymbol fieldSymbol)
+            {
+
+                if (fieldSymbol.IsBackingField()) continue; // Skip backing fields
+                memberType = MemberType.Field;
+                name = fieldSymbol.Name;
+                type = fieldSymbol.Type;
+            }
+            else if (member is IPropertySymbol propertySymbol)
+            {
+                memberType = MemberType.Property;
+                name = propertySymbol.Name;
+                type = propertySymbol.Type;
+            }
+            else if (member is IParameterSymbol parameterSymbol)
+            {
+                memberType = MemberType.Parameter;
+                name = parameterSymbol.Name;
+                type = parameterSymbol.Type;
+            }
+            else
+                continue; // Skip unsupported member types
+
 
             List<AttributeInfo> attributes = [];
 
@@ -94,7 +114,7 @@ public static class FinalizeMembersExtensions
                 nestedConfig = new NestedConfig(true, false);
 
 
-            var info = new MemberInfo(name, attributes, type, isProperty, nestedConfig);
+            var info = new MemberInfo(name, attributes, type, memberType, nestedConfig);
 
             if (attributes.Count > 0)
                 memberInfos.Add(info);

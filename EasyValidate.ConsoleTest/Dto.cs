@@ -1,11 +1,11 @@
 using EasyValidate.Core.Attributes;
 using EasyValidate.Core.Abstraction;
 using EasyValidate.ConsoleTest;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EasyValidate.ConsoleTest;
 
-public partial class Dto
- : IValidate
+public partial class Dto : IValidate
 {
 
     [Optional, PastDate]
@@ -25,6 +25,7 @@ public partial class Dto
     public string? TestIncompatibleChain { get; set; }
 
     // [NotEmpty,NotNull]
+    [Optional, CCC]
     public string? Name { get; set; }
 
     public Dto? NestedDto { get; set; }
@@ -35,8 +36,15 @@ public partial class Dto
     /// <returns>A ValueTask containing true if validation should be performed; otherwise, false.</returns>
     private ValueTask<bool> ShouldValidateStartsWith(IChainResult result)
     {
+        this.Validate();
         return new System.Threading.Tasks.ValueTask<bool>(true);
     }
+
+    // public void XXXX([CCC] string? name, [NotEmpty] string? value)
+    // {
+    //     // This method is intentionally left empty to demonstrate the use of attributes
+    //     // without any specific logic.
+    // }
 
 
 
@@ -60,11 +68,17 @@ public partial class Dto
 }
 
 
-public class CCC : NumericAttribute
+public class CCC : StringValidationAttributeBase
 {
     [ValidationContext]
     public Dto? GG { get; init; }
-    public IServiceProvider ServiceProvider { get; set; }
+    public IServiceProvider? ServiceProvider { get; init; }
+    public override string ErrorCode { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+    public override AttributeResult Validate(string propertyName, string value)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 

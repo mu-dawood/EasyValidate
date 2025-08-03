@@ -68,15 +68,17 @@ namespace EasyValidate
                 List<MethodTarget> methodTargets = [];
                 foreach (var member in classSymbol.GetMembers())
                 {
-                    /// get parmters for methods to make validation for it
-                    if (member is IMethodSymbol method)
+                    /// get parameters for methods to make validation for it
+                    if (member is IMethodSymbol method && method.MethodKind == MethodKind.Ordinary)
                     {
                         var methodParameters = method.Parameters;
                         if (methodParameters.Length > 0)
                         {
-                            var methodInfos = members.FinalizeMembers(instanceNames, argumentHandler, classSymbol);
-                            if (methodInfos.Count > 0)
-                                methodTargets.Add(new MethodTarget(method, methodInfos));
+                            // Process method parameters instead of all class members
+                            var parameterInfos = methodParameters
+                                .FinalizeMembers(instanceNames, argumentHandler, classSymbol);
+                            if (parameterInfos.Count > 0)
+                                methodTargets.Add(new MethodTarget(method, parameterInfos));
                         }
                     }
 
@@ -91,9 +93,10 @@ namespace EasyValidate
                 .Add(new NamespaceHandler())
                 .Add(new ClassDeclarationHandler())
                 .Add(new ReusableInstancesHandler())
-                .Add(new ValidateMethodOverlodsHandler())
-                .Add(new ValidateMethodHandler(compilation))
-                .Add(new MemberValidationMethodHandler(compilation));
+                .Add(new ValidateMethodOverloadsHandler())
+                .Add(new ValidateMethodHandler())
+                .Add(new MemberValidationMethodHandler(compilation))
+                .Add(new ParmterValidationMethodHandler(compilation));
 
                 var (sb, _) = chain.Handle(new HandlerParams(target, context, classSymbol));
                 var namespacePath = classSymbol.ContainingNamespace.ToDisplayString().Replace('.', '/');
@@ -106,8 +109,8 @@ namespace EasyValidate
             catch (Exception ex)
             {
                 context.ReportDiagnostic(Diagnostic.Create(
-                    new DiagnosticDescriptor("EVGEN001", "Validation Class Generation Error", "Error generating validation class for {0}: {1}", "EasyValidate", DiagnosticSeverity.Error, true),
-                   classSymbol.Locations.First(), classSymbol.Name, ex.Message));
+                    new DiagnosticDescriptor("EVGEN001", "Validation Class Generation Error", "Error generating validation class for {0}: {1}, Track: {2}", "EasyValidate", DiagnosticSeverity.Error, true),
+                   classSymbol.Locations.First(), classSymbol.Name, ex.Message,ex.StackTrace));
                 DebuggerUtil.Log($"Error generating validation class for {classSymbol.Name}: {ex.Message}");
                 return;
             }

@@ -9,9 +9,7 @@ namespace EasyValidate.Benchmarks
     {
         public CollectionBenchmarks()
         {
-            serviceProvider = new DefaultServiceProvider();
         }
-        private readonly IServiceProvider serviceProvider;
 
         private LengthAttribute _easyLengthAttribute = null!;
         private MinLengthAttribute _easyMinLengthAttribute = null!;

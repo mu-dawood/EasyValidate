@@ -3,11 +3,19 @@ using Microsoft.CodeAnalysis;
 
 namespace EasyValidate.Types;
 
-internal class MemberInfo(string name, List<AttributeInfo> attributes, ITypeSymbol type, bool isProperty, NestedConfig? nestedConfig)
+internal class MemberInfo(string name, List<AttributeInfo> attributes, ITypeSymbol type, MemberType memberType, NestedConfig? nestedConfig)
 {
     public string Name { get; } = name;
     public NestedConfig? NestedConfig { get; } = nestedConfig;
     public ITypeSymbol Type { get; } = type;
-    public bool IsProperty { get; } = isProperty;
+    public MemberType MemberType { get; } = memberType;
     public IReadOnlyList<AttributeInfo> Attributes { get; } = attributes;
+}
+
+
+internal enum MemberType
+{
+    Property,
+    Field,
+    Parameter
 }

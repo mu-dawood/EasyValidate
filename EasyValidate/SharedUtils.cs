@@ -242,52 +242,71 @@ public static class SharedUtils
         }
         return (false, ImmutableArray<ITypeSymbol>.Empty);
     }
-    public static string ToSakeCase(this string input)
+    private static readonly HashSet<string> CSharpKeywords = new()
+    {
+        "abstract", "as", "base", "bool", "break", "byte", "case", "catch",
+        "char", "checked", "class", "const", "continue", "decimal", "default",
+        "delegate", "do", "double", "else", "enum", "event", "explicit", "extern",
+        "false", "finally", "fixed", "float", "for", "foreach", "goto", "if",
+        "implicit", "in", "int", "interface", "internal", "is", "lock", "long",
+        "namespace", "new", "null", "object", "operator", "out", "override", "params",
+        "private", "protected", "public", "readonly", "ref", "return", "sbyte",
+        "sealed", "short", "sizeof", "stackalloc", "static", "string", "struct",
+        "switch", "this", "throw", "true", "try", "typeof", "uint", "ulong", "unchecked",
+        "unsafe", "ushort", "using", "virtual", "void", "volatile", "while"
+    };
+
+    public static string ToCSharpVariableName(this string input)
     {
         if (string.IsNullOrWhiteSpace(input))
-            return input;
+            return "_";
 
+        // Convert to camelCase and remove invalid characters
         var sb = new StringBuilder();
-        for (int i = 0; i < input.Length; i++)
+        bool nextUpper = false;
+
+        foreach (char c in input)
         {
-            var c = input[i];
-
-            if (char.IsUpper(c))
+            if (char.IsLetterOrDigit(c))
             {
-                if (i > 0)
-                    sb.Append('_');
-
-                sb.Append(char.ToLowerInvariant(c));
+                if (sb.Length == 0)
+                {
+                    sb.Append(char.ToLowerInvariant(c));
+                }
+                else if (nextUpper)
+                {
+                    sb.Append(char.ToUpperInvariant(c));
+                    nextUpper = false;
+                }
+                else
+                {
+                    sb.Append(c);
+                }
             }
-            else if (c == ' ')
+            else if (c is ' ' or '_' or '-' or '@')
             {
-                if (i > 0 && sb.Length > 0 && sb[sb.Length - 1] != '_')
-                    sb.Append('_');
+                nextUpper = true;
             }
-            else if (c == '-')
-            {
-                if (i > 0 && sb.Length > 0 && sb[sb.Length - 1] != '_')
-                    sb.Append('_');
-            }
-            else if (c == '_')
-            {
-                if (sb.Length > 0 && sb[sb.Length - 1] != '_')
-                    sb.Append('_');
-            }
-            else if (c == '@')
-            {
-                if (i > 0 && sb.Length > 0 && sb[sb.Length - 1] != '_')
-                    sb.Append('_');
-                sb.Append("at_");
-            }
-            else
-            {
-                sb.Append(c);
-            }
+            // else ignore other special characters entirely
         }
 
-        return sb.ToString();
+        if (sb.Length == 0)
+            return "_";
+
+        var result = sb.ToString();
+
+        // If it starts with a digit, prefix with "_"
+        if (char.IsDigit(result[0]))
+            result = "_" + result;
+
+        // If it's a reserved keyword, prefix with "@"
+        if (CSharpKeywords.Contains(result))
+            result = "@" + result;
+
+        return result;
     }
+
+
 
     public static string ToPascalCase(this string name)
     {

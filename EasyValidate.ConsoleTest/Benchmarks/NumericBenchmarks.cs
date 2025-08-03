@@ -9,9 +9,7 @@ namespace EasyValidate.Benchmarks
     {
         public NumericBenchmarks()
         {
-            serviceProvider = new DefaultServiceProvider();
         }
-        private readonly IServiceProvider serviceProvider;
         private RangeAttribute _easyRangeAttribute = null!;
         private GreaterThanAttribute _greaterThanAttribute = null!;
         private LessThanAttribute _lessThanAttribute = null!;

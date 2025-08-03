@@ -43,7 +43,7 @@ public static class GenerateAttributeInitializationExtension
                 if (prop.GetAttributes().Any(a => a.AttributeClass.IsValidationContext()))
                     namedArguments.Add($"{prop.Name} = this");
                 else
-                    namedArguments.Add($"{prop.Name} = serviceProvider");
+                    namedArguments.Add($"{prop.Name} = config?.ServiceProvider ?? throw new InvalidOperationException(\"ServiceProvider is required for {attributeClass.Name}. \")");
             }
             return $"{attributeCreation} {{ {string.Join(", ", namedArguments)} }}";
         }

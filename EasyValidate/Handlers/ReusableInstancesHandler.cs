@@ -33,9 +33,10 @@ namespace EasyValidate.Handlers
                 var instanceDeclration = instance.Info.InstanceDeclration;
                 var instanceMethod = instance.Info.InstanceMethod;
                 var staticModifier = instance.IsStatic ? "static " : string.Empty;
-
+                var serviceProvider = instance.Info.NeedServiceProvider()?
+                    "ValidationConfig? config" : string.Empty;
                 sb.AppendLine($"        private {staticModifier}{attributeClassName}? {instanceVariable};");
-                sb.AppendLine($"        private {staticModifier}{attributeClassName} {instanceMethod} (IServiceProvider serviceProvider) => {instanceVariable} ??= {instanceDeclration};");
+                sb.AppendLine($"        private {staticModifier}{attributeClassName} {instanceMethod} ({serviceProvider}) => {instanceVariable} ??= {instanceDeclration};");
 
             }
             sb.AppendLine();

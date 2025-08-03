@@ -6,18 +6,17 @@ using Microsoft.CodeAnalysis;
 
 namespace EasyValidate.Handlers
 {
-    internal class ValidateMethodHandler(Compilation compilation) : ValidationHandlerBase
+    internal class ValidateMethodHandler : ValidationHandlerBase
     {
-        private readonly ValidationAttributeProcessorHandler _processor = new(compilation);
 
         public override (StringBuilder sb, Dictionary<string, List<string>> awaitableMembers) Next(HandlerParams @params)
         {
             var (nextsp, awaitableMembers) = base.Next(@params);
             var sb = new StringBuilder();
             if (awaitableMembers.TryGetValue(@params.Target.Symbol.Name, out var awaitableMembersList) && awaitableMembersList.Any())
-                sb.AppendLine("        public async ValueTask<IValidationResult> ValidateAsync(IServiceProvider serviceProvider)");
+                sb.AppendLine("        public async ValueTask<IValidationResult> ValidateAsync(ValidationConfig config)");
             else
-                sb.AppendLine("        public IValidationResult Validate(IServiceProvider serviceProvider)");
+                sb.AppendLine("        public IValidationResult Validate(ValidationConfig? config = null)");
             sb.AppendLine("        {");
             sb.AppendLine("            var result = new ValidationResult();");
 
@@ -27,9 +26,9 @@ namespace EasyValidate.Handlers
                 var asyncItem = awaitableMembersList.Contains(member.Name);
                 var methodName = $"Validate@{member.Name}".ToPascalCase();
                 if (asyncItem)
-                    sb.AppendLine($"            await result.AddPropertyResultAsync({methodName}(serviceProvider));");
+                    sb.AppendLine($"            await result.AddPropertyResultAsync({methodName}(config));");
                 else
-                    sb.AppendLine($"            result.AddPropertyResult({methodName}(serviceProvider));");
+                    sb.AppendLine($"            result.AddPropertyResult({methodName}(config));");
 
             }
             sb.AppendLine("            return result;");

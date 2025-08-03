@@ -8,7 +8,6 @@ namespace EasyValidate.ConsoleTest;
 public partial class TimingUser(bool logResult)
 {
     private bool logResult = logResult;
-    readonly IServiceProvider serviceProvider = new DefaultServiceProvider();
     public void EnableLogging()
     {
         logResult = true;

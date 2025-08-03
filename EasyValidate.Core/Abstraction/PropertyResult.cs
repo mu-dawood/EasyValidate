@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace EasyValidate.Core.Abstraction
 {
-    public sealed class PropertyResult(IServiceProvider provider, string propertyName) : IPropertyResult
+    public sealed class PropertyResult(ValidationConfig? config, string propertyName) : IPropertyResult
     {
-        private readonly IServiceProvider _provider = provider;
         private readonly string _propertyName = propertyName;
+        private readonly ValidationConfig? _config = config;
 
         public string PropertyName => _propertyName;
 
@@ -32,8 +32,8 @@ namespace EasyValidate.Core.Abstraction
         }
 
 
-        public bool HasErrors() => _hasErrors ||_hasNestedErrors;
-        public bool HasNestedErrors()=> _hasNestedErrors;
+        public bool HasErrors() => _hasErrors || _hasNestedErrors;
+        public bool HasNestedErrors() => _hasNestedErrors;
 
         public bool HasErrors(string chainName)
         {
@@ -59,7 +59,7 @@ namespace EasyValidate.Core.Abstraction
 
         public void AddNestedResult<T>(T other) where T : IValidate
         {
-            var result = other.Validate(_provider);
+            var result = other.Validate(_config);
             if (result.IsValid()) return;
             _nestedResults ??= [];
             _nestedResults.Add(result);
@@ -69,7 +69,7 @@ namespace EasyValidate.Core.Abstraction
 
         public async Task AddNestedResultAsync<T>(T other) where T : IAsyncValidate
         {
-            var result = await other.ValidateAsync(_provider);
+            var result = await other.ValidateAsync(_config);
             if (result.IsValid()) return;
             _nestedResults ??= [];
             _nestedResults.Add(result);
@@ -97,6 +97,7 @@ namespace EasyValidate.Core.Abstraction
         {
             return string.Join(Environment.NewLine, Results.Select(chain => chain.ToString()));
         }
+
     }
 
 

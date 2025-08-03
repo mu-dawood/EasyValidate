@@ -18,10 +18,11 @@ namespace EasyValidate.Handlers
         /// <summary>
         /// Processes all validation for a property including attributes and nested validation.
         /// </summary>
-        public bool ProcessPropertyValidation(StringBuilder sb, MemberInfo member, string chainVariableName, string returnVariable, string serviceProviderName, List<AttributeInfo> attributes)
+        public (bool awaitble, bool needServiceProvider) ProcessPropertyValidation(StringBuilder sb, MemberInfo member, List<AttributeInfo> attributes)
         {
             string indent = "            ";
             var awaitable = false;
+            var needServiceProvider = false;
 
             if (attributes.Count > 0)
             {
@@ -43,18 +44,18 @@ namespace EasyValidate.Handlers
 
                     // Generate variable name for output (based on attribute type)
                     var attributeName = GetAttributeVariableName(attr);
-                    var validationResultVaiable = $"{attributeName}Result".ToSakeCase();
+                    var validationResultVaiable = $"{attributeName}Result".ToCSharpVariableName();
                     var attrInstance = info.InstanceVariable;
                     if (info.ConditionalMethod != null)
                     {
                         var conditionalAwait = info.ConditionalMethod.IsAsync ? "await " : "";
-                        sb.AppendLine($"{indent}if ({conditionalAwait}{info.ConditionalMethod.MethodName}({chainVariableName})) {{");
+                        sb.AppendLine($"{indent}if ({conditionalAwait}{info.ConditionalMethod.MethodName}(result)) {{");
                         indent += "    ";
                     }
                     var resultAawit = resolvedType!.IsAsync ? "await " : "";
                     if (attr.AttributeClass.IsOptionalAttribute())
                     {
-                        sb.AppendLine($"{indent}if ({currentInputVariable} is null) return {returnVariable};");
+                        sb.AppendLine($"{indent}if ({currentInputVariable} is null) return result;");
                         /// check if currentInputVariable is nullable and if so, remove the nullability
                         /// if contains 'Value' property like DateTime, Guid, etc.
                         if (currentType is INamedTypeSymbol namedType && namedType.GetMembers().OfType<IPropertySymbol>().Any(p => p.Name == "HasValue" && p.Type.SpecialType == SpecialType.System_Boolean))
@@ -62,11 +63,15 @@ namespace EasyValidate.Handlers
                     }
                     else
                     {
-                        sb.AppendLine($"{indent}var {attrInstance} = {info.InstanceMethod}({serviceProviderName});");
+                        var config = info.NeedServiceProvider() ?
+                            "config" : string.Empty;
+                        if (!string.IsNullOrEmpty(config))
+                            needServiceProvider = true;
+                        sb.AppendLine($"{indent}var {attrInstance} = {info.InstanceMethod}({config});");
                         sb.AppendLine($"{indent}var {validationResultVaiable} = {resultAawit}{attrInstance}.Validate(nameof({member.Name}), {currentInputVariable});");
                         sb.AppendLine($"{indent}if(!{validationResultVaiable}.IsValid) {{");
-                        sb.AppendLine($"{indent}    {chainVariableName}.AddResult({validationResultVaiable},{attrInstance},{currentInputVariable});");
-                        sb.AppendLine($"{indent}    return {returnVariable};");
+                        sb.AppendLine($"{indent}    result.AddResult({validationResultVaiable},{attrInstance},{currentInputVariable});");
+                        sb.AppendLine($"{indent}    return result;");
                         sb.AppendLine($"{indent}}}");
                         if (attr.AttributeClass.IsNotNullAttribute())
                         {
@@ -88,7 +93,7 @@ namespace EasyValidate.Handlers
                     currentType = resolvedType!.ResolveOutPutType(currentType);
                 }
             }
-            return awaitable;
+            return (awaitable, needServiceProvider);
         }
 
 

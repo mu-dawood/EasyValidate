@@ -1,6 +1,5 @@
 using EasyValidate.Types;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +8,7 @@ namespace EasyValidate.Handlers
     /// <summary>
     /// Generates individual private validation methods for each property.
     /// </summary>
-    internal class MemberValidationMethodHandler(Compilation compilation) : ValidationHandlerBase
+    internal class ParmterValidationMethodHandler(Compilation compilation) : ValidationHandlerBase
     {
         private readonly ValidationAttributeProcessorHandler _processor = new(compilation);
 
@@ -17,22 +16,21 @@ namespace EasyValidate.Handlers
         {
             var (nextsp, awaitableMembers) = base.Next(@params);
             var sb = new StringBuilder();
-            List<string> awaitableMembersList = [];
             // Process members
-            foreach (var member in @params.Target.Members)
+            foreach (var method in @params.Target.Methods)
             {
-                var (awaitable, needServiceProvider) = GeneratePropertyValidationMethod(sb, member);
-                if (awaitable)
+                List<string> awaitableMembersList = [];
+
+                foreach (var member in method.Parmters)
                 {
-                    awaitableMembersList.Add(member.Name);
+                    var (awaitable, needServiceProvider) = GeneratePropertyValidationMethod(sb, method, member);
+                    if (awaitable)
+                    {
+                        awaitableMembersList.Add(member.Name);
+                    }
+
                 }
             }
-
-            if (awaitableMembers.TryGetValue(@params.Target.Symbol.Name, out var existingList))
-            {
-                awaitableMembersList.AddRange(existingList);
-            }
-            awaitableMembers[@params.Target.Symbol.Name] = [.. awaitableMembersList.Distinct()];
             sb.Append(nextsp);
             return (sb, awaitableMembers);
         }
@@ -40,26 +38,26 @@ namespace EasyValidate.Handlers
         /// <summary>
         /// Generates a private validation method for a specific property.
         /// </summary>
-        private (bool awaitable, bool needServiceProvider) GeneratePropertyValidationMethod(StringBuilder sb, MemberInfo member)
+        private (bool awaitable, bool needServiceProvider) GeneratePropertyValidationMethod(StringBuilder sb, MethodTarget method, MemberInfo member)
         {
 
             var groupedAttributes = member.Attributes.GroupBy(GetChainValue).OrderBy(g => string.IsNullOrEmpty(g.Key) ? 1 : 0).ThenBy(g => g.Key).ToList();
 
-            var methodName = $"Validate@{member.Name}".ToPascalCase();
+            var methodName = $"Validate@{member.Name}@for@{method.Symbol.Name}".ToPascalCase();
             StringBuilder propertyBuilder = new();
             StringBuilder chainMethodsBuilder = new();
             var awaitable = false;
             var needServiceProvider = false;
             propertyBuilder.AppendLine("        {");
-            propertyBuilder.AppendLine($"            var property_result = new PropertyResult(config, nameof({member.Name}));");
+            propertyBuilder.AppendLine($"            var property_result = new PropertyResult(config, nameof({member.Name.ToCSharpVariableName()}));");
             foreach (var group in groupedAttributes)
             {
 
                 var infos = group.ToList();
                 var chainMethod = group.Key switch
                 {
-                    "" => $"Default@Validate@{member.Name}".ToPascalCase(),
-                    _ => $"Validate@{member.Name}@{group.Key}".ToPascalCase()
+                    "" => $"Default@Validate@{member.Name}@for{method.Symbol.Name}".ToPascalCase(),
+                    _ => $"Validate@{member.Name}@for@{method.Symbol.Name}@{group.Key}".ToPascalCase()
                 };
                 var (chainAwaitable, chainNeedServiceProvider) = GeneratePropertyChainMethod(chainMethodsBuilder, member, chainMethod, group.Key, infos);
                 if (chainAwaitable)
@@ -69,6 +67,7 @@ namespace EasyValidate.Handlers
                 }
                 if (chainNeedServiceProvider)
                     needServiceProvider = true;
+
                 if (chainNeedServiceProvider)
                     propertyBuilder.AppendLine($"            property_result.AddChainResult({chainMethod}(config));");
                 else
@@ -90,15 +89,14 @@ namespace EasyValidate.Handlers
             propertyBuilder.AppendLine("        }");
             propertyBuilder.AppendLine();
             if (awaitable)
-                sb.AppendLine($"        public async ValueTask<IPropertyResult> {methodName}(ValidationConfig? config = null)");
+                sb.AppendLine($"        private async ValueTask<IPropertyResult> {methodName}(ValidationConfig? config = null)");
             else
-                sb.AppendLine($"        public IPropertyResult {methodName}(ValidationConfig? config = null)");
+                sb.AppendLine($"        private IPropertyResult {methodName}(ValidationConfig? config = null)");
             sb.Append(propertyBuilder);
             sb.Append(chainMethodsBuilder);
             return (awaitable, needServiceProvider);
 
         }
-
 
 
 
@@ -113,7 +111,8 @@ namespace EasyValidate.Handlers
             var propsBuilder = new StringBuilder();
             var (awaitable, needServiceProvider) = _processor.ProcessPropertyValidation(propsBuilder, member, infos);
             var returnType = awaitable ? "async ValueTask<IChainResult>" : "IChainResult";
-  
+            var serviceProvider = needServiceProvider ?
+                ", IServiceProvider serviceProvider" : string.Empty;
             sb.AppendLine($"        public {returnType} {methodName}(ValidationConfig? config = null)");
             sb.AppendLine("        {");
             sb.AppendLine($"            var result = new ChainResult(config?.Formatter, {passedChainValue}, nameof({member.Name}));");
@@ -123,6 +122,7 @@ namespace EasyValidate.Handlers
             sb.AppendLine();
             return (awaitable, needServiceProvider);
         }
+
 
 
         private string GetChainValue(AttributeInfo attr) => attr.Chain;

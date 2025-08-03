@@ -9,9 +9,7 @@ namespace EasyValidate.Benchmarks
     {
         public DateTimeBenchmarks()
         {
-            serviceProvider = new DefaultServiceProvider();
         }
-        private readonly IServiceProvider serviceProvider;
         private FutureDateAttribute _futureDateAttribute = null!;
         private PastDateAttribute _pastDateAttribute = null!;
         private TodayAttribute _todayAttribute = null!;

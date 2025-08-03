@@ -9,9 +9,7 @@ namespace EasyValidate.Benchmarks
     {
         public StringBenchmarks()
         {
-            serviceProvider = new DefaultServiceProvider();
         }
-        private readonly IServiceProvider serviceProvider;
         private AlphaAttribute _alphaAttribute = null!;
         private AlphaNumericAttribute _alphaNumericAttribute = null!;
         private NumericAttribute _numericAttribute = null!;

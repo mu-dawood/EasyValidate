@@ -9,9 +9,7 @@ namespace EasyValidate.Benchmarks
     {
         public OtherBenchmarks()
         {
-            serviceProvider = new DefaultServiceProvider();
         }
-        private readonly IServiceProvider serviceProvider;
         private BaseEncodingAttribute _baseEncodingAttribute = null!;
         private CommonPrintableAttribute _commonPrintableAttribute = null!;
         private FileExtensionAttribute _fileExtensionAttribute = null!;

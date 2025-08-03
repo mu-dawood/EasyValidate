@@ -1,8 +1,6 @@
 using System;
 
 namespace EasyValidate.Core.Attributes;
-
-
 /// <summary>
 /// Marks a property as a validation context, indicating that the property will be injected with a model instance.
 /// <para>
