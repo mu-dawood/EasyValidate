@@ -7,6 +7,8 @@ using System;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace EasyValidate;
 
@@ -255,55 +257,33 @@ public static class SharedUtils
         "switch", "this", "throw", "true", "try", "typeof", "uint", "ulong", "unchecked",
         "unsafe", "ushort", "using", "virtual", "void", "volatile", "while"
     };
-
     public static string ToCSharpVariableName(this string input)
+    {
+        var name = input._ToCSharpVariableName();
+        return CSharpKeywords.Contains(name) ? "@" + name : name;
+    }
+
+    private static string _ToCSharpVariableName(this string input)
     {
         if (string.IsNullOrWhiteSpace(input))
             return "_";
 
-        // Convert to camelCase and remove invalid characters
-        var sb = new StringBuilder();
-        bool nextUpper = false;
-
-        foreach (char c in input)
-        {
-            if (char.IsLetterOrDigit(c))
-            {
-                if (sb.Length == 0)
-                {
-                    sb.Append(char.ToLowerInvariant(c));
-                }
-                else if (nextUpper)
-                {
-                    sb.Append(char.ToUpperInvariant(c));
-                    nextUpper = false;
-                }
-                else
-                {
-                    sb.Append(c);
-                }
-            }
-            else if (c is ' ' or '_' or '-' or '@')
-            {
-                nextUpper = true;
-            }
-            // else ignore other special characters entirely
-        }
-
-        if (sb.Length == 0)
+        // Split the input on non-alphanumeric characters
+        var parts = Regex.Split(input, @"[\W_]+")
+                         .Where(p => !string.IsNullOrWhiteSpace(p))
+                         .ToArray();
+        if (parts.Length == 0)
             return "_";
+        // Capitalize first letter of each part, preserve rest (PascalCase)
+        var pascal = string.Concat(parts.Select(CapitalizeFirst));
+        // Lowercase the first character to make camelCase
+        var camel = char.ToLowerInvariant(pascal[0]) + pascal.Substring(1);
 
-        var result = sb.ToString();
+        // Ensure valid C# identifier (can't start with digit)
+        if (char.IsDigit(camel[0]))
+            camel = "_" + camel;
 
-        // If it starts with a digit, prefix with "_"
-        if (char.IsDigit(result[0]))
-            result = "_" + result;
-
-        // If it's a reserved keyword, prefix with "@"
-        if (CSharpKeywords.Contains(result))
-            result = "@" + result;
-
-        return result;
+        return camel;
     }
 
 
@@ -313,19 +293,15 @@ public static class SharedUtils
         if (string.IsNullOrWhiteSpace(name))
             return string.Empty;
 
-        var words = name.Split(['_', '@'], StringSplitOptions.RemoveEmptyEntries);
-        var result = new StringBuilder(name.Length);
-
-        foreach (var word in words)
-        {
-            if (word.Length == 0) continue;
-
-            result.Append(char.ToUpperInvariant(word[0]));
-            if (word.Length > 1)
-                result.Append(word.Substring(1).ToLowerInvariant());
-        }
-
-        return result.ToString();
+        var parts = Regex.Split(name, @"[\W_]+")
+                        .Where(p => !string.IsNullOrEmpty(p));
+        // Capitalize only the first letter, preserve the rest
+        return string.Concat(parts.Select(CapitalizeFirst));
+    }
+    private static string CapitalizeFirst(string part)
+    {
+        if (string.IsNullOrEmpty(part)) return part;
+        return char.ToUpperInvariant(part[0]) + part.Substring(1);
     }
 
 }

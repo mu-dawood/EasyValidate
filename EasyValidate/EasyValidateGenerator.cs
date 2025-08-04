@@ -94,9 +94,9 @@ namespace EasyValidate
                 .Add(new ClassDeclarationHandler())
                 .Add(new ReusableInstancesHandler())
                 .Add(new ValidateMethodOverloadsHandler())
-                .Add(new ValidateMethodHandler())
+                .Add(new RootValidateMethodHandler())
                 .Add(new MemberValidationMethodHandler(compilation))
-                .Add(new ParmterValidationMethodHandler(compilation));
+                .Add(new ParameterValidationMethodHandler(compilation));
 
                 var (sb, _) = chain.Handle(new HandlerParams(target, context, classSymbol));
                 var namespacePath = classSymbol.ContainingNamespace.ToDisplayString().Replace('.', '/');

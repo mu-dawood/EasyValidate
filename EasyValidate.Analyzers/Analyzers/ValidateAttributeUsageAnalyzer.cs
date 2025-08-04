@@ -118,6 +118,23 @@ namespace EasyValidate.Analyzers.Analyzers
                         memberType = fieldSymbol.Type;
                         attributes = fieldSymbol.GetAttributes();
                     }
+                    else if (member is IMethodSymbol methodSymbol)
+                    {
+                        foreach (var parameter in methodSymbol.Parameters)
+                        {
+                            var parmterChainGroups = GroupAttributesByChain(context, parameter, parameter.Type, parameter.GetAttributes());
+                            foreach (var chainGroup in parmterChainGroups)
+                            {
+                                var value = chainGroup.Value.AsReadOnly();
+                                foreach (var processor in chainProcessors)
+                                {
+                                    var (passed, order) = processor.Process(context, chainGroup.Key, value, parameter.Type, context.Symbol.Name);
+                                    if (!passed) break;
+                                }
+                            }
+                        }
+                        continue;
+                    }
                     else
                         continue; // Skip if not a property or field
 
@@ -133,7 +150,7 @@ namespace EasyValidate.Analyzers.Analyzers
                             try
                             {
                                 var (passed, order) = processor.Process(context, chainGroup.Key, value, memberType, context.Symbol.Name);
-                                if (!passed) return;
+                                if (!passed) break;
                                 if (order != null && order.Count > 0)
                                 {
                                     // Check if any order item has async input/output types

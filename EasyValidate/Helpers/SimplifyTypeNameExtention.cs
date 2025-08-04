@@ -1,10 +1,24 @@
 using System;
+using Microsoft.CodeAnalysis;
 
 namespace EasyValidate.Helpers;
 
 public static class SimplifyTypeNameExtention
 {
-    internal static string SimplifyTypeName(this string typeName)
+    internal static string SimplifiedTypeName(this ITypeSymbol typeSymbol)
+    {
+
+        // Use the ToDisplayString method with FullyQualifiedFormat to get the full name
+        var fullName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+        if (typeSymbol.NullableAnnotation == NullableAnnotation.Annotated && typeSymbol.IsReferenceType)
+        {
+            return fullName.SimplifyTypeName() + "?";
+        }
+        // Simplify the type name using the extension method
+        return fullName.SimplifyTypeName();
+    }
+
+    private static string SimplifyTypeName(this string typeName)
     {
         // Remove global:: prefix
         if (typeName.StartsWith("global::"))

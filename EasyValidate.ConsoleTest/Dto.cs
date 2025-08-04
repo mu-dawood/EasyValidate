@@ -40,11 +40,12 @@ public partial class Dto : IValidate
         return new System.Threading.Tasks.ValueTask<bool>(true);
     }
 
-    // public void XXXX([CCC] string? name, [NotEmpty] string? value)
-    // {
-    //     // This method is intentionally left empty to demonstrate the use of attributes
-    //     // without any specific logic.
-    // }
+    public void TestMethod([NotNull] Dto? name, [NotNull, NotEmpty] string? value)
+    {
+        ValidateNameForTestMethod(name);
+        // This method is intentionally left empty to demonstrate the use of attributes
+        // without any specific logic.
+    }
 
 
 

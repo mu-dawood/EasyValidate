@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 
 namespace EasyValidate.Handlers
 {
-    internal class ValidateMethodHandler : ValidationHandlerBase
+    internal class RootValidateMethodHandler : ValidationHandlerBase
     {
 
         public override (StringBuilder sb, Dictionary<string, List<string>> awaitableMembers) Next(HandlerParams @params)

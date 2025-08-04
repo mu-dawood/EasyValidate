@@ -19,7 +19,7 @@ public static class GenerateAttributeInitializationExtension
         if (attributeClass.IsGenericType && attributeClass.TypeArguments.Length > 0)
         {
             var typeArguments = attributeClass.TypeArguments
-                .Select(typeArg => typeArg.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).SimplifyTypeName())
+                .Select(typeArg => typeArg.SimplifiedTypeName())
                 .ToArray();
             shortClassName = $"{shortClassName}<{string.Join(", ", typeArguments)}>";
         }
