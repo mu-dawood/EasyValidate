@@ -11,7 +11,7 @@ namespace EasyValidate.Core.Abstraction
     /// <docs-display-name>Validation Interface</docs-display-name>
     /// <docs-icon>CheckCircle</docs-icon>
     /// <docs-description>Provides methods for validating objects and returning formatted validation results.</docs-description>
-    public interface IValidate
+    public interface IValidate : IGenerate
     {
         /// <summary>
         /// Validates the object and returns a validation result using the default formatter and configuration.
@@ -43,7 +43,7 @@ namespace EasyValidate.Core.Abstraction
     /// <docs-display-name>Async Validation Interface</docs-display-name>
     /// <docs-icon>CheckCircle</docs-icon>
     /// <docs-description>Provides asynchronous methods for validating objects and returning formatted validation results.</docs-description>
-    public interface IAsyncValidate
+    public interface IAsyncValidate : IGenerate
     {
         /// <summary>
         /// Asynchronously validates the object and returns a validation result using the default formatter and configuration, or the provided <see cref="ValidationConfig"/> if specified.

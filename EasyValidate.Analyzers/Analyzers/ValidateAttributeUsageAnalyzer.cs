@@ -27,7 +27,7 @@ namespace EasyValidate.Analyzers.Analyzers
         private readonly DiagnosticDescriptor PublicMethodChainDiagnostic = new(
             ErrorIds.ValidateAttributeUsagePublicMethod,
             "Public Method Validation Chain Warning",
-            "Method '{0}' is public and has validation attributes. This is allowed, but may lead to ambiguity between your original method and the generated overload. To ensure the generated method is called, pass 'null' or a ValidationConfig object as the last parameter.",
+            "Method '{0}' is {1} and has validation attributes. This is allowed, but may lead to ambiguity between your original method and the generated overload. To ensure the generated method is called, pass 'null' or a ValidationConfig object as the last parameter.",
             "Usage",
             DiagnosticSeverity.Warning,
             true);
@@ -88,10 +88,10 @@ namespace EasyValidate.Analyzers.Analyzers
                 return;
 
             var members = classType.GetMembers();
-            bool? hasAsync = null;
             try
             {
                 var formattedTypes = new HashSet<string>();
+                Interface needInterface = Interface.None;
 
                 foreach (var member in members)
                 {
@@ -138,13 +138,16 @@ namespace EasyValidate.Analyzers.Analyzers
                         foreach (var parameter in methodSymbol.Parameters)
                         {
                             var parmterChainGroups = GroupAttributesByChain(context, parameter, parameter.Type, parameter.GetAttributes());
-                            if (parmterChainGroups.Count > 0 && !puplicReported && methodSymbol.DeclaredAccessibility.HasFlag(Accessibility.Public))
+                            if (needInterface == Interface.None && parmterChainGroups.Any())
+                                needInterface = Interface.Generate;
+                            if (parmterChainGroups.Count > 0 && !puplicReported && (methodSymbol.DeclaredAccessibility.HasFlag(Accessibility.Public) || methodSymbol.DeclaredAccessibility == Accessibility.Internal))
                             {
                                 // Report diagnostic for public method with validation chain attributes
                                 context.ReportDiagnostic(Diagnostic.Create(
                                     PublicMethodChainDiagnostic,
                                     methodSymbol.Locations.FirstOrDefault() ?? Location.None,
-                                    methodSymbol.Name
+                                    methodSymbol.Name,
+                                    methodSymbol.DeclaredAccessibility.HasFlag(Accessibility.Public) ? "public" : "internal"
                                 ));
                                 puplicReported = true;
                             }
@@ -165,8 +168,9 @@ namespace EasyValidate.Analyzers.Analyzers
 
                     // Group attributes by Chain parameter value
                     var chainGroups = GroupAttributesByChain(context, member, memberType, attributes);
-                    if (!chainGroups.Any()) continue;
-                    hasAsync = false;
+                    if ((needInterface == Interface.None || needInterface == Interface.Generate) && chainGroups.Any())
+                        needInterface = Interface.Validate;
+
                     foreach (var chainGroup in chainGroups)
                     {
                         var value = chainGroup.Value.AsReadOnly();
@@ -184,7 +188,7 @@ namespace EasyValidate.Analyzers.Analyzers
                                     {
                                         if (info.Types.IsAsync)
                                         {
-                                            hasAsync = true;
+                                            needInterface = Interface.AsyncValidate;
                                             break;
                                         }
                                         if (string.IsNullOrEmpty(info.Info.ConditionalMethodName))
@@ -193,7 +197,7 @@ namespace EasyValidate.Analyzers.Analyzers
                                                .FirstOrDefault(m => m.Name == info.Info.ConditionalMethodName);
                                         if (method != null && method.IsAsyncMethod().isAsync)
                                         {
-                                            hasAsync = true;
+                                            needInterface = Interface.AsyncValidate;
                                             break;
                                         }
                                     }
@@ -206,15 +210,16 @@ namespace EasyValidate.Analyzers.Analyzers
                     }
 
                 }
-
-                if (hasAsync.HasValue)
+                var _interface = needInterface switch
                 {
-                    bool implementsAsync = classType.ImplementsIAsyncValidate();
-                    bool implementsSync = classType.ImplementsIValidate();
-                    if (hasAsync.Value && !implementsAsync)
-                        formattedTypes.Add("interface:EasyValidate.Core.Abstraction.IAsyncValidate");
-                    if (!hasAsync.Value && !implementsSync)
-                        formattedTypes.Add("interface:EasyValidate.Core.Abstraction.IValidate");
+                    Interface.Generate => "EasyValidate.Core.Abstraction.IGenerate",
+                    Interface.Validate => "EasyValidate.Core.Abstraction.IValidate",
+                    Interface.AsyncValidate => "EasyValidate.Core.Abstraction.IAsyncValidate",
+                    _ => string.Empty
+                };
+                if (!string.IsNullOrEmpty(_interface) && !classType.ImplementsInterface(_interface))
+                {
+                    formattedTypes.Add("interface:" + _interface);
                 }
 
                 if (formattedTypes.Count > 0)
@@ -301,5 +306,13 @@ namespace EasyValidate.Analyzers.Analyzers
 
             return chainGroups;
         }
+    }
+
+    file enum Interface
+    {
+        None,
+        Generate,
+        Validate,
+        AsyncValidate
     }
 }

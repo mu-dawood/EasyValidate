@@ -38,7 +38,7 @@ namespace EasyValidate
 
                 if (classSymbol is not INamedTypeSymbol classSymbolNonNull)
                     return;
-                if (!classSymbol.ImplementsIAsyncValidate() && !classSymbol.ImplementsIValidate())
+                if (!classSymbol.ImplementsIGenerate())
                     return;
 
                 DebuggerUtil.Log($"Processing class: {classSymbolNonNull.Name}");

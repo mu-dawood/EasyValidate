@@ -12,6 +12,9 @@ namespace EasyValidate.Handlers
         public override (StringBuilder, HandlerParams) Next(HandlerParams @params)
         {
             var (nextsp, p) = base.Next(@params);
+            if (p.Target.Members.Count == 0)
+                return (nextsp, p);
+
             var sb = new StringBuilder();
             if (p.Target.AwaitableMembers.Any())
                 sb.AppendLine("        public async ValueTask<IValidationResult> ValidateAsync(ValidationConfig? config=null)");

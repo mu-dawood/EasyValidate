@@ -34,26 +34,27 @@ namespace EasyValidate.Fixers
             {
                 var nonPublicModifiers = new[] {
                     (SyntaxKind.PrivateKeyword, "private"),
-                    (SyntaxKind.InternalKeyword, "internal"),
                     (SyntaxKind.ProtectedKeyword, "protected")
                 };
                 foreach (var (modifierKind, title) in nonPublicModifiers)
                 {
-                    if (!methodNode.Modifiers.Any(m => m.IsKind(modifierKind)))
-                    {
-                        var newModifiers = methodNode.Modifiers
-                            .Where(m => !m.IsKind(SyntaxKind.PublicKeyword))
-                            .ToList();
-                        newModifiers.Insert(0, SyntaxFactory.Token(modifierKind));
-                        var newMethod = methodNode.WithModifiers(SyntaxFactory.TokenList(newModifiers));
-                        var newRoot = root.ReplaceNode(methodNode, newMethod);
-                        context.RegisterCodeFix(
-                            Microsoft.CodeAnalysis.CodeActions.CodeAction.Create(
-                                title: $"Make method {title}",
-                                createChangedDocument: _ => Task.FromResult(context.Document.WithSyntaxRoot(newRoot)),
-                                equivalenceKey: $"MakeMethod{title.Replace(" ", "")}"),
-                            diagnostic);
-                    }
+
+                    var newModifiers = methodNode.Modifiers
+                        .Where(m => !m.IsKind(SyntaxKind.PublicKeyword))
+                        .ToList();
+                    newModifiers.Insert(0, SyntaxFactory.Token(modifierKind));
+                    var newMethod = methodNode
+                        .WithModifiers(SyntaxFactory.TokenList(newModifiers))
+                        .WithLeadingTrivia(methodNode.GetLeadingTrivia())
+                        .WithTrailingTrivia(methodNode.GetTrailingTrivia());
+                    var newRoot = root.ReplaceNode(methodNode, newMethod);
+                    context.RegisterCodeFix(
+                        Microsoft.CodeAnalysis.CodeActions.CodeAction.Create(
+                            title: $"Make method {title}",
+                            createChangedDocument: _ => Task.FromResult(context.Document.WithSyntaxRoot(newRoot)),
+                            equivalenceKey: $"MakeMethod{title.Replace(" ", "")}"),
+                        diagnostic);
+
                 }
             }
         }

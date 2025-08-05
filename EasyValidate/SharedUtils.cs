@@ -150,6 +150,8 @@ public static class SharedUtils
 
     public static bool ImplementsIValidate(this ITypeSymbol? type) =>
         type?.ImplementsInterface("EasyValidate.Core.Abstraction.IValidate") ?? false;
+
+    public static bool ImplementsIGenerate(this ITypeSymbol? type) => type?.ImplementsInterface("EasyValidate.Core.Abstraction.IGenerate") ?? false;
     public static bool IsCollectionOfIValidate(this ITypeSymbol? type) =>
         type?.IsCollectionOfInterface("EasyValidate.Core.Abstraction.IValidate") ?? false;
 

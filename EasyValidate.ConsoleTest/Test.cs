@@ -3,7 +3,7 @@ using EasyValidate.Core.Attributes;
 
 namespace EasyValidate.ConsoleTest;
 
-public partial class TestClass : IValidate
+public partial class TestClass : IGenerate
 {
 
     /// You will see:
@@ -31,7 +31,7 @@ public class Program
         string result = dto.TestMethod(new Dto(), "test value");
 
         // TestMethod2 will not call generated as original its private method
-        IValidationResult<string> result2 = dto.TestMethod2(new Dto(), "test value");
+        IValidationResult<string> result2 = TestClass.TestMethod2(new Dto(), "test value");
 
         /// you need to pass ValidationConfig or null to the method to call the generated method
         /// There a warning if you make orignal method public

@@ -11,6 +11,9 @@ namespace EasyValidate.Handlers
         public override (StringBuilder, HandlerParams) Next(HandlerParams @params)
         {
             var (nextsp, p) = base.Next(@params);
+            if (p.Target.Members.Count == 0)
+                return (nextsp, p);
+                
             var sb = new StringBuilder();
 
             var returnType = "IValidationResult";
