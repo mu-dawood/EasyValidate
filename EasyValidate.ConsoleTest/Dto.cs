@@ -27,7 +27,6 @@ public partial class Dto : IValidate
     // [NotEmpty,NotNull]
     [Optional, CCC]
     public string? Name { get; set; }
-
     public Dto? NestedDto { get; set; }
     /// <summary>
     /// Determines whether validation should be performed.
@@ -40,9 +39,10 @@ public partial class Dto : IValidate
         return new System.Threading.Tasks.ValueTask<bool>(true);
     }
 
-    public void TestMethod([NotNull] Dto? name, [NotNull, NotEmpty] string? value)
+    public string TestMethod([NotNull] Dto? name, [NotNull, NotEmpty] string? value)
     {
-        ValidateNameForTestMethod(name);
+        this.TestMethod(name, value, new ValidationConfig());
+        return "TestMethod executed";
         // This method is intentionally left empty to demonstrate the use of attributes
         // without any specific logic.
     }

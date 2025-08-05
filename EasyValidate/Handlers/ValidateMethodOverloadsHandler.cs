@@ -8,14 +8,14 @@ namespace EasyValidate.Handlers
 {
     internal class ValidateMethodOverloadsHandler : ValidationHandlerBase
     {
-        public override (StringBuilder sb, Dictionary<string, List<string>> awaitableMembers) Next(HandlerParams @params)
+        public override (StringBuilder, HandlerParams) Next(HandlerParams @params)
         {
-            var (nextsp, awaitableMembers) = base.Next(@params);
+            var (nextsp, p) = base.Next(@params);
             var sb = new StringBuilder();
 
             var returnType = "IValidationResult";
             var methodName = "Validate";
-            if (awaitableMembers.TryGetValue(@params.Target.Symbol.Name, out var awaitableMembersList) && awaitableMembersList.Any())
+            if (p.Target.AwaitableMembers.Any())
             {
                 returnType = "ValueTask<IValidationResult>";
                 methodName = "ValidateAsync";
@@ -30,7 +30,7 @@ namespace EasyValidate.Handlers
             sb.AppendLine();
 
             sb.Append(nextsp);
-            return (sb, awaitableMembers);
+            return (sb, p);
         }
     }
 }

@@ -18,11 +18,10 @@ namespace EasyValidate.Handlers
         /// <summary>
         /// Processes all validation for a property including attributes and nested validation.
         /// </summary>
-        public (bool awaitble, bool needServiceProvider) ProcessPropertyValidation(StringBuilder sb, MemberInfo member, List<AttributeInfo> attributes)
+        public bool ProcessPropertyValidation(StringBuilder sb, MemberInfo member, List<AttributeInfo> attributes)
         {
             string indent = "            ";
             var awaitable = false;
-            var needServiceProvider = false;
 
             if (attributes.Count > 0)
             {
@@ -65,8 +64,6 @@ namespace EasyValidate.Handlers
                     {
                         var config = info.NeedServiceProvider() ?
                             "config" : string.Empty;
-                        if (!string.IsNullOrEmpty(config))
-                            needServiceProvider = true;
                         sb.AppendLine($"{indent}var {attrInstance} = {info.InstanceMethod}({config});");
                         sb.AppendLine($"{indent}var {validationResultVaiable} = {resultAawit}{attrInstance}.Validate(nameof({member.Name}), {currentInputVariable});");
                         sb.AppendLine($"{indent}if(!{validationResultVaiable}.IsValid) {{");
@@ -93,7 +90,7 @@ namespace EasyValidate.Handlers
                     currentType = resolvedType!.ResolveOutPutType(currentType);
                 }
             }
-            return (awaitable, needServiceProvider);
+            return awaitable;
         }
 
 

@@ -13,7 +13,7 @@ namespace EasyValidate.Handlers
     {
         private readonly ValidationAttributeProcessorHandler _processor = new(compilation);
 
-        public override (StringBuilder sb, Dictionary<string, List<string>> awaitableMembers) Next(HandlerParams @params)
+        public override (StringBuilder, HandlerParams) Next(HandlerParams @params)
         {
             var (nextsp, awaitableMembers) = base.Next(@params);
             var sb = new StringBuilder();
@@ -21,16 +21,18 @@ namespace EasyValidate.Handlers
             foreach (var method in @params.Target.Methods)
             {
                 List<string> awaitableMembersList = [];
-
                 foreach (var member in method.Parmters)
                 {
-                    var (awaitable, needServiceProvider) = GeneratePropertyValidationMethod(sb, method, member);
-                    if (awaitable)
+                    if (GeneratePropertyValidationMethod(sb, method, member))
                     {
                         awaitableMembersList.Add(member.Name);
                     }
-
                 }
+                @params.Target.WithMethods(
+                    @params.Target.Methods.Select(m => m == method
+                        ? m.WithAwaitableMembers(awaitableMembersList.Distinct())
+                        : m)
+                );
             }
             sb.Append(nextsp);
             return (sb, awaitableMembers);
@@ -39,7 +41,7 @@ namespace EasyValidate.Handlers
         /// <summary>
         /// Generates a private validation method for a specific property.
         /// </summary>
-        private (bool awaitable, bool needServiceProvider) GeneratePropertyValidationMethod(StringBuilder sb, MethodTarget method, MemberInfo member)
+        private bool GeneratePropertyValidationMethod(StringBuilder sb, MethodTarget method, MemberInfo member)
         {
 
             var groupedAttributes = member.Attributes.GroupBy(GetChainValue).OrderBy(g => string.IsNullOrEmpty(g.Key) ? 1 : 0).ThenBy(g => g.Key).ToList();
@@ -48,7 +50,6 @@ namespace EasyValidate.Handlers
             StringBuilder propertyBuilder = new();
             StringBuilder chainMethodsBuilder = new();
             var awaitable = false;
-            var needServiceProvider = false;
             propertyBuilder.AppendLine("        {");
             propertyBuilder.AppendLine($"            var property_result = new PropertyResult(config, nameof({member.Name}));");
             foreach (var group in groupedAttributes)
@@ -60,19 +61,12 @@ namespace EasyValidate.Handlers
                     "" => $"Default@Validate@{member.Name}@for{method.Symbol.Name}".ToPascalCase(),
                     _ => $"Validate@{member.Name}@for@{method.Symbol.Name}@{group.Key}".ToPascalCase()
                 };
-                var (chainAwaitable, chainNeedServiceProvider) = GeneratePropertyChainMethod(chainMethodsBuilder, member, chainMethod, group.Key, infos);
-                if (chainAwaitable)
+                if (GeneratePropertyChainMethod(chainMethodsBuilder, member, chainMethod, group.Key, infos))
                 {
                     chainMethod = "await " + chainMethod;
                     awaitable = true;
                 }
-                if (chainNeedServiceProvider)
-                    needServiceProvider = true;
-
-                if (chainNeedServiceProvider)
-                    propertyBuilder.AppendLine($"            property_result.AddChainResult({chainMethod}({member.Name}, config));");
-                else
-                    propertyBuilder.AppendLine($"            property_result.AddChainResult({chainMethod}({member.Name}, config));");
+                propertyBuilder.AppendLine($"            property_result.AddChainResult({chainMethod}({member.Name}, config));");
 
 
             }
@@ -95,13 +89,13 @@ namespace EasyValidate.Handlers
                 sb.AppendLine($"        private IPropertyResult {methodName}({member.Type.SimplifiedTypeName()} {member.Name}, ValidationConfig? config = null)");
             sb.Append(propertyBuilder);
             sb.Append(chainMethodsBuilder);
-            return (awaitable, needServiceProvider);
+            return awaitable;
 
         }
 
 
 
-        private (bool awaitable, bool) GeneratePropertyChainMethod(StringBuilder sb, MemberInfo member, string methodName, string chain, List<AttributeInfo> infos)
+        private bool GeneratePropertyChainMethod(StringBuilder sb, MemberInfo member, string methodName, string chain, List<AttributeInfo> infos)
         {
             var passedChainValue = chain switch
             {
@@ -110,7 +104,7 @@ namespace EasyValidate.Handlers
                 _ => $"\"{chain}\""
             };
             var propsBuilder = new StringBuilder();
-            var (awaitable, needServiceProvider) = _processor.ProcessPropertyValidation(propsBuilder, member, infos);
+            var awaitable = _processor.ProcessPropertyValidation(propsBuilder, member, infos);
             var returnType = awaitable ? "async ValueTask<IChainResult>" : "IChainResult";
             sb.AppendLine($"        public {returnType} {methodName}({member.Type.SimplifiedTypeName()} {member.Name}, ValidationConfig? config = null)");
             sb.AppendLine("        {");
@@ -119,7 +113,7 @@ namespace EasyValidate.Handlers
             sb.AppendLine("            return result;");
             sb.AppendLine("        }");
             sb.AppendLine();
-            return (awaitable, needServiceProvider);
+            return awaitable;
         }
 
 

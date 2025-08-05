@@ -8,9 +8,9 @@ namespace EasyValidate.Handlers
 {
     internal class ClassDeclarationHandler : ValidationHandlerBase
     {
-        public override (StringBuilder sb, Dictionary<string, List<string>> awaitableMembers) Next(HandlerParams @params)
+        public override (StringBuilder, HandlerParams) Next(HandlerParams @params)
         {
-            var (nextsp, awaitableMembers) = base.Next(@params);
+            var (nextsp, p) = base.Next(@params);
             var sb = new StringBuilder();
             var classSymbol = @params.ClassSymbol;
             string accessibility = classSymbol.DeclaredAccessibility switch
@@ -57,7 +57,7 @@ namespace EasyValidate.Handlers
             sb.Append(nextsp);
 
             sb.AppendLine("    }");
-            return (sb, awaitableMembers);
+            return (sb, p);
         }
     }
 }

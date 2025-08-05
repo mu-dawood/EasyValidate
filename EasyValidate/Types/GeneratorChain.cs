@@ -14,9 +14,10 @@ namespace EasyValidate.Types
             return this;
         }
 
-        internal (StringBuilder sb, Dictionary<string, List<string>> awaitableMembers) Handle(HandlerParams @params)
+        internal StringBuilder Handle(HandlerParams @params)
         {
-            return _head.Next(@params);
+            var (sb, _) = _head.Next(@params);
+            return sb;
         }
     }
 }

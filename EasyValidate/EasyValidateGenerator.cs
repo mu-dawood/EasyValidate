@@ -96,9 +96,10 @@ namespace EasyValidate
                 .Add(new ValidateMethodOverloadsHandler())
                 .Add(new RootValidateMethodHandler())
                 .Add(new MemberValidationMethodHandler(compilation))
+                .Add(new MethodsRootValidatedHandler())
                 .Add(new ParameterValidationMethodHandler(compilation));
 
-                var (sb, _) = chain.Handle(new HandlerParams(target, context, classSymbol));
+                var sb = chain.Handle(new HandlerParams(target, context, classSymbol));
                 var namespacePath = classSymbol.ContainingNamespace.ToDisplayString().Replace('.', '/');
                 var fileName = $"{classSymbol.Name}_Validation.g.cs";
                 context.AddSource($"{namespacePath}/{fileName}", SourceText.From(sb.ToString(), Encoding.UTF8));
@@ -110,7 +111,7 @@ namespace EasyValidate
             {
                 context.ReportDiagnostic(Diagnostic.Create(
                     new DiagnosticDescriptor("EVGEN001", "Validation Class Generation Error", "Error generating validation class for {0}: {1}, Track: {2}", "EasyValidate", DiagnosticSeverity.Error, true),
-                   classSymbol.Locations.First(), classSymbol.Name, ex.Message,ex.StackTrace));
+                   classSymbol.Locations.First(), classSymbol.Name, ex.Message, ex.StackTrace));
                 DebuggerUtil.Log($"Error generating validation class for {classSymbol.Name}: {ex.Message}");
                 return;
             }

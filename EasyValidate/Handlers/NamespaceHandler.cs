@@ -6,13 +6,13 @@ namespace EasyValidate.Handlers
 {
     internal class NamespaceHandler : ValidationHandlerBase
     {
-        public override (StringBuilder sb, Dictionary<string, List<string>> awaitableMembers) Next(HandlerParams @params)
+        public override (StringBuilder, HandlerParams) Next(HandlerParams @params)
         {
             var namespaceName = @params.ClassSymbol.ContainingNamespace.IsGlobalNamespace
                 ? string.Empty
                 : @params.ClassSymbol.ContainingNamespace.ToDisplayString();
 
-            var (nextsp, awaitableMembers) = base.Next(@params);
+            var (nextsp, p) = base.Next(@params);
             var sb = new StringBuilder();
             if (!string.IsNullOrEmpty(namespaceName))
             {
@@ -26,7 +26,7 @@ namespace EasyValidate.Handlers
             {
                 sb.AppendLine("}");
             }
-            return (sb, awaitableMembers);
+            return (sb, p);
         }
     }
 }

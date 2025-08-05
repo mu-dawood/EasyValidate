@@ -20,6 +20,19 @@ namespace EasyValidate.Analyzers.Analyzers
             "Usage",
             DiagnosticSeverity.Error,
             true);
+
+        /// <summary>
+        /// Diagnostic descriptor for reporting public methods with validation chains (warning).
+        /// </summary>
+        private readonly DiagnosticDescriptor PublicMethodChainDiagnostic = new(
+            ErrorIds.ValidateAttributeUsagePublicMethod,
+            "Public Method Validation Chain Warning",
+            "Method '{0}' is public and has validation attributes. This is allowed, but may lead to ambiguity between your original method and the generated overload. To ensure the generated method is called, pass 'null' or a ValidationConfig object as the last parameter.",
+            "Usage",
+            DiagnosticSeverity.Warning,
+            true);
+
+
         private readonly List<IAttributeUsageProcessor> processors = [
             new PowerOfAttributeUsage(),
             new DivisibleByAttributeUsage(),
@@ -39,7 +52,8 @@ namespace EasyValidate.Analyzers.Analyzers
                 var descriptors = new List<DiagnosticDescriptor>
                 {
                     ErrorDiagnostic,
-                    MissingTypeDiagnostic
+                    MissingTypeDiagnostic,
+                    PublicMethodChainDiagnostic
                 };
                 foreach (var processor in processors)
                 {
@@ -120,9 +134,20 @@ namespace EasyValidate.Analyzers.Analyzers
                     }
                     else if (member is IMethodSymbol methodSymbol)
                     {
+                        bool puplicReported = false;
                         foreach (var parameter in methodSymbol.Parameters)
                         {
                             var parmterChainGroups = GroupAttributesByChain(context, parameter, parameter.Type, parameter.GetAttributes());
+                            if (parmterChainGroups.Count > 0 && !puplicReported && methodSymbol.DeclaredAccessibility.HasFlag(Accessibility.Public))
+                            {
+                                // Report diagnostic for public method with validation chain attributes
+                                context.ReportDiagnostic(Diagnostic.Create(
+                                    PublicMethodChainDiagnostic,
+                                    methodSymbol.Locations.FirstOrDefault() ?? Location.None,
+                                    methodSymbol.Name
+                                ));
+                                puplicReported = true;
+                            }
                             foreach (var chainGroup in parmterChainGroups)
                             {
                                 var value = chainGroup.Value.AsReadOnly();
@@ -140,8 +165,8 @@ namespace EasyValidate.Analyzers.Analyzers
 
                     // Group attributes by Chain parameter value
                     var chainGroups = GroupAttributesByChain(context, member, memberType, attributes);
-                    if (chainGroups.Any())
-                        hasAsync = false;
+                    if (!chainGroups.Any()) continue;
+                    hasAsync = false;
                     foreach (var chainGroup in chainGroups)
                     {
                         var value = chainGroup.Value.AsReadOnly();

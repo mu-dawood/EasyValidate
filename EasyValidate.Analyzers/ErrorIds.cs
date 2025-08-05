@@ -18,5 +18,6 @@ public class ErrorIds
     public const string ConditionalMethodInvalidNameError = "EASY015"; //Conditional method contains unsupported chars
     public const string ValidateAttributeUsageMissingType = "EASY016"; // Missing required validation type(s) (interface/class)
     public const string ValidationContextPropertyDiagnostic = "EASY017";
+    public const string ValidateAttributeUsagePublicMethod = "EASY018"; // Public method with validation chain attributes
 
 }

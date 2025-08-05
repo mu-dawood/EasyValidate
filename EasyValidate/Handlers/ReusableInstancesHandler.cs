@@ -8,11 +8,14 @@ namespace EasyValidate.Handlers
 {
     internal class ReusableInstancesHandler : ValidationHandlerBase
     {
-        public override (StringBuilder sb, Dictionary<string, List<string>> awaitableMembers) Next(HandlerParams @params)
+        public override (StringBuilder, HandlerParams) Next(HandlerParams @params)
         {
-            var (nextsp, awaitableMembers) = base.Next(@params);
+            var (nextsp, p) = base.Next(@params);
             var sb = new StringBuilder();
-            var instances = @params.Target.Members
+            var allMembers = @params.Target.Members
+               .Union(@params.Target.Methods.SelectMany((x) => x.Parmters));
+
+            var instances = allMembers
                   .SelectMany((x) => x.Attributes.Select((attr, index) => new
                   {
                       Info = attr,
@@ -33,7 +36,7 @@ namespace EasyValidate.Handlers
                 var instanceDeclration = instance.Info.InstanceDeclration;
                 var instanceMethod = instance.Info.InstanceMethod;
                 var staticModifier = instance.IsStatic ? "static " : string.Empty;
-                var serviceProvider = instance.Info.NeedServiceProvider()?
+                var serviceProvider = instance.Info.NeedServiceProvider() ?
                     "ValidationConfig? config" : string.Empty;
                 sb.AppendLine($"        private {staticModifier}{attributeClassName}? {instanceVariable};");
                 sb.AppendLine($"        private {staticModifier}{attributeClassName} {instanceMethod} ({serviceProvider}) => {instanceVariable} ??= {instanceDeclration};");
@@ -41,7 +44,7 @@ namespace EasyValidate.Handlers
             }
             sb.AppendLine();
             sb.Append(nextsp);
-            return (sb, awaitableMembers);
+            return (sb, p);
         }
     }
 }

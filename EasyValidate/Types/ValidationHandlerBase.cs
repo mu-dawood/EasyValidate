@@ -8,7 +8,7 @@ internal interface IValidationHandler
 {
     IValidationHandler WithNext(IValidationHandler handler);
     // public List<string> AwaitbleMembers { get; } = [];
-    (StringBuilder sb, Dictionary<string, List<string>> awaitableMembers) Next(HandlerParams @params);
+    (StringBuilder sb, HandlerParams @params) Next(HandlerParams @params);
 }
 
 internal abstract class ValidationHandlerBase : IValidationHandler
@@ -21,11 +21,11 @@ internal abstract class ValidationHandlerBase : IValidationHandler
         return handler;
     }
 
-    public virtual (StringBuilder sb, Dictionary<string, List<string>> awaitableMembers) Next(HandlerParams @params)
+    public virtual (StringBuilder sb, HandlerParams @params) Next(HandlerParams @params)
     {
         if (_nextHandler == null)
         {
-            return (new(), []);
+            return (new(), @params);
         }
         return _nextHandler.Next(@params);
     }
@@ -38,5 +38,9 @@ internal class HandlerParams(ValidationTarget target, SourceProductionContext co
     public ValidationTarget Target { get; } = target;
     public SourceProductionContext Context { get; } = context;
     public INamedTypeSymbol ClassSymbol { get; } = classSymbol;
+    public HandlerParams WithTarget(ValidationTarget target)
+    {
+        return new HandlerParams(target, Context, ClassSymbol);
+    }
 
 }

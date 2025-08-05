@@ -5,8 +5,14 @@ using System.Threading.Tasks;
 
 namespace EasyValidate.Core.Abstraction
 {
-    public sealed class ValidationResult : IValidationResult
+    public class ValidationResult : IValidationResult
     {
+        internal ValidationResult(List<IPropertyResult>? results)
+        {
+            _results = results;
+        }
+
+        public static ValidationResult Create() => new(null);
 
         private List<IPropertyResult>? _results;
 
@@ -67,6 +73,23 @@ namespace EasyValidate.Core.Abstraction
             _results ??= [];
             _results.Add(await result);
         }
+
+        public IValidationResult<T> WithResult<T>(T? result)
+        {
+            return new ValidationResult<T>(_results, result);
+        }
+    }
+
+    public class ValidationResult<T> : ValidationResult, IValidationResult<T>
+    {
+
+        public T? Result { get; private set; }
+
+        internal ValidationResult(List<IPropertyResult>? results, T? result) : base(results)
+        {
+            Result = result;
+        }
+
     }
 
 

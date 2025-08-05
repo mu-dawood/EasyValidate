@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace EasyValidate.Core.Abstraction;
@@ -183,6 +183,28 @@ public interface IValidationResult
     /// <docs-type>Method</docs-type>
     /// <docs-return-type>Task</docs-return-type>
     Task AddPropertyResultAsync(ValueTask<IPropertyResult> result);
+
+}
+
+public interface IValidationResult<out T> : IValidationResult
+{
+    /// <summary>
+    /// Gets the validated instance of type <typeparamref name="T"/>.
+    /// </summary>
+    /// <value>
+    /// The validated instance of type <typeparamref name="T"/> if validation is successful; otherwise, null.
+    /// </value>
+    T? Result { get; }
+
+#if NET5_0_OR_GREATER
+    [MemberNotNullWhen(true, nameof(Result))]
+#endif
+    new bool IsValid();
+
+#if NET5_0_OR_GREATER
+    [MemberNotNullWhen(false, nameof(Result))]
+#endif
+    new bool HasErrors();
 
 }
 
