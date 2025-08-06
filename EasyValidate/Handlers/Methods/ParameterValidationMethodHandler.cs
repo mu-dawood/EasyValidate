@@ -61,7 +61,8 @@ namespace EasyValidate.Handlers
                     "" => $"Default@Validate@{member.Name}@for{method.Symbol.Name}".ToPascalCase(),
                     _ => $"Validate@{member.Name}@for@{method.Symbol.Name}@{group.Key}".ToPascalCase()
                 };
-                if (GeneratePropertyChainMethod(chainMethodsBuilder, member, chainMethod, group.Key, infos))
+
+                if (GeneratePropertyChainMethod(chainMethodsBuilder, method.Symbol.IsStatic, member, chainMethod, group.Key, infos))
                 {
                     chainMethod = "await " + chainMethod;
                     awaitable = true;
@@ -83,10 +84,12 @@ namespace EasyValidate.Handlers
             propertyBuilder.AppendLine("            return property_result;");
             propertyBuilder.AppendLine("        }");
             propertyBuilder.AppendLine();
+            var staticMethod = method.Symbol.IsStatic ? "static " : string.Empty;
+
             if (awaitable)
-                sb.AppendLine($"        private async ValueTask<IPropertyResult> {methodName}({member.Type.SimplifiedTypeName()} {member.Name}, ValidationConfig? config = null)");
+                sb.AppendLine($"        private {staticMethod}async ValueTask<IPropertyResult> {methodName}({member.Type.SimplifiedTypeName()} {member.Name}, ValidationConfig? config = null)");
             else
-                sb.AppendLine($"        private IPropertyResult {methodName}({member.Type.SimplifiedTypeName()} {member.Name}, ValidationConfig? config = null)");
+                sb.AppendLine($"        private {staticMethod}IPropertyResult {methodName}({member.Type.SimplifiedTypeName()} {member.Name}, ValidationConfig? config = null)");
             sb.Append(propertyBuilder);
             sb.Append(chainMethodsBuilder);
             return awaitable;
@@ -95,7 +98,7 @@ namespace EasyValidate.Handlers
 
 
 
-        private bool GeneratePropertyChainMethod(StringBuilder sb, MemberInfo member, string methodName, string chain, List<AttributeInfo> infos)
+        private bool GeneratePropertyChainMethod(StringBuilder sb, bool isStatic, MemberInfo member, string methodName, string chain, List<AttributeInfo> infos)
         {
             var passedChainValue = chain switch
             {
@@ -106,7 +109,9 @@ namespace EasyValidate.Handlers
             var propsBuilder = new StringBuilder();
             var awaitable = _processor.ProcessPropertyValidation(propsBuilder, member, infos);
             var returnType = awaitable ? "async ValueTask<IChainResult>" : "IChainResult";
-            sb.AppendLine($"        public {returnType} {methodName}({member.Type.SimplifiedTypeName()} {member.Name}, ValidationConfig? config = null)");
+            var staticMethod = isStatic ? "static " : string.Empty;
+
+            sb.AppendLine($"        public {staticMethod}{returnType} {methodName}({member.Type.SimplifiedTypeName()} {member.Name}, ValidationConfig? config = null)");
             sb.AppendLine("        {");
             sb.AppendLine($"            var result = new ChainResult(config?.Formatter, {passedChainValue}, nameof({member.Name}));");
             sb.Append(propsBuilder);

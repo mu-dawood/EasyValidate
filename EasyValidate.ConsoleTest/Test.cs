@@ -16,7 +16,7 @@ public partial class TestClass : IGenerate
         return "TestMethod executed";
     }
 
-    private static string TestMethod2([NotNull] Dto? name, [NotNull, NotEmpty] string? value)
+    private  string TestMethod2([NotNull] Dto? name, [NotNull, NotEmpty] string? value)
     {
         return "TestMethod2 executed";
     }

@@ -12,14 +12,22 @@ namespace EasyValidate.Handlers
         {
             var (nextsp, p) = base.Next(@params);
             var sb = new StringBuilder();
-            var allMembers = @params.Target.Members
-               .Union(@params.Target.Methods.SelectMany((x) => x.Parmters));
+            var allMembers = @params.Target.Members.Select((x) => new
+            {
+                Member = x,
+                IsStatic = x.Type.IsStatic || @params.Target.Symbol.IsStatic,
+            })
+            .Union(@params.Target.Methods.SelectMany((x) => x.Parmters.Select((p) => new
+            {
+                Member = p,
+                x.Symbol.IsStatic,
+            })));
 
             var instances = allMembers
-                  .SelectMany((x) => x.Attributes.Select((attr, index) => new
+                  .SelectMany((x) => x.Member.Attributes.Select((attr, index) => new
                   {
                       Info = attr,
-                      x.Type.IsStatic,
+                      x.IsStatic,
                   }))
                   .GroupBy(x => x.Info.InstanceVariable)
                   .Select(g => g.OrderByDescending((o) => o.IsStatic).FirstOrDefault())
