@@ -20,6 +20,11 @@ public partial class TestClass : IGenerate
     {
         return "TestMethod2 executed";
     }
+
+    private void TestMethod3([NotNull] Dto? name, [NotNull, NotEmpty] string? value)
+    {
+
+    }
 }
 
 public class Program
@@ -44,5 +49,9 @@ public class Program
         {
             Console.WriteLine("Validation failed.");
         }
+
+        var result3 = dto.TestMethod3(new Dto(), "test value");
+
+
     }
 }

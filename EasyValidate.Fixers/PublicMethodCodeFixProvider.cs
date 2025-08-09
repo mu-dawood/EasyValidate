@@ -8,8 +8,8 @@ using System.Composition;
 
 namespace EasyValidate.Fixers
 {
-    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(NonPublicMethodChainCodeFixProvider)), Shared]
-    public class NonPublicMethodChainCodeFixProvider : CodeFixProvider
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(PublicMethodCodeFixProvider)), Shared]
+    public class PublicMethodCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             [ErrorIds.ValidateAttributeUsagePublicMethod];

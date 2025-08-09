@@ -2,9 +2,12 @@ using EasyValidate.Core.Attributes;
 using EasyValidate.Test.Extensions;
 
 using System.Linq;
+using EasyValidate.Core.Abstraction;
+
 namespace EasyValidate.Test.ParameterValidation
 {
     public partial class TestParameterValidation
+ : IGenerate
     {
         public static void TestMethod([NotNull] string name, [Range(1, 100)] int age)
         {

@@ -1,7 +1,4 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
@@ -17,10 +14,11 @@
             "projectPath": "${workspaceFolder}/EasyValidate.ConsoleTest/EasyValidate.ConsoleTest.csproj"
         },
         {
-            "name": "Attach to Source Generator",
-            "type": "coreclr",
-            "request": "attach",
-            "processId": "${command:pickProcess}"
+            "type": "node-terminal",
+            "name": "Run Script: dev (website)",
+            "request": "launch",
+            "command": "npm run dev",
+            "cwd": "${workspaceFolder}/website"
         }
     ]
 }
