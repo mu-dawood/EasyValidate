@@ -31,15 +31,9 @@ internal class ValidationTarget(INamedTypeSymbol symbol)
             Methods = [.. methods],
         };
     }
-    internal ValidationTarget WithAwaitableMembers(IEnumerable<string> awaitableMembers)
+    internal void SetAwaitableMembers(IEnumerable<string> awaitableMembers)
     {
-        return new ValidationTarget(Symbol)
-        {
-            Symbol = Symbol,
-            Members = Members,
-            Methods = Methods,
-            _awaitableMembers = [.. awaitableMembers],
-        };
+        _awaitableMembers = [.. awaitableMembers];
     }
 
     internal bool NeedGeneration => Members.Count > 0 || Methods.Count > 0;
@@ -52,12 +46,9 @@ internal class MethodTarget(IMethodSymbol symbol, List<MemberInfo> parameters)
     private List<string> _awaitableMembers = [];
     internal IReadOnlyCollection<string> AwaitableMembers => _awaitableMembers;
     internal IReadOnlyCollection<MemberInfo> Parmters { get; } = parameters;
-    internal MethodTarget WithAwaitableMembers(IEnumerable<string> awaitableMembers)
+    internal void SetAwaitableMembers(IEnumerable<string> awaitableMembers)
     {
-        return new MethodTarget(Symbol, parameters)
-        {
-            _awaitableMembers = [.. awaitableMembers],
-        };
+       _awaitableMembers = [.. awaitableMembers];
     }
 
 }

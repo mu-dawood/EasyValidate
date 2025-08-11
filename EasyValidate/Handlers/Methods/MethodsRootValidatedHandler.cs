@@ -21,13 +21,14 @@ namespace EasyValidate.Handlers
                 parmters.Add("ValidationConfig? config = null");
                 var parmtersString = string.Join(", ", parmters);
                 var rootMethodName = method.Symbol.Name;
-                var returnType = method.Symbol.ReturnType.SimplifiedTypeName();
-                bool isVoid = returnType == "void";
+                var (isAsyncMethod, args) = method.Symbol.IsAsyncMethod();
+                var returnType = isAsyncMethod ? string.Join(", ", args.Select((x) => x.SimplifiedTypeName())) : method.Symbol.ReturnType.SimplifiedTypeName();
+                bool isVoid = returnType == "void" || (isAsyncMethod && args.Length == 0);
                 var resultType = isVoid ? "IValidationResult" : $"IValidationResult<{returnType}>";
                 var instanceType = isVoid ? "IValidationResult" : $"IValidationResult<{returnType}>";
                 var passedPramters = method.Parmters.Select(p => $"{p.Name}: {p.Name}").ToList();
                 var staticMethod = method.Symbol.IsStatic ? "static " : string.Empty;
-                if (method.AwaitableMembers.Any())
+                if (isAsyncMethod || method.AwaitableMembers.Any())
                     sb.AppendLine($"        public {staticMethod}async ValueTask<{resultType}> {rootMethodName}({parmtersString})");
                 else
                     sb.AppendLine($"        public {staticMethod}{resultType} {rootMethodName}({parmtersString})");
@@ -44,10 +45,14 @@ namespace EasyValidate.Handlers
                         sb.AppendLine($"            result.AddPropertyResult({methodName}({member.Name}, config));");
 
                 }
+                var asyncPrefix = isAsyncMethod ? "await " : string.Empty;
                 if (isVoid)
+                {
+                    sb.AppendLine($"            {asyncPrefix}{rootMethodName}({string.Join(", ", passedPramters)});");
                     sb.AppendLine("            return result;");
+                }
                 else
-                    sb.AppendLine($"            return result.WithResult({rootMethodName}({string.Join(", ", passedPramters)}));");
+                    sb.AppendLine($"            return result.WithResult({asyncPrefix}{rootMethodName}({string.Join(", ", passedPramters)}));");
                 sb.AppendLine("        }");
                 sb.AppendLine();
             }

@@ -3,55 +3,74 @@ using EasyValidate.Core.Attributes;
 
 namespace EasyValidate.ConsoleTest;
 
-public partial class TestClass : IGenerate
+public partial class User : IGenerate
 {
+    public string Email { get; private set; } = string.Empty;
+    public int? Age { get; private set; }
 
-    /// You will see:
-    /// Method 'TestMethod' is public and has validation attributes. 
-    /// This is allowed, but may lead to ambiguity between your original method 
-    /// and the generated overload. To ensure the generated method is called, 
-    /// pass 'null' or a ValidationConfig object as the last parameter.
-    public string TestMethod([NotNull] Dto? name, [NotNull, NotEmpty] string? value)
+    private static User Create([EmailAddress] string name, [GreaterThan(18)] int age)
     {
-        return "TestMethod executed";
+        return new User
+        {
+            Email = name,
+            Age = age
+        };
     }
 
-    private static string TestMethod2([NotNull] Dto? name, [NotNull, NotEmpty] string? value)
+    private void Update([EmailAddress, EmailExists] string name, [GreaterThan(18)] int age)
     {
-        return "TestMethod2 executed";
+        Email = name;
+        Age = age;
     }
 
-    private void TestMethod3([NotNull] Dto? name, [NotNull, NotEmpty] string? value)
+    private Task UpdateAsync([EmailAddress] string name, [GreaterThan(18)] int age)
     {
-
+        Email = name;
+        Age = age;
+        return Task.CompletedTask;
     }
+
 }
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
-        var dto = new TestClass();
-        /// TestMethod will call  original as its public method
-        string result = dto.TestMethod(new Dto(), "test value");
-
-        // TestMethod2 will not call generated as original its private method
-        IValidationResult<string> result2 = TestClass.TestMethod2(new Dto(), "test value");
-
-        /// you need to pass ValidationConfig or null to the method to call the generated method
-        /// There a warning if you make orignal method public
-        var validatedResult = dto.TestMethod(new Dto(), "test value", null);
-        if (validatedResult.IsValid())
+        /// create is not async,as no awaitable members nor the original method is async
+        var result = User.Create("John Doe", 25);
+        if (result.IsValid())
         {
-            Console.WriteLine("Validation passed.", validatedResult.Result);
-        }
-        else
-        {
-            Console.WriteLine("Validation failed.");
+            Console.WriteLine($"User created successfully:, Email = {result.Result.Email}, Age = {result.Result.Age}");
+           
+            /// update is async, as it has awaitable members
+            var updateResult = await result.Result.Update("Jane Doe", 30);
+
+            /// UpdateAsync is async, as the original method is async
+            updateResult = await result.Result.UpdateAsync("Jane Doe", 30);
+            if (updateResult.IsValid())
+                Console.WriteLine($"User updated successfully:, Email = {result.Result.Email}, Age = {result.Result.Age}");
         }
 
-        var result3 = dto.TestMethod3(new Dto(), "test value");
+    }
+}
 
+/// Reuasable attribute for email existence check
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = true)]
+public class EmailExistsAttribute : Attribute, IAsyncValidationAttribute<string>
+{
+    public string ErrorCode => "EmailExists";
 
+    public string? ConditionalMethod { get; set; }
+
+    public string Chain { get; set; } = string.Empty;
+
+    public IServiceProvider? ServiceProvider { get; init; }
+
+    public async Task<AttributeResult> ValidateAsync(string propertyName, string value)
+    {
+        // Simulate an async check for email existence
+        // var db = ServiceProvider.GetService<DBContext>();
+        // var exists = await db.Users.AnyAsync(u => u.Email == value);
+        return AttributeResult.Success(); // Simulate success for demonstration
     }
 }

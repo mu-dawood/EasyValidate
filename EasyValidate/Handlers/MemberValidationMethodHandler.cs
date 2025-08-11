@@ -26,7 +26,7 @@ namespace EasyValidate.Handlers
                     awaitableMembersList.Add(member.Name);
                 }
             }
-            p = p.WithTarget(p.Target.WithAwaitableMembers(awaitableMembersList.Distinct()));
+            @params.Target.SetAwaitableMembers(awaitableMembersList.Distinct());
             sb.Append(nextsp);
             return (sb, p);
         }
