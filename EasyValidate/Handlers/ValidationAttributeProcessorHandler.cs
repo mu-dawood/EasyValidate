@@ -64,8 +64,9 @@ namespace EasyValidate.Handlers
                     {
                         var config = info.NeedServiceProvider() ?
                             "config" : string.Empty;
+                        var validateMethodName = resolvedType!.IsAsync ? "ValidateAsync" : "Validate";
                         sb.AppendLine($"{indent}var {attrInstance} = {info.InstanceMethod}({config});");
-                        sb.AppendLine($"{indent}var {validationResultVaiable} = {resultAawit}{attrInstance}.Validate(nameof({member.Name}), {currentInputVariable});");
+                        sb.AppendLine($"{indent}var {validationResultVaiable} = {resultAawit}{attrInstance}.{validateMethodName}(nameof({member.Name}), {currentInputVariable});");
                         sb.AppendLine($"{indent}if(!{validationResultVaiable}.IsValid) {{");
                         sb.AppendLine($"{indent}    result.AddResult({validationResultVaiable},{attrInstance},{currentInputVariable});");
                         sb.AppendLine($"{indent}    return result;");
