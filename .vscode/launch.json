@@ -17,8 +17,8 @@
             "type": "node-terminal",
             "name": "Run Script: dev (website)",
             "request": "launch",
-            "command": "npm run dev",
-            "cwd": "${workspaceFolder}/website"
+            "command": "yarn run dev",
+            "cwd": "${workspaceFolder}/EasyValidate-Website"
         }
     ]
 }

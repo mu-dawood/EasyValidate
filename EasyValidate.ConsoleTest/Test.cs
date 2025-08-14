@@ -3,8 +3,66 @@ using EasyValidate.Core.Attributes;
 
 namespace EasyValidate.ConsoleTest;
 
+
+
+
+public partial class ComplexUser : IValidate
+{
+    [GreaterThan(0)]
+    private readonly int _age = 0;
+
+    [NotNull, EmailAddress]
+    public string Email { get; set; } = string.Empty;
+    [NotEmpty]
+    public string Name { get; set; } = string.Empty;
+
+    private void Update([NotNull, EmailAddress] string email, [NotEmpty] string name)
+    {
+        Email = email;
+        Name = name;
+    }
+}
+
+public class Test
+{
+    public static async Task Main(string[] args)
+    {
+        var user = new ComplexUser();
+        var result = user.Validate();
+        if (result.IsValid())
+        {
+            Console.WriteLine("User is valid.");
+        }
+    }
+}
+
+
+
+/// Create a reusable custom attribute for email existence
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = true)]
+public class EmailExistsAttribute : Attribute, IAsyncValidationAttribute<string>
+{
+    public string ErrorCode => "EmailExists";
+
+    public string? ConditionalMethod { get; set; }
+
+    public string Chain { get; set; } = string.Empty;
+
+    public IServiceProvider? ServiceProvider { get; init; }
+
+    public async Task<AttributeResult> ValidateAsync(string propertyName, string value)
+    {
+        // Simulate an async check for email existence
+        // var db = ServiceProvider.GetService<DBContext>();
+        // var exists = await db.Users.AnyAsync(u => u.Email == value);
+        return AttributeResult.Success(); // Simulate success for demonstration
+    }
+}
+
+
 public partial class User : IGenerate
 {
+    public bool IsValid() => true;
     public string Email { get; private set; } = string.Empty;
     public int? Age { get; private set; }
 
@@ -41,7 +99,7 @@ public class Program
         if (result.IsValid())
         {
             Console.WriteLine($"User created successfully:, Email = {result.Result.Email}, Age = {result.Result.Age}");
-           
+
             /// update is async, as it has awaitable members
             var updateResult = await result.Result.Update("Jane Doe", 30);
 
@@ -54,23 +112,3 @@ public class Program
     }
 }
 
-/// Reuasable attribute for email existence check
-[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = true)]
-public class EmailExistsAttribute : Attribute, IAsyncValidationAttribute<string>
-{
-    public string ErrorCode => "EmailExists";
-
-    public string? ConditionalMethod { get; set; }
-
-    public string Chain { get; set; } = string.Empty;
-
-    public IServiceProvider? ServiceProvider { get; init; }
-
-    public async Task<AttributeResult> ValidateAsync(string propertyName, string value)
-    {
-        // Simulate an async check for email existence
-        // var db = ServiceProvider.GetService<DBContext>();
-        // var exists = await db.Users.AnyAsync(u => u.Email == value);
-        return AttributeResult.Success(); // Simulate success for demonstration
-    }
-}
