@@ -1,10 +1,10 @@
-using EasyValidate.Types;
+using EasyValidate.Generator.Types;
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace EasyValidate.Handlers
+namespace EasyValidate.Generator.Handlers
 {
     /// <summary>
     /// Coordinates validation processing for properties by delegating to specialized handlers.
@@ -18,7 +18,7 @@ namespace EasyValidate.Handlers
         /// <summary>
         /// Processes all validation for a property including attributes and nested validation.
         /// </summary>
-        public bool ProcessPropertyValidation(StringBuilder sb, MemberInfo member, List<AttributeInfo> attributes)
+        public bool ProcessPropertyValidation(StringBuilder sb, Member member, IReadOnlyCollection<AttributeInfo> attributes)
         {
             string indent = "            ";
             var awaitable = false;
@@ -30,7 +30,7 @@ namespace EasyValidate.Handlers
                 var currentType = member.Type;
                 for (int i = 0; i < attributes.Count; i++)
                 {
-                    var info = attributes[i];
+                    var info = attributes.ElementAt(i);
                     var attr = info.Attribute;
                     var (canAccept, resolvedType) = attr.AttributeClass.IsOptionalOrNotNullAttribute() ?
                         (true, new(currentType, currentType, false, true)) : info.InputAndOutputTypes.CanAccept(_compilation, currentType);

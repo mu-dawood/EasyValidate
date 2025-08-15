@@ -1,5 +1,5 @@
 
-using EasyValidate.Core.Abstraction;
+using EasyValidate.Abstractions;
 
 namespace EasyValidate.ConsoleTest.Video;
 

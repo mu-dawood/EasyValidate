@@ -1,27 +1,20 @@
 using Microsoft.CodeAnalysis;
-using System.Collections.Generic;
 using System.Text;
 
-namespace EasyValidate.Types;
+namespace EasyValidate.Generator.Types;
 
-internal interface IValidationHandler
+
+internal abstract class ValidationHandlerBase
 {
-    IValidationHandler WithNext(IValidationHandler handler);
-    // public List<string> AwaitbleMembers { get; } = [];
-    (StringBuilder sb, HandlerParams @params) Next(HandlerParams @params);
-}
+    private ValidationHandlerBase? _nextHandler;
 
-internal abstract class ValidationHandlerBase : IValidationHandler
-{
-    private IValidationHandler? _nextHandler;
-
-    public IValidationHandler WithNext(IValidationHandler handler)
+    internal virtual ValidationHandlerBase WithNext(ValidationHandlerBase handler)
     {
         _nextHandler = handler;
         return handler;
     }
 
-    public virtual (StringBuilder sb, HandlerParams @params) Next(HandlerParams @params)
+    internal virtual (StringBuilder sb, HandlerParams @params) Next(HandlerParams @params)
     {
         if (_nextHandler == null)
         {
@@ -35,10 +28,10 @@ internal abstract class ValidationHandlerBase : IValidationHandler
 
 internal class HandlerParams(ValidationTarget target, SourceProductionContext context, INamedTypeSymbol classSymbol)
 {
-    public ValidationTarget Target { get; } = target;
-    public SourceProductionContext Context { get; } = context;
-    public INamedTypeSymbol ClassSymbol { get; } = classSymbol;
-    public HandlerParams WithTarget(ValidationTarget target)
+    internal ValidationTarget Target { get; } = target;
+    internal SourceProductionContext Context { get; } = context;
+    internal INamedTypeSymbol ClassSymbol { get; } = classSymbol;
+    internal HandlerParams WithTarget(ValidationTarget target)
     {
         return new HandlerParams(target, Context, ClassSymbol);
     }

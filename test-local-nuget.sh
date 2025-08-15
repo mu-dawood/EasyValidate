@@ -33,13 +33,13 @@ rm -rf ~/.nuget/packages/easyvalidate ~/.nuget/packages/easyvalidate.analyzers 2
 
 echo "Cleaning project..."
 dotnet clean EasyValidate/EasyValidate.csproj
-dotnet clean EasyValidate.Core/EasyValidate.Core.csproj
-dotnet clean EasyValidate.Analyzers/EasyValidate.Analyzers.csproj
+dotnet clean EasyValidate.Attributes/EasyValidate.Attributes.csproj
+dotnet clean EasyValidate.Abstractions/EasyValidate.Abstractions.csproj
 dotnet clean EasyValidate.Fixers/EasyValidate.Fixers.csproj
 
 echo "Removing bin and obj directories..."
-rm -rf EasyValidate.Core/bin EasyValidate.Core/obj
-rm -rf EasyValidate.Analyzers/bin EasyValidate.Analyzers/obj
+rm -rf EasyValidate.Abstractions/bin EasyValidate.Abstractions/obj
+rm -rf EasyValidate.Attributes/bin EasyValidate.Attributes/obj
 rm -rf EasyValidate.Fixers/bin EasyValidate.Fixers/obj
 rm -rf EasyValidate/bin EasyValidate/obj
 
@@ -62,20 +62,40 @@ fi
 
 
 
+
+
+# 1. Create local NuGet source directory if it doesn't exist
+LOCAL_NUGET=./local-nuget
+mkdir -p "$LOCAL_NUGET"
+
+echo "Adding local NuGet source..."
+dotnet nuget add source "$(pwd)/local-nuget" -n easy_validate_local
+
+# abstractions
 echo "Restoring dependencies..."
-dotnet restore EasyValidate.Core/EasyValidate.Core.csproj
-dotnet restore EasyValidate.Analyzers/EasyValidate.Analyzers.csproj
+dotnet restore EasyValidate.Abstractions/EasyValidate.Abstractions.csproj
+echo "Building EasyValidate.Abstractions"
+dotnet pack -c Release EasyValidate.Abstractions/EasyValidate.Abstractions.csproj
+AbstractionsPKG_PATH=$(ls -t EasyValidate.Abstractions/bin/Release/EasyValidate.Abstractions.*.nupkg | head -n 1)
+echo "Adding $AbstractionsPKG_PATH to $LOCAL_NUGET using dotnet nuget push..."
+cp "$AbstractionsPKG_PATH" "$LOCAL_NUGET/"
+
+
+#attributes
+dotnet restore EasyValidate.Attributes/EasyValidate.Attributes.csproj
+echo "Building EasyValidate.Attributes"
+dotnet pack -c Release EasyValidate.Attributes/EasyValidate.Attributes.csproj
+AttributesPKG_PATH=$(ls -t EasyValidate.Attributes/bin/Release/EasyValidate.Attributes.*.nupkg | head -n 1)
+echo "Adding $AttributesPKG_PATH to $LOCAL_NUGET using dotnet nuget push..."
+cp "$AttributesPKG_PATH" "$LOCAL_NUGET/"
+
 dotnet restore EasyValidate.Fixers/EasyValidate.Fixers.csproj
 dotnet restore EasyValidate/EasyValidate.csproj
-
 
 echo "Building EasyValidate..."
 dotnet build -c Release EasyValidate/EasyValidate.csproj
 dotnet pack -c Release EasyValidate/EasyValidate.csproj
 
-# 1. Create local NuGet source directory if it doesn't exist
-LOCAL_NUGET=./local-nuget
-mkdir -p "$LOCAL_NUGET"
 
 
 # 5. Add the EasyValidate package to the local source
@@ -83,8 +103,7 @@ PKG_PATH=$(ls -t EasyValidate/bin/Release/EasyValidate.*.nupkg | head -n 1)
 echo "Adding $PKG_PATH to $LOCAL_NUGET using dotnet nuget push..."
 cp "$PKG_PATH" "$LOCAL_NUGET/"
 
-echo "Adding local NuGet source..."
-dotnet nuget add source "$(pwd)/local-nuget" -n easy_validate_local
+
 
 
 

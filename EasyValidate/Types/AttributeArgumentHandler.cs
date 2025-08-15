@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EasyValidate.Types
+namespace EasyValidate.Generator.Types
 {
     /// <summary>
     /// Handles formatting of attribute constructor and named arguments for code generation.
@@ -31,7 +31,7 @@ namespace EasyValidate.Types
         /// <summary>
         /// Formats constructor arguments for an attribute.
         /// </summary>
-        public List<string> FormatConstructorArguments(AttributeData attribute)
+        internal List<string> FormatConstructorArguments(AttributeData attribute)
         {
             var constructorArguments = new List<string>();
             foreach (var arg in attribute.ConstructorArguments)
@@ -44,7 +44,7 @@ namespace EasyValidate.Types
         /// <summary>
         /// Formats a single typed constant argument.
         /// </summary>
-        public string FormatArgument(TypedConstant arg)
+        internal string FormatArgument(TypedConstant arg)
         {
             return arg.Kind switch
             {

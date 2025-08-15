@@ -1,10 +1,11 @@
-using EasyValidate.Helpers;
-using EasyValidate.Types;
+using EasyValidate.Generator.Helpers;
+using EasyValidate.Generator.Types;
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-namespace EasyValidate.Handlers
+
+namespace EasyValidate.Generator.Handlers.Methods
 {
     /// <summary>
     /// Generates individual private validation methods for each property.
@@ -13,7 +14,7 @@ namespace EasyValidate.Handlers
     {
         private readonly ValidationAttributeProcessorHandler _processor = new(compilation);
 
-        public override (StringBuilder, HandlerParams) Next(HandlerParams @params)
+        internal override (StringBuilder, HandlerParams) Next(HandlerParams @params)
         {
             var (nextsp, awaitableMembers) = base.Next(@params);
             var sb = new StringBuilder();
@@ -37,10 +38,9 @@ namespace EasyValidate.Handlers
         /// <summary>
         /// Generates a private validation method for a specific property.
         /// </summary>
-        private bool GeneratePropertyValidationMethod(StringBuilder sb, MethodTarget method, MemberInfo member)
+        private bool GeneratePropertyValidationMethod(StringBuilder sb, MethodTarget method, Member member)
         {
 
-            var groupedAttributes = member.Attributes.GroupBy(GetChainValue).OrderBy(g => string.IsNullOrEmpty(g.Key) ? 1 : 0).ThenBy(g => g.Key).ToList();
 
             var methodName = $"Validate@{member.Name}@for@{method.Symbol.Name}".ToPascalCase();
             StringBuilder propertyBuilder = new();
@@ -48,10 +48,10 @@ namespace EasyValidate.Handlers
             var awaitable = false;
             propertyBuilder.AppendLine("        {");
             propertyBuilder.AppendLine($"            var property_result = new PropertyResult(config, nameof({member.Name}));");
-            foreach (var group in groupedAttributes)
+            foreach (var group in member.Attributes)
             {
 
-                var infos = group.ToList();
+                var infos = group.Value;
                 var chainMethod = group.Key switch
                 {
                     "" => $"Default@Validate@{member.Name}@for{method.Symbol.Name}".ToPascalCase(),
@@ -94,7 +94,7 @@ namespace EasyValidate.Handlers
 
 
 
-        private bool GeneratePropertyChainMethod(StringBuilder sb, bool isStatic, MemberInfo member, string methodName, string chain, List<AttributeInfo> infos)
+        private bool GeneratePropertyChainMethod(StringBuilder sb, bool isStatic, Member member, string methodName, string chain, IReadOnlyCollection<AttributeInfo> infos)
         {
             var passedChainValue = chain switch
             {

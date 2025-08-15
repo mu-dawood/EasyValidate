@@ -1,5 +1,5 @@
-using EasyValidate.Core.Abstraction;
-using EasyValidate.Core.Attributes;
+using EasyValidate.Abstractions;
+using EasyValidate.Attributes;
 using MediatR;
 
 namespace EasyValidate.ConsoleTest.Video;

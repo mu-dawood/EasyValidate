@@ -1,16 +1,15 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using EasyValidate.Helpers;
-using EasyValidate.Types;
+using EasyValidate.Generator.Helpers;
+using EasyValidate.Generator.Types;
 using Microsoft.CodeAnalysis;
 
-namespace EasyValidate.Handlers
+namespace EasyValidate.Generator.Handlers.Methods
 {
     internal class MethodsRootValidatedHandler : ValidationHandlerBase
     {
 
-        public override (StringBuilder, HandlerParams) Next(HandlerParams @params)
+        internal override (StringBuilder, HandlerParams) Next(HandlerParams @params)
         {
             var (nextsp, p) = base.Next(@params);
             var sb = new StringBuilder();

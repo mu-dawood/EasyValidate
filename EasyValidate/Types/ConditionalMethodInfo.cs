@@ -1,8 +1,8 @@
-namespace EasyValidate.Types;
+namespace EasyValidate.Generator.Types;
 
 internal class ConditionalMethodInfo(string methodName, bool isAsync)
 {
-    public string MethodName { get; } = methodName;
-    public bool IsAsync { get; } = isAsync;
+    internal string MethodName { get; } = methodName;
+    internal bool IsAsync { get; } = isAsync;
 
 }

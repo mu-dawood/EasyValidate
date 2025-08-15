@@ -40,45 +40,35 @@
   </ItemGroup>
 
   <Target Name="BuildDependencies" BeforeTargets="BeforeBuild;Pack">
-    <MSBuild Projects="..\EasyValidate.Core\EasyValidate.Core.csproj" Targets="Build"
+    <MSBuild Projects="..\EasyValidate.Abstractions\EasyValidate.Abstractions.csproj"
+      Targets="Build"
       Properties="Configuration=$(Configuration)" />
-    <MSBuild Projects="..\EasyValidate.Analyzers\EasyValidate.Analyzers.csproj" Targets="Build"
+    <MSBuild Projects="..\EasyValidate.Attributes\EasyValidate.Attributes.csproj" Targets="Build"
       Properties="Configuration=$(Configuration)" />
     <MSBuild Projects="..\EasyValidate.Fixers\EasyValidate.Fixers.csproj" Targets="Build"
       Properties="Configuration=$(Configuration)" />
   </Target>
   <ItemGroup>
     <Content
-      Include="..\EasyValidate.Analyzers\bin\$(Configuration)\netstandard2.0\EasyValidate.Analyzers.dll"
-      Pack="true"
-      PackagePath="analyzers/dotnet/cs" />
-    <Content
       Include="..\EasyValidate.Fixers\bin\$(Configuration)\netstandard2.0\EasyValidate.Fixers.dll"
       Pack="true"
       PackagePath="analyzers/dotnet/cs" />
     <Content
-      Include="..\EasyValidate.Core\bin\$(Configuration)\netstandard2.0\EasyValidate.Core.xml"
+      Include="..\EasyValidate.Abstractions\bin\$(Configuration)\netstandard2.1\EasyValidate.Abstractions.xml"
       Pack="true"
-      PackagePath="lib/netstandard2.0/" />
+      PackagePath="lib/netstandard2.1/" />
     <Content
-      Include="..\EasyValidate.Core\bin\$(Configuration)\netstandard2.0\EasyValidate.Core.dll"
+      Include="..\EasyValidate.Abstractions\bin\$(Configuration)\netstandard2.1\EasyValidate.Abstractions.dll"
       Pack="true"
-      PackagePath="lib/netstandard2.0" />
-    <Content Include="..\EasyValidate.Core\bin\$(Configuration)\net5.0\EasyValidate.Core.dll"
+      PackagePath="lib/netstandard2.1" />
+    <Content
+      Include="..\EasyValidate.Attributes\bin\$(Configuration)\netstandard2.1\EasyValidate.Attributes.xml"
       Pack="true"
-      PackagePath="lib/net5.0" />
-    <Content Include="..\EasyValidate.Core\bin\$(Configuration)\net6.0\EasyValidate.Core.dll"
+      PackagePath="lib/netstandard2.1/" />
+    <Content
+      Include="..\EasyValidate.Attributes\bin\$(Configuration)\netstandard2.1\EasyValidate.Attributes.dll"
       Pack="true"
-      PackagePath="lib/net6.0" />
-    <Content Include="..\EasyValidate.Core\bin\$(Configuration)\net7.0\EasyValidate.Core.dll"
-      Pack="true"
-      PackagePath="lib/net7.0" />
-    <Content Include="..\EasyValidate.Core\bin\$(Configuration)\net8.0\EasyValidate.Core.dll"
-      Pack="true"
-      PackagePath="lib/net8.0" />
-    <Content Include="..\EasyValidate.Core\bin\$(Configuration)\net9.0\EasyValidate.Core.dll"
-      Pack="true"
-      PackagePath="lib/net9.0" />
+      PackagePath="lib/netstandard2.1" />
 
     <Content Include="$(OutputPath)\$(AssemblyName).dll"
       Pack="true"

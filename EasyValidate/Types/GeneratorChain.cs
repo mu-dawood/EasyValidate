@@ -1,14 +1,13 @@
-using System.Collections.Generic;
 using System.Text;
 
-namespace EasyValidate.Types
+namespace EasyValidate.Generator.Types
 {
-    internal class GeneratorChain(IValidationHandler head)
+    internal class GeneratorChain(ValidationHandlerBase head)
     {
-        private readonly IValidationHandler _head = head;
-        private IValidationHandler _tail = head;
+        private readonly ValidationHandlerBase _head = head;
+        private ValidationHandlerBase _tail = head;
 
-        internal GeneratorChain Add(IValidationHandler handler)
+        internal GeneratorChain Add(ValidationHandlerBase handler)
         {
             _tail = _tail.WithNext(handler);
             return this;

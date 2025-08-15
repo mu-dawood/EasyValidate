@@ -1,4 +1,4 @@
-using EasyValidate.Analyzers;
+using EasyValidate.Generator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -171,14 +171,14 @@ namespace EasyValidate.Fixers
 
             if (useValueTask && root is CompilationUnitSyntax compilationUnit)
             {
-                if (!compilationUnit.Usings.Any(u => u.Name?.ToString() == "EasyValidate.Core.Abstraction"))
-                    parmterType = SyntaxFactory.IdentifierName("EasyValidate.Core.Abstraction.IChainResult");
+                if (!compilationUnit.Usings.Any(u => u.Name?.ToString() == "EasyValidate.Abstractions"))
+                    parmterType = SyntaxFactory.IdentifierName("EasyValidate.Abstractions.IChainResult");
                 else
                     parmterType = SyntaxFactory.IdentifierName("IChainResult");
                 if (useValueTask && !compilationUnit.Usings.Any(u => u.Name?.ToString() == "System.Threading.Tasks"))
                     returnType = SyntaxFactory.ParseTypeName("System.Threading.Tasks.ValueTask<bool>");
             }
-            parmterType ??= SyntaxFactory.IdentifierName("EasyValidate.Core.Abstraction.IChainResult");
+            parmterType ??= SyntaxFactory.IdentifierName("EasyValidate.Abstractions.IChainResult");
             returnType ??= useValueTask
                             ? SyntaxFactory.ParseTypeName("System.Threading.Tasks.ValueTask<bool>")
                             : SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword));
@@ -241,7 +241,7 @@ namespace EasyValidate.Fixers
             var newMethod = method.WithParameterList(SyntaxFactory.ParameterList(
                 SyntaxFactory.SingletonSeparatedList(
                     SyntaxFactory.Parameter(SyntaxFactory.Identifier("result"))
-                        .WithType(SyntaxFactory.IdentifierName("EasyValidate.Core.Abstraction.IChainResult")))));
+                        .WithType(SyntaxFactory.IdentifierName("EasyValidate.Abstractions.IChainResult")))));
 
             var newClassDeclaration = classDeclaration.ReplaceNode(method, newMethod);
             var newRoot = root.ReplaceNode(classDeclaration, newClassDeclaration);

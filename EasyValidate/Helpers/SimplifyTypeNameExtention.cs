@@ -1,7 +1,7 @@
 using System;
 using Microsoft.CodeAnalysis;
 
-namespace EasyValidate.Helpers;
+namespace EasyValidate.Generator.Helpers;
 
 public static class SimplifyTypeNameExtention
 {

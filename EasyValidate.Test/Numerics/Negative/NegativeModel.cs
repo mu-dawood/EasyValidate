@@ -1,5 +1,5 @@
-using EasyValidate.Core.Attributes;
-using EasyValidate.Core.Abstraction;
+using EasyValidate.Attributes;
+using EasyValidate.Abstractions;
 using EasyValidate.Test.Extensions;
 
 using System.Linq;

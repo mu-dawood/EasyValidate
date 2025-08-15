@@ -1,7 +1,7 @@
-namespace EasyValidate.Types;
+namespace EasyValidate.Generator.Types;
 
 internal class NestedConfig(bool isCollection, bool isAsync)
 {
-    public bool IsCollection { get; } = isCollection;
-    public bool IsAsync { get; } = isAsync;
+    internal bool IsCollection { get; } = isCollection;
+    internal bool IsAsync { get; } = isAsync;
 }

@@ -1,7 +1,7 @@
 
 
-using EasyValidate.Core.Abstraction;
-using EasyValidate.Core.Attributes;
+using EasyValidate.Abstractions;
+using EasyValidate.Attributes;
 
 namespace EasyValidate.ConsoleTest;
 

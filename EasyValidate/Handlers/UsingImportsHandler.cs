@@ -1,12 +1,11 @@
-using System.Collections.Generic;
 using System.Text;
-using EasyValidate.Types;
+using EasyValidate.Generator.Types;
 
-namespace EasyValidate.Handlers
+namespace EasyValidate.Generator.Handlers
 {
     internal class UsingImportsHandler : ValidationHandlerBase
     {
-        public override (StringBuilder, HandlerParams) Next(HandlerParams @params)
+        internal override (StringBuilder, HandlerParams) Next(HandlerParams @params)
         {
             var (nextsp, p) = base.Next(@params);
             var sb = new StringBuilder();
@@ -14,8 +13,8 @@ namespace EasyValidate.Handlers
             sb.AppendLine("#nullable enable");
             sb.AppendLine("using global::System;");
             sb.AppendLine("using global::System.Collections.Generic;");
-            sb.AppendLine("using global::EasyValidate.Core.Abstraction;");
-            sb.AppendLine("using global::EasyValidate.Core.Attributes;");
+            sb.AppendLine("using global::EasyValidate.Abstractions;");
+            sb.AppendLine("using global::EasyValidate.Attributes;");
             sb.Append(nextsp);
             sb.AppendLine("#nullable restore");
             return (sb, p);

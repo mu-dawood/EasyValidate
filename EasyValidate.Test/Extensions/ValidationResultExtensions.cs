@@ -1,4 +1,4 @@
-using EasyValidate.Core.Abstraction;
+using EasyValidate.Abstractions;
 using EasyValidate.Test.Extensions;
 
 using System.Linq;

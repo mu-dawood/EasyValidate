@@ -3,14 +3,11 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System;
-using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Text.RegularExpressions;
-using System.Globalization;
 
-namespace EasyValidate;
+namespace EasyValidate.Generator;
 
 public static class SharedUtils
 {
@@ -28,6 +25,9 @@ public static class SharedUtils
         }
         return false;
     }
+
+    // public static bool IsEasyValidateTarget(this ITypeSymbol? type)=>
+    //     type?.InheritsFrom("EasyValidate.Abstractions.EasyValidateAttribute") ?? false;
 
     public static ITypeSymbol ToNonNullable(this ITypeSymbol type)
     {
@@ -54,9 +54,9 @@ public static class SharedUtils
             if (interfaceType is INamedTypeSymbol namedInterface && namedInterface.TypeArguments.Length >= 1)
             {
                 bool isAsync = false;
-                if (namedInterface.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::EasyValidate.Core.Abstraction.IAsyncValidationAttribute"))
+                if (namedInterface.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::EasyValidate.Abstractions.IAsyncValidationAttribute"))
                     isAsync = true;
-                else if (!namedInterface.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::EasyValidate.Core.Abstraction.IValidationAttribute"))
+                else if (!namedInterface.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::EasyValidate.Abstractions.IValidationAttribute"))
                     continue;
                 if (namedInterface.TypeArguments.Length == 1)
                 {
@@ -76,8 +76,8 @@ public static class SharedUtils
         if (type == null)
             return false;
         string[] interfaces = [
-            "global::EasyValidate.Core.Abstraction.IValidationAttribute",
-            "global::EasyValidate.Core.Abstraction.IAsyncValidationAttribute",
+            "global::EasyValidate.Abstractions.IValidationAttribute",
+            "global::EasyValidate.Abstractions.IAsyncValidationAttribute",
         ];
         // Check all interfaces transitively (including interfaces implemented by base classes)
         foreach (var interfaceType in type.AllInterfaces)
@@ -97,8 +97,8 @@ public static class SharedUtils
         if (type == null)
             return false;
         string[] interfaces = [
-            "global::EasyValidate.Core.Abstraction.IValidationAttribute",
-            "global::EasyValidate.Core.Abstraction.IAsyncValidationAttribute",
+            "global::EasyValidate.Abstractions.IValidationAttribute",
+            "global::EasyValidate.Abstractions.IAsyncValidationAttribute",
         ];
         // Check all interfaces transitively (including interfaces implemented by base classes)
         foreach (var interfaceType in type.AllInterfaces)
@@ -161,23 +161,23 @@ public static class SharedUtils
 
 
     public static bool ImplementsIAsyncValidate(this ITypeSymbol? type) =>
-        type?.ImplementsInterface("EasyValidate.Core.Abstraction.IAsyncValidate") ?? false;
+        type?.ImplementsInterface("EasyValidate.Abstractions.IAsyncValidate") ?? false;
 
     public static bool IsValidationContext(this ITypeSymbol? type) =>
-         type?.InheritsFrom("EasyValidate.Core.Attributes.ValidationContextAttribute") ?? false;
+         type?.InheritsFrom("EasyValidate.Abstractions.ValidationContextAttribute") ?? false;
     public static bool IsCollectionOfIAsyncValidate(this ITypeSymbol? type) =>
-        type?.IsCollectionOfInterface("EasyValidate.Core.Abstraction.IAsyncValidate") ?? false;
+        type?.IsCollectionOfInterface("EasyValidate.Abstractions.IAsyncValidate") ?? false;
 
     public static bool ImplementsIValidate(this ITypeSymbol? type) =>
-        type?.ImplementsInterface("EasyValidate.Core.Abstraction.IValidate") ?? false;
+        type?.ImplementsInterface("EasyValidate.Abstractions.IValidate") ?? false;
 
-    public static bool ImplementsIGenerate(this ITypeSymbol? type) => type?.ImplementsInterface("EasyValidate.Core.Abstraction.IGenerate") ?? false;
+    public static bool ImplementsIGenerate(this ITypeSymbol? type) => type?.ImplementsInterface("EasyValidate.Abstractions.IGenerate") ?? false;
     public static bool IsCollectionOfIValidate(this ITypeSymbol? type) =>
-        type?.IsCollectionOfInterface("EasyValidate.Core.Abstraction.IValidate") ?? false;
+        type?.IsCollectionOfInterface("EasyValidate.Abstractions.IValidate") ?? false;
 
 
-    public static bool IsNotNullAttribute(this ITypeSymbol? type) => InheritsFrom(type, "EasyValidate.Core.Attributes.NotNullAttribute");
-    public static bool IsOptionalAttribute(this ITypeSymbol? type) => InheritsFrom(type, "EasyValidate.Core.Attributes.OptionalAttribute");
+    public static bool IsNotNullAttribute(this ITypeSymbol? type) => InheritsFrom(type, "EasyValidate.Attributes.NotNullAttribute");
+    public static bool IsOptionalAttribute(this ITypeSymbol? type) => InheritsFrom(type, "EasyValidate.Attributes.OptionalAttribute");
     public static bool IsOptionalOrNotNullAttribute(this ITypeSymbol? type) => type.IsOptionalAttribute() || type.IsNotNullAttribute();
 
 

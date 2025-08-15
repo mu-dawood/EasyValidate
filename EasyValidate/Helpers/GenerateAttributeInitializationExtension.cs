@@ -1,9 +1,8 @@
-using System;
 using System.Linq;
-using EasyValidate.Types;
+using EasyValidate.Generator.Types;
 using Microsoft.CodeAnalysis;
 
-namespace EasyValidate.Helpers;
+namespace EasyValidate.Generator.Helpers;
 
 public static class GenerateAttributeInitializationExtension
 {

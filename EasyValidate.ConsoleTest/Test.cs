@@ -1,5 +1,5 @@
-using EasyValidate.Core.Abstraction;
-using EasyValidate.Core.Attributes;
+using EasyValidate.Abstractions;
+using EasyValidate.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
@@ -10,10 +10,11 @@ namespace EasyValidate.ConsoleTest;
 
 public partial class Model : IGenerate
 {
-
-    private string Private([NotNull, Length(10)] string name, [GreaterThan(10)] int age)
+    [NotNull, NotEmpty]
+    public string? Name { get; set; }
+    private string Private([Length(10)] string name, [GreaterThan(10)] int age)
     {
-       return $"Name: {name}, Age: {age}";
+        return $"Name: {name}, Age: {age}";
         // Private method logic here
     }
 }
@@ -23,10 +24,11 @@ public class Test
     public static async Task Main(string[] args)
     {
         var user = new Model();
+        user.Validate();
         var result = user.Private("John Doe", 25);
         if (result.IsValid())
         {
-            Console.WriteLine("User updated successfully.",result.Result);
+            Console.WriteLine("User updated successfully.", result.Result);
         }
 
     }

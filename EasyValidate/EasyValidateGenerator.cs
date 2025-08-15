@@ -3,15 +3,15 @@ using System.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
-using EasyValidate.Handlers;
-using System.Collections.Immutable;
+using EasyValidate.Generator.Handlers;
 using System.Collections.Generic;
 using System;
 using Microsoft.CodeAnalysis.CSharp;
-using EasyValidate.Types;
-using EasyValidate.Helpers;
+using EasyValidate.Generator.Types;
+using EasyValidate.Generator.Handlers.Methods;
+using EasyValidate.Generator.Helpers;
 
-namespace EasyValidate
+namespace EasyValidate.Generator
 {
     [Generator]
     public class EasyValidateGenerator : IIncrementalGenerator
@@ -52,18 +52,18 @@ namespace EasyValidate
         private static void GenerateValidationClass(INamedTypeSymbol classSymbol, Compilation compilation, SourceProductionContext context)
         {
             DebuggerUtil.Log($"Generating validation class for: {classSymbol.Name}");
-
+            var argumentHandler = new AttributeArgumentHandler();
+            Dictionary<string, string> instanceNames = [];
+            var finalizer = new MembersFinalizer(context, classSymbol, argumentHandler, instanceNames);
             try
             {
                 // Skip classes that have no properties with validation attributes
                 // Check if the class has any properties with attributes derived from IValidationAttribute
-                var argumentHandler = new AttributeArgumentHandler();
                 var members = classSymbol.GetMembers().OrderBy(m => m is IFieldSymbol ? 0 : 1).ToList(); // Order properties first, then fields
-                Dictionary<string, string> instanceNames = [];
                 var target = new ValidationTarget(classSymbol);
-                var memberInfos = members.FinalizeMembers(instanceNames, argumentHandler, classSymbol);
-                if (memberInfos.Count > 0)
-                    target = target.WithMembers(memberInfos);
+                var infos = finalizer.Finalize(members, compilation);
+                if (infos.Count > 0)
+                    target = target.WithMembers(infos);
 
                 List<MethodTarget> methodTargets = [];
                 foreach (var member in classSymbol.GetMembers())
@@ -75,8 +75,7 @@ namespace EasyValidate
                         if (methodParameters.Length > 0)
                         {
                             // Process method parameters instead of all class members
-                            var parameterInfos = methodParameters
-                                .FinalizeMembers(instanceNames, argumentHandler, classSymbol);
+                            var parameterInfos = finalizer.Finalize(methodParameters, compilation);
                             if (parameterInfos.Count > 0)
                                 methodTargets.Add(new MethodTarget(method, parameterInfos));
                         }

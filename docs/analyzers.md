@@ -28,7 +28,7 @@ The analyzer package provides static code analysis rules that help catch validat
 This rule ensures that classes deriving from validation attributes properly implement the required `Validate` method signature.
 
 **Message:**  
-Class '{0}' must have at least one 'Validate(string, Type)' method with exactly two parameters, and all 'Validate' methods must have exactly two parameters. Ensure all 'Validate' methods return 'EasyValidate.Core.Abstraction.AttributeResult'.
+Class '{0}' must have at least one 'Validate(string, Type)' method with exactly two parameters, and all 'Validate' methods must have exactly two parameters. Ensure all 'Validate' methods return 'EasyValidate.Abstractions.AttributeResult'.
 
 **Example of violation:**
 ```csharp

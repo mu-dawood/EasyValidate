@@ -1,4 +1,4 @@
-using EasyValidate.Core.Abstraction;
+using EasyValidate.Abstractions;
 
 using EasyValidate.Test.Extensions;
 using System.Linq;
@@ -170,7 +170,7 @@ public class NotNullAdvancedTests
         Assert.Contains("Error:", formattedMessage);
     }
 
-    public class TestFormatter : EasyValidate.Core.Abstraction.IFormatter
+    public class TestFormatter : EasyValidate.Abstractions.IFormatter
     {
         public string Format<T>(AttributeResult result, T value)
         {

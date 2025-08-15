@@ -1,4 +1,4 @@
-using EasyValidate.Analyzers;
+using EasyValidate.Generator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;

@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace EasyValidate.Helpers;
+namespace EasyValidate.Generator.Helpers;
 
 public static class IsGetterFieldExtension
 {

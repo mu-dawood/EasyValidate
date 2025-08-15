@@ -1,23 +1,25 @@
 using System.Collections.Immutable;
+using EasyValidate.Generator.Analyzers;
 using Microsoft.CodeAnalysis;
 
-namespace EasyValidate.Types;
+namespace EasyValidate.Generator.Types;
 
-internal class AttributeInfo(AttributeData attribute, string chain, ConditionalMethodInfo? conditionalMethod, string instancedName, string instanceDeclration, ImmutableArray<InputAndOutputTypes> inputAndOutputTypes)
+internal class AttributeInfo(AttributeData attribute, Location location, string chain, ConditionalMethodInfo? conditionalMethod, string instancedName, string instanceDeclration, ImmutableArray<InputAndOutputTypes> inputAndOutputTypes)
 {
-    public AttributeData Attribute => attribute;
+    internal AttributeData Attribute => attribute;
+    internal Location Location { get; } = location;
+    internal string Chain { get; } = chain;
+    internal string InstanceMethod { get; } = $"Get_{instancedName}".ToPascalCase();
+    internal string InstanceVariable { get; } = instancedName.ToCSharpVariableName();
+    internal string InstanceDeclration { get; } = instanceDeclration;
 
-    public string Chain { get; } = chain;
-    public string InstanceMethod { get; } = $"Get_{instancedName}".ToPascalCase();
-    public string InstanceVariable { get; } = instancedName.ToCSharpVariableName();
-    public string InstanceDeclration { get; } = instanceDeclration;
+    internal ConditionalMethodInfo? ConditionalMethod => conditionalMethod;
 
-    public ConditionalMethodInfo? ConditionalMethod => conditionalMethod;
+    internal ImmutableArray<InputAndOutputTypes> InputAndOutputTypes => inputAndOutputTypes;
+   internal string FullName => attribute.AttributeClass?.GetFullName() ?? string.Empty;
+    internal string Name => attribute.AttributeClass?.Name?? string.Empty;
 
-    public ImmutableArray<InputAndOutputTypes> InputAndOutputTypes => inputAndOutputTypes;
-
-
-    internal  bool NeedServiceProvider()
+    internal bool NeedServiceProvider()
     {
         if (Attribute.AttributeClass == null)
             return false;
@@ -30,4 +32,14 @@ internal class AttributeInfo(AttributeData attribute, string chain, ConditionalM
         }
         return false;
     }
+
+
+    internal (bool areCompatible, InputAndOutputTypes?) CanAccept(AnalyserContext context, ITypeSymbol type)
+    {
+        if (attribute.AttributeClass.IsOptionalOrNotNullAttribute()) return (true, new(type, type, false, true));
+        return InputAndOutputTypes.CanAccept(context.Compilation, type);
+    }
 }
+
+
+

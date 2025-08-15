@@ -1,12 +1,11 @@
-using System.Collections.Generic;
 using System.Text;
-using EasyValidate.Types;
+using EasyValidate.Generator.Types;
 
-namespace EasyValidate.Handlers
+namespace EasyValidate.Generator.Handlers
 {
     internal class NamespaceHandler : ValidationHandlerBase
     {
-        public override (StringBuilder, HandlerParams) Next(HandlerParams @params)
+        internal override (StringBuilder, HandlerParams) Next(HandlerParams @params)
         {
             var namespaceName = @params.ClassSymbol.ContainingNamespace.IsGlobalNamespace
                 ? string.Empty

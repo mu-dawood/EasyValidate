@@ -1,5 +1,5 @@
 using System.Composition;
-using EasyValidate.Analyzers;
+using EasyValidate.Generator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -54,7 +54,7 @@ namespace EasyValidate.Fixers
             {
                 // Register two code fixes:
                 // 1. Set Strategy to ExecutionStrategy.ConditionalAndStopChain
-                var strategyExprStop = SyntaxFactory.ParseExpression("EasyValidate.Core.Abstraction.ExecutionStrategy.ConditionalAndStopChain");
+                var strategyExprStop = SyntaxFactory.ParseExpression("EasyValidate.Abstractions.ExecutionStrategy.ConditionalAndStopChain");
                 var newAttributeStop = AddOrUpdateNamedArgument(attributeNode, "Strategy", strategyExprStop);
                 var newRootStop = root.ReplaceNode(attributeNode, newAttributeStop);
                 context.RegisterCodeFix(
@@ -65,7 +65,7 @@ namespace EasyValidate.Fixers
                     diagnostic);
 
                 // 2. Set Strategy to ExecutionStrategy.ConditionalAndContinue
-                var strategyExprContinue = SyntaxFactory.ParseExpression("EasyValidate.Core.Abstraction.ExecutionStrategy.ConditionalAndContinue");
+                var strategyExprContinue = SyntaxFactory.ParseExpression("EasyValidate.Abstractions.ExecutionStrategy.ConditionalAndContinue");
                 var newAttributeContinue = AddOrUpdateNamedArgument(attributeNode, "Strategy", strategyExprContinue);
                 var newRootContinue = root.ReplaceNode(attributeNode, newAttributeContinue);
                 context.RegisterCodeFix(

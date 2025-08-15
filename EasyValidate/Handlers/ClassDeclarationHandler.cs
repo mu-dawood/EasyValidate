@@ -1,14 +1,14 @@
-using EasyValidate.Types;
+using EasyValidate.Generator.Types;
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace EasyValidate.Handlers
+namespace EasyValidate.Generator.Handlers
 {
     internal class ClassDeclarationHandler : ValidationHandlerBase
     {
-        public override (StringBuilder, HandlerParams) Next(HandlerParams @params)
+        internal override (StringBuilder, HandlerParams) Next(HandlerParams @params)
         {
             var (nextsp, p) = base.Next(@params);
             var sb = new StringBuilder();
@@ -42,14 +42,18 @@ namespace EasyValidate.Handlers
             }
 
 
-            // List<string> interfaces = [];
+            List<string> interfaces = [];
+            if (p.Target.AwaitableMembers.Any())
+                interfaces.Add("EasyValidate.Abstractions.IAsyncValidate");
+            else
+                interfaces.Add("EasyValidate.Abstractions.IValidate");
 
-            // /// add interfaces
-            // if (interfaces.Any())
-            // {
-            //     modifiers.Append(" : ");
-            //     modifiers.Append(string.Join(", ", interfaces));
-            // }
+            /// add interfaces
+            if (interfaces.Any())
+            {
+                modifiers.Append(" : ");
+                modifiers.Append(string.Join(", ", interfaces));
+            }
 
             sb.AppendLine($"    {modifiers}");
             sb.AppendLine("    {");

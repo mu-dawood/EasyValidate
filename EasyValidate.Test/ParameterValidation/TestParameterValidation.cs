@@ -1,8 +1,8 @@
-using EasyValidate.Core.Attributes;
+using EasyValidate.Attributes;
 using EasyValidate.Test.Extensions;
 
 using System.Linq;
-using EasyValidate.Core.Abstraction;
+using EasyValidate.Abstractions;
 
 namespace EasyValidate.Test.ParameterValidation
 {
