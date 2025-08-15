@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
 using System.Composition;
+using System.Linq;
 
 namespace EasyValidate.Fixers
 {
@@ -45,12 +46,11 @@ namespace EasyValidate.Fixers
                 }
             }
         }
-
         private void RegisterAttributeInheritanceFix(
-            CodeFixContext context,
-            SyntaxNode root,
-            ClassDeclarationSyntax classDeclaration,
-            Diagnostic diagnostic)
+                 CodeFixContext context,
+                 SyntaxNode root,
+                 ClassDeclarationSyntax classDeclaration,
+                 Diagnostic diagnostic)
         {
             var action = CodeAction.Create(
                 title: "Inherit from System.Attribute",
@@ -111,6 +111,33 @@ namespace EasyValidate.Fixers
             context.RegisterCodeFix(allTargetsAction, diagnostic);
         }
 
+        private async Task<Document> ImplmentGenericValidationAttributeInsteadofNonGeeric(
+                    Document document,
+                    SyntaxNode root,
+                    ClassDeclarationSyntax classDeclaration,
+                    CancellationToken cancellationToken, string interfaceName)
+        {
+
+            // Check if the class already implements IValidationAttribute<T>
+            var interfaceList = classDeclaration.BaseList?.Types;
+            if (interfaceList != null && interfaceList.Value.Any(i => i.ToString().StartsWith("IValidationAttribute<")))
+            {
+                return document; // Already implements, no changes needed
+            }
+
+            // Create the new interface implementation
+            var newInterface = SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(interfaceName));
+            BaseListSyntax baseList = classDeclaration.BaseList!;
+            /// get the existing IValidationAttribute
+            var oldNode = baseList.Types.FirstOrDefault(i => i.ToString().StartsWith("IValidationAttribute"));
+            if (oldNode != null)
+                baseList = baseList.ReplaceNode(oldNode, newInterface);
+            else
+                baseList = baseList.AddTypes(newInterface);
+            var newClassDeclaration = classDeclaration.WithBaseList(baseList);
+            var newRoot = root.ReplaceNode(classDeclaration, newClassDeclaration);
+            return await AddUsingIfNeeded(document.WithSyntaxRoot(newRoot), "System", cancellationToken);
+        }
         private async Task<Document> AddSystemAttributeInheritance(
             Document document,
             SyntaxNode root,

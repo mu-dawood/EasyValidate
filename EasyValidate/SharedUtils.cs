@@ -70,7 +70,27 @@ public static class SharedUtils
         args = [.. arguments];
         return res;
     }
+    public static bool IsValidationAttributeBase(this ITypeSymbol? type)
+    {
 
+        if (type == null)
+            return false;
+        string[] interfaces = [
+            "global::EasyValidate.Core.Abstraction.IValidationAttribute",
+            "global::EasyValidate.Core.Abstraction.IAsyncValidationAttribute",
+        ];
+        // Check all interfaces transitively (including interfaces implemented by base classes)
+        foreach (var interfaceType in type.AllInterfaces)
+        {
+            if (interfaceType is INamedTypeSymbol namedInterface &&
+                interfaces.Any((x) => namedInterface.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith(x)))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
     public static bool IsValidationAttribute(this ITypeSymbol? type)
     {
 

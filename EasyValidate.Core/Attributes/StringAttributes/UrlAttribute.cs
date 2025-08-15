@@ -41,11 +41,11 @@ namespace EasyValidate.Core.Attributes
             {
                 return AttributeResult.Fail<Uri>("The {0} field must be a valid URL.", propertyName);
             }
-            bool isValid = IsUrl(value!, out Uri uriOutput);
-            return isValid ? AttributeResult.Success(uriOutput) : AttributeResult.Fail<Uri>("The {0} field must be a valid URL.", propertyName);
+            bool isValid = IsUrl(value!, out Uri? uriOutput);
+            return isValid ? AttributeResult.Success(uriOutput ?? new Uri("about:blank")) : AttributeResult.Fail<Uri>("The {0} field must be a valid URL.", propertyName);
         }
 
-        private static bool IsUrl(string value, out Uri output)
+        private static bool IsUrl(string value, out Uri? output)
         {
             return Uri.TryCreate(value, UriKind.Absolute, out output);
         }

@@ -130,9 +130,16 @@ namespace EasyValidate.Analyzers.Analyzers
             isEnabledByDefault: true
         );
 
-
+        private static readonly DiagnosticDescriptor MustImplmentGeneric = new(
+                   id: ErrorIds.ValidateAttributeMustImplmentGeneric,
+                   title: "Validation attribute must implement IValidationAttribute<T>",
+                   messageFormat: "Class '{0}' must implement IValidationAttribute<T> or IAsyncValidationAttribute<T> where T is the type of the property it validates you can use also implement IValidationAttribute<TInput,TOutput> for transformations",
+                   category: "Design",
+                   defaultSeverity: DiagnosticSeverity.Error,
+                   isEnabledByDefault: true
+        );
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-                    [MustInheritFromAttribute, MustHaveProperAttribute, ValidationContextPropertyDiagnostic];
+                    [MustInheritFromAttribute, MustHaveProperAttribute, ValidationContextPropertyDiagnostic, MustImplmentGeneric];
 
         public override void Initialize(AnalysisContext context)
         {
@@ -150,9 +157,21 @@ namespace EasyValidate.Analyzers.Analyzers
                 return;
 
             // Check if the class ultimately implements IValidationAttribute interface
-            bool isValidationAttribute = classSymbol.IsValidationAttribute();
+            bool isValidationAttribute = classSymbol.IsValidationAttributeBase();
             if (!isValidationAttribute)
                 return;
+
+            if (!classSymbol.IsValidationAttribute())
+            {
+                var classSyntax = classSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() as Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax;
+                var baseList = classSyntax?.BaseList;
+                var interfaceType = baseList?.Types.FirstOrDefault(t => t.Type.ToString().StartsWith("IValidationAttribute"));
+                var location = interfaceType?.GetLocation() ?? classSymbol.Locations[0];
+                var diagnostic = Diagnostic.Create(MustImplmentGeneric, location, classSymbol.Name);
+                context.ReportDiagnostic(diagnostic);
+                
+                return;
+            }
 
             // Check if the class inherits from System.Attribute
             bool inheritsFromAttribute = InheritsFromSystemAttribute(classSymbol);

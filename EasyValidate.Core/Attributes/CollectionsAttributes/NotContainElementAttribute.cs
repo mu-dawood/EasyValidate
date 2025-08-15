@@ -58,12 +58,11 @@ namespace EasyValidate.Core.Attributes
         {
 #if NET5_0_OR_GREATER
             bool isValid = string.IsNullOrEmpty(value) || !value.Contains(ForbiddenValue?.ToString() ?? "", StringComparison.OrdinalIgnoreCase);
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, ForbiddenValue?.ToString() ?? "");
 #else
             bool isValid = string.IsNullOrEmpty(value) || value!.IndexOf(ForbiddenValue.ToString(), StringComparison.OrdinalIgnoreCase) == 0;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, ForbiddenValue);
 #endif
-            return isValid
-                ? AttributeResult.Success()
-                : AttributeResult.Fail(ErrorMessage, propertyName, ForbiddenValue);
         }
     }
 }

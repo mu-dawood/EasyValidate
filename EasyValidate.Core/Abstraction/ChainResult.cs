@@ -14,20 +14,20 @@ namespace EasyValidate.Core.Abstraction
 
         private List<ValidationError>? _errors;
 
-        public IReadOnlyCollection<ValidationError> Errors => _errors?.AsReadOnly() ?? (IReadOnlyCollection<ValidationError>)Array.Empty<ValidationError>();
+        public IReadOnlyCollection<ValidationError> Errors => _errors?.AsReadOnly() ?? (IReadOnlyCollection<ValidationError>)[];
 
         public void AddResult<TValidator, TInput>(AttributeResult result, TValidator validator, TInput input) where TValidator : IValidationAttribute
         {
             _errors ??= [];
             if (_formatter == null)
             {
-                var formattedMessage = string.Format(result.MessageTemplate, result.MessageArgs);
+                var formattedMessage = string.Format(result.MessageTemplate, result.MessageArgs ?? []);
                 var error = new ValidationError(validator.ErrorCode, validator.GetType().Name, formattedMessage, _propertyName, _chainName);
                 _errors.Add(error);
             }
             else
             {
-                var formattedMessage = _formatter.Format(result, input);
+                var formattedMessage = _formatter.Format(result.MessageTemplate, result.MessageArgs ?? []);
                 var error = new ValidationError(validator.ErrorCode, validator.GetType().Name, formattedMessage, _propertyName, _chainName);
                 _errors.Add(error);
             }

@@ -40,5 +40,4 @@ public partial class ComplexUserWithAttributes : IValidate
 
     [NotDefault()]
     public Guid Id { get; set; } = Guid.NewGuid();
-
 }

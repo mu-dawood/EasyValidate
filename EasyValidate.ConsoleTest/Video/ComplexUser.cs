@@ -1,5 +1,3 @@
-using System;
-
 namespace EasyValidate.ConsoleTest.Video;
 
 public class ComplexUser

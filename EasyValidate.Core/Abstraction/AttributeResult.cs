@@ -8,11 +8,11 @@ namespace EasyValidate.Core.Abstraction
     /// <docs-description>Encapsulates the result of a single attribute validation, including success status, error messages, and formatting arguments.</docs-description>
     public readonly struct AttributeResult
     {
-        private AttributeResult(bool isValid, string messageTemplate, object?[]? args)
+        private AttributeResult(bool isValid, string messageTemplate, object[]? args)
         {
             IsValid = isValid;
             MessageTemplate = messageTemplate;
-            MessageArgs = args ?? _empty;
+            MessageArgs = args;
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace EasyValidate.Core.Abstraction
         /// <remarks>
         /// These arguments are used with <see cref="MessageTemplate"/> to create formatted error messages.
         /// </remarks>
-        public object?[] MessageArgs { get; }
+        public object[]? MessageArgs { get; }
 
         /// <summary>
         /// Gets the message template for the validation error, if validation failed.
@@ -35,7 +35,6 @@ namespace EasyValidate.Core.Abstraction
         /// <value>The unformatted error message template, or <c>string.Empty</c> if validation succeeded.</value>
         public string MessageTemplate { get; }
 
-        private static readonly object?[] _empty = [];
 
         /// <summary>
         /// Creates a successful validation result.
@@ -49,7 +48,7 @@ namespace EasyValidate.Core.Abstraction
         /// <param name="template">The error message template.</param>
         /// <param name="args">Arguments for formatting the error message.</param>
         /// <returns>An <see cref="AttributeResult"/> representing a failed validation.</returns>
-        public static AttributeResult Fail(string template, params object?[] args)
+        public static AttributeResult Fail(string template, params object[] args)
             => new(false, template, args);
 
         /// <summary>
@@ -64,18 +63,18 @@ namespace EasyValidate.Core.Abstraction
         /// <param name="template">The error message template.</param>
         /// <param name="args">Arguments for formatting the error message.</param>
         /// <returns>An <see cref="AttributeResult"/> representing a failed validation.</returns>
-        public static AttributeResult<R> Fail<R>(string template, params object?[] args)
+        public static AttributeResult<R> Fail<R>(string template, params object[] args)
             => new(false, default, template, args);
 
     }
 
     public readonly struct AttributeResult<T>
     {
-        internal AttributeResult(bool isValid, T? output, string messageTemplate, object?[]? args)
+        internal AttributeResult(bool isValid, T? output, string messageTemplate, object[]? args)
         {
             IsValid = isValid;
             MessageTemplate = messageTemplate;
-            MessageArgs = args ?? _empty;
+            MessageArgs = args;
             Output = output;
         }
         public T? Output { get; }
@@ -91,7 +90,7 @@ namespace EasyValidate.Core.Abstraction
         /// <remarks>
         /// These arguments are used with <see cref="MessageTemplate"/> to create formatted error messages.
         /// </remarks>
-        public object?[] MessageArgs { get; }
+        public object[]? MessageArgs { get; }
 
         /// <summary>
         /// Gets the message template for the validation error, if validation failed.
@@ -99,14 +98,14 @@ namespace EasyValidate.Core.Abstraction
         /// <value>The unformatted error message template, or <c>string.Empty</c> if validation succeeded.</value>
         public string MessageTemplate { get; }
 
-        private static readonly object?[] _empty = [];
+        private static readonly object[] _empty = [];
 
         public static implicit operator AttributeResult(AttributeResult<T> result)
         {
             if (result.IsValid)
                 return AttributeResult.Success();
             else
-                return AttributeResult.Fail(result.MessageTemplate, result.MessageArgs);
+                return AttributeResult.Fail(result.MessageTemplate, result.MessageArgs ?? _empty);
         }
 
 

@@ -3,8 +3,7 @@ using EasyValidate.Core.Abstraction;
 
 namespace EasyValidate.Benchmarks.Models.EasyValidate
 {
-    public partial class SimpleUser
-: IValidate
+    public partial class SimpleUser : IValidate
     {
         [NotNull]
         [MaxLength(50)]
@@ -18,8 +17,7 @@ namespace EasyValidate.Benchmarks.Models.EasyValidate
         public int Age { get; set; } = 30;
     }
 
-    public partial class HeavyUser
-: IValidate
+    public partial class HeavyUser : IValidate
     {
         [NotNull]
         [MaxLength(50)]

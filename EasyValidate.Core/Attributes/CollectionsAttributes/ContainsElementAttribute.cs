@@ -59,12 +59,11 @@ namespace EasyValidate.Core.Attributes
         {
 #if NET5_0_OR_GREATER
             bool isValid = value.Contains(ExpectedValue?.ToString() ?? "", StringComparison.OrdinalIgnoreCase);
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, ExpectedValue?.ToString()?? "");
 #else
             bool isValid = value.IndexOf(ExpectedValue.ToString(), StringComparison.OrdinalIgnoreCase) >= 0;
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail(ErrorMessage, propertyName, ExpectedValue);
 #endif
-            return isValid
-                ? AttributeResult.Success()
-                : AttributeResult.Fail(ErrorMessage, propertyName, ExpectedValue);
         }
 
     }

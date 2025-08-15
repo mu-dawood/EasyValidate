@@ -34,7 +34,7 @@ namespace EasyValidate.Core.Attributes
             bool isValid = Equals(value, ComparisonValue);
             return isValid
                 ? AttributeResult.Success()
-                : AttributeResult.Fail("The field {0} must be equal to {1}.", propertyName, ComparisonValue);
+                : ComparisonValue is null ? AttributeResult.Fail("The field {0} must be null.", propertyName) : AttributeResult.Fail("The field {0} must be equal to {1}.", propertyName, ComparisonValue);
         }
     }
 

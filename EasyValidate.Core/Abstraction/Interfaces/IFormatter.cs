@@ -1,31 +1,31 @@
 namespace EasyValidate.Core.Abstraction
 {
     /// <summary>
-    /// Defines a formatter interface for formatting messages with arguments.
+    /// Provides an interface for formatting validation messages using templates and arguments.
     /// </summary>
     /// <docs-display-name>Message Formatter Interface</docs-display-name>
     /// <docs-icon>MessageSquare</docs-icon>
-    /// <docs-description>Interface for formatting validation error messages with dynamic arguments and placeholders.</docs-description>
+    /// <docs-description>
+    /// Used to format validation error messages with dynamic arguments and placeholders.
+    /// </docs-description>
     public interface IFormatter
     {
         /// <summary>
-        /// Formats a validation message using the template and arguments from an <see cref="AttributeResult"/> and the validated value.
+        /// Formats a validation message using a template string and arguments.
         /// </summary>
-        /// <typeparam name="T">The type of the validated value.</typeparam>
-        /// <param name="result">The result of attribute validation containing the message template and arguments.</param>
-        /// <param name="value">The value that was validated (may be used for custom formatting).</param>
+        /// <param name="messageTemplate">The message template containing placeholders (e.g., "Value must be between {0} and {1}").</param>
+        /// <param name="args">Arguments to substitute into the template.</param>
         /// <returns>The formatted message with arguments substituted into the template.</returns>
         /// <example>
         /// <code>
         /// var formatter = new CustomFormatter();
-        /// var result = AttributeResult.Fail("Value must be between {0} and {1}", 10, 100);
-        /// var message = formatter.Format(result, 42);
+        /// var message = formatter.Format("Value must be between {0} and {1}", 10, 100);
         /// // Returns: "Value must be between 10 and 100"
         /// </code>
         /// </example>
         /// <docs-member>Format(string, object[])</docs-member>
         /// <docs-type>Method</docs-type>
         /// <docs-return-type>string</docs-return-type>
-        string Format<T>(AttributeResult result, T value);
+        string Format(string messageTemplate, object[] args);
     }
 }

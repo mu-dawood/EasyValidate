@@ -19,5 +19,6 @@ public class ErrorIds
     public const string ValidateAttributeUsageMissingType = "EASY016"; // Missing required validation type(s) (interface/class)
     public const string ValidationContextPropertyDiagnostic = "EASY017";
     public const string ValidateAttributeUsagePublicMethod = "EASY018"; // Public method with validation chain attributes
+    public const string ValidateAttributeMustImplmentGeneric = "EASY019"; // Validation attribute must implement IValidationAttribute<T>
 
 }

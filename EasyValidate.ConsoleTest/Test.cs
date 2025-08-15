@@ -1,25 +1,20 @@
 using EasyValidate.Core.Abstraction;
 using EasyValidate.Core.Attributes;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 
 namespace EasyValidate.ConsoleTest;
 
 
 
 
-public partial class ComplexUser : IValidate
+public partial class Model : IGenerate
 {
-    [GreaterThan(0)]
-    private readonly int _age = 0;
 
-    [NotNull, EmailAddress]
-    public string Email { get; set; } = string.Empty;
-    [NotEmpty]
-    public string Name { get; set; } = string.Empty;
-
-    private void Update([NotNull, EmailAddress] string email, [NotEmpty] string name)
+    private string Private([NotNull, Length(10)] string name, [GreaterThan(10)] int age)
     {
-        Email = email;
-        Name = name;
+       return $"Name: {name}, Age: {age}";
+        // Private method logic here
     }
 }
 
@@ -27,12 +22,28 @@ public class Test
 {
     public static async Task Main(string[] args)
     {
-        var user = new ComplexUser();
-        var result = user.Validate();
+        var user = new Model();
+        var result = user.Private("John Doe", 25);
         if (result.IsValid())
         {
-            Console.WriteLine("User is valid.");
+            Console.WriteLine("User updated successfully.",result.Result);
         }
+
+    }
+}
+
+
+
+public class MyFormatter : IFormatter
+{
+    private readonly IStringLocalizer<MyFormatter> _localizer;
+    public MyFormatter(IStringLocalizer<MyFormatter> localizer)
+    {
+        _localizer = localizer;
+    }
+    public string Format(string messageTemplate, object[] args)
+    {
+        return _localizer.GetString(messageTemplate, args).Value;
     }
 }
 
