@@ -9,7 +9,8 @@ using ConsoleTest;
 //                 .WithWarmupCount(1)
 //                 .WithIterationCount(1));
 
-var benchmarkArg = args.Length > 0 ? args[0] : "FluentFriendlyValidationBenchmarks";
+var benchmarkArg = args.Length > 0 ? args.Last() : "FluentFriendlyValidationBenchmarks";
+
 switch (benchmarkArg)
 {
 	case "FluentFriendlyValidationBenchmarks":
