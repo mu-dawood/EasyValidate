@@ -36,16 +36,16 @@ jobs:
         run: ./test-local-nuget.sh
         
       - name: Restore ConsoleTest project
-        run: dotnet restore Src/ConsoleTest/ConsoleTest.csproj
+        run: dotnet restore Test/ConsoleTest/ConsoleTest.csproj
 
       - name: Build ConsoleTest project in Release mode
-        run: dotnet build Src/ConsoleTest/ConsoleTest.csproj --configuration Release --no-restore
+        run: dotnet build Test/ConsoleTest/ConsoleTest.csproj --configuration Release --no-restore
 
       - name: Run benchmarks
         run: |
           BENCHMARK_CLASS="${{ github.event.inputs.benchmark_file }}"
           BENCHMARK_CLASS="${BENCHMARK_CLASS%.cs}"
-          dotnet run --project Src/ConsoleTest/ConsoleTest.csproj --configuration Release --no-build --runtimes net9.0 "$BENCHMARK_CLASS"
+          dotnet run --project Test/ConsoleTest/ConsoleTest.csproj --configuration Release --no-build --runtimes net9.0 "$BENCHMARK_CLASS"
 
       - name: Copy benchmark result
         run: |
