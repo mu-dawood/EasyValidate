@@ -9,13 +9,36 @@ using ConsoleTest;
 //                 .WithWarmupCount(1)
 //                 .WithIterationCount(1));
 
-BenchmarkRunner.Run<FluentFriendlyValidationBenchmarks>();
-
-
-// var user = new TimingUser(false);
-// user.RunNonInvalid();
-// user.RunValid();
-// user.EnableLogging();
-// user.RunNonInvalid();
-// user.RunValid();
+var benchmarkArg = args.Length > 0 ? args[0] : "FluentFriendlyValidationBenchmarks";
+switch (benchmarkArg)
+{
+	case "FluentFriendlyValidationBenchmarks":
+		BenchmarkRunner.Run<FluentFriendlyValidationBenchmarks>();
+		break;
+	case "CollectionBenchmarks":
+		BenchmarkRunner.Run<CollectionBenchmarks>();
+		break;
+	case "DateTimeBenchmarks":
+		BenchmarkRunner.Run<DateTimeBenchmarks>();
+		break;
+	case "GeneralBenchmarks":
+		BenchmarkRunner.Run<GeneralBenchmarks>();
+		break;
+	case "NumericBenchmarks":
+		BenchmarkRunner.Run<NumericBenchmarks>();
+		break;
+	case "OtherBenchmarks":
+		BenchmarkRunner.Run<OtherBenchmarks>();
+		break;
+	case "StringBenchmarks":
+		BenchmarkRunner.Run<StringBenchmarks>();
+		break;
+	case "ValidationBenchmarks":
+		BenchmarkRunner.Run<ValidationBenchmarks>();
+		break;
+	default:
+		Console.WriteLine($"Unknown benchmark: {benchmarkArg}. Running FluentFriendlyValidationBenchmarks by default.");
+		BenchmarkRunner.Run<FluentFriendlyValidationBenchmarks>();
+		break;
+}
 
