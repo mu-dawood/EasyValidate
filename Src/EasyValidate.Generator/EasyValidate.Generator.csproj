@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>EasyValidate.Generator</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IsRoslynAnalyzer>true</IsRoslynAnalyzer>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="4.14.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="4.14.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+  </ItemGroup>
+
+
+  <!-- Ship the generator DLL as an analyzer -->
+  <ItemGroup>
+    <None Include="$(TargetPath)" Pack="true" PackagePath="analyzers/dotnet/cs" />
+  </ItemGroup>
+
+
+  <!-- Build and include Fixers with the same configuration -->
+  <ItemGroup>
+    <ProjectReference Include="..\EasyValidate.Fixers\EasyValidate.Fixers.csproj"
+      ReferenceOutputAssembly="false"
+      PrivateAssets="all" />
+    <Content
+      Include="..\EasyValidate.Fixers\bin\$(Configuration)\netstandard2.0\EasyValidate.Fixers.dll"
+      Pack="true"
+      PackagePath="analyzers/dotnet/cs" />
+  </ItemGroup>
+
+</Project>

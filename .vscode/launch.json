@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C#: Debug",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/EasyValidate/EasyValidate.csproj"
+        },
+        {
+            "name": "C#: Debug Console",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/ConsoleTest/ConsoleTest.csproj"
+        },
+        {
+            "type": "node-terminal",
+            "name": "Run Script: dev (website)",
+            "request": "launch",
+            "command": "yarn run dev",
+            "cwd": "${workspaceFolder}/EasyValidate-Website"
+        }
+    ]
+}

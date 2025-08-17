@@ -1,0 +1,35 @@
+<Project>
+  <PropertyGroup>
+    <Version>2.2.0</Version>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeBuildOutput>true</IncludeBuildOutput>
+    <BuildDependsOn>Restore;$(BuildDependsOn)</BuildDependsOn>
+    <PackDependsOn>Build;$(PackDependsOn)</PackDependsOn>
+
+    <!-- Meta data -->
+    <Authors>Mohamed dawood</Authors>
+    <Company>Mohamed dawood's Company</Company>
+    <Description>EasyValidate is a modern, attribute-based validation library and source generator
+      for .NET. It enables powerful, composable, and type-safe validation using Roslyn analyzers and
+      source generators.</Description>
+    <PackageTags>validation;source-generator;roslyn;dotnet;attributes;analyzer</PackageTags>
+    <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/mu-dawood/EasyValidate</RepositoryUrl>
+    <PackageProjectUrl>https://easy-validate.netlify.app/</PackageProjectUrl>
+    <PackageReadmeFile>nuget-readme.md</PackageReadmeFile>
+    <PackageReleaseNotes>See https://github.com/mu-dawood/EasyValidate/releases</PackageReleaseNotes>
+    <RepositoryType>git</RepositoryType>
+    <PackageSourceUrl>https://github.com/mu-dawood/EasyValidate</PackageSourceUrl>
+    <PackageDocumentationUrl>https://easy-validate.netlify.app/</PackageDocumentationUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <Copyright>Copyright © 2025 Mohamed dawood</Copyright>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../docs/nuget-readme.md" Pack="true" PackagePath="\" />
+    <None Include="../docs/icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>
