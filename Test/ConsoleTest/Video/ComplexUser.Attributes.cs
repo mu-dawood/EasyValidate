@@ -3,7 +3,7 @@ using EasyValidate.Attributes;
 
 namespace ConsoleTest.Video;
 
-public partial class ComplexUserWithAttributes : IValidate
+public partial class ComplexUserWithAttributes : IGenerate
 {
     [NotEmpty]
     public string Name { get; set; } = string.Empty;

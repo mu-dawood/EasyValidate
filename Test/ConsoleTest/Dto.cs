@@ -1,11 +1,9 @@
 using EasyValidate.Attributes;
 using EasyValidate.Abstractions;
-using ConsoleTest;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace ConsoleTest;
 
-public partial class Dto : IValidate
+public partial class Dto : IGenerate
 {
 
     [Optional, PastDate]

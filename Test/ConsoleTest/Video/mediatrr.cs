@@ -4,7 +4,7 @@ using MediatR;
 
 namespace ConsoleTest.Video;
 
-public partial class CreateUser : IRequest<Guid>, IValidate
+public partial class CreateUser : IRequest<Guid>, IGenerate
 {
 
     [NotEmpty, MaxLength(50)]
