@@ -4,7 +4,7 @@
 # This script clones and sets up the external EasyValidate documentation website repository
 
 WEBSITE_REPO_URL="https://github.com/mu-dawood/EasyValidate-Website.git"  # Update this URL
-WEBSITE_DIR="EasyValidate-Website"
+WEBSITE_DIR="Website"
 
 echo "🚀 Setting up EasyValidate Documentation Website..."
 
