@@ -132,7 +132,7 @@ jobs:
         if: ${{ steps.get_artifact_id.outputs.artifact_id != '' }}
         uses: actions/download-artifact@v4
         with:
-          name: benchmark-current
+          name: benchmark-${{ github.event.inputs.benchmark_file }}
           path: current
 
       - name: Summarize benchmark diff with OpenAI
