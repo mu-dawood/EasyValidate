@@ -34,8 +34,8 @@ namespace ConsoleTest.Benchmarks.Models.EasyValidate
         [MaxLength(100)]
         public string Address { get; set; } = "123 Main St";
 
-        // [NotNull]
-        // [Matches(@"\+\d{1,3}\s?\d{4,14}")]
+        [NotNull]
+        [Matches(@"\+\d{1,3}\s?\d{4,14}")]
         public string Phone { get; set; } = "+1234567890";
 
         [NotNull]

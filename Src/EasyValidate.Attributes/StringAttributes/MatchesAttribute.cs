@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using EasyValidate.Abstractions;
 namespace EasyValidate.Attributes
@@ -18,19 +19,29 @@ namespace EasyValidate.Attributes
     /// </code>
     /// </example>
     public class MatchesAttribute(
-        #if NET7_0_OR_GREATER
+#if NET7_0_OR_GREATER
 		[System.Diagnostics.CodeAnalysis.StringSyntax(System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.Regex)]
-		#endif
+#endif
         string pattern,
         RegexOptions options = RegexOptions.Compiled | RegexOptions.IgnoreCase
     ) : StringValidationAttributeBase
     {
+        private static ConcurrentDictionary<(string pattern, RegexOptions options), Regex>? _cache;
 
-        /// <summary>
-        /// The regular expression pattern to match.
-        /// </summary>
-        public Regex Pattern { get; } = new Regex(pattern, options, TimeSpan.FromSeconds(1.0));
+        private static Regex GetOrAdd(string p, RegexOptions o)
+        {
+            _cache ??= new();
+            return _cache.GetOrAdd((p, o), key =>
+              new Regex(key.pattern, key.options, TimeSpan.FromSeconds(2.0)));
+        }
 
+        private static RegexOptions Normalize(RegexOptions opts)
+        {
+            // Add CultureInvariant for speed + determinism unless caller opted out
+            if ((opts & RegexOptions.CultureInvariant) == 0)
+                opts |= RegexOptions.CultureInvariant;
+            return opts;
+        }
 
         /// <inheritdoc/>
         public override string ErrorCode { get; set; } = "MatchesValidationError";
@@ -43,8 +54,8 @@ namespace EasyValidate.Attributes
             {
                 return AttributeResult.Fail("The {0} field cannot be null.", propertyName);
             }
-            bool isValid = Pattern.IsMatch(value!);
-            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must match the pattern '{1}'.", propertyName, Pattern);
+            bool isValid = GetOrAdd(pattern, options).IsMatch(value!);
+            return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must match the pattern '{1}'.", propertyName, pattern);
         }
     }
 }
