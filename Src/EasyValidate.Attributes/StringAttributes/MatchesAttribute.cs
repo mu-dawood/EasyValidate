@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using EasyValidate.Abstractions;
 namespace EasyValidate.Attributes
@@ -26,13 +25,12 @@ namespace EasyValidate.Attributes
         RegexOptions options = RegexOptions.Compiled | RegexOptions.IgnoreCase
     ) : StringValidationAttributeBase
     {
-        private static ConcurrentDictionary<(string pattern, RegexOptions options), Regex>? _cache;
 
-        private static Regex GetOrAdd(string p, RegexOptions o)
+        Regex? _regex;
+        private Regex GetRegex()
         {
-            _cache ??= new();
-            return _cache.GetOrAdd((p, o), key =>
-              new Regex(key.pattern, key.options, TimeSpan.FromSeconds(2.0)));
+            _regex ??= new Regex(pattern, options, TimeSpan.FromSeconds(2.0));
+            return _regex;
         }
 
         private static RegexOptions Normalize(RegexOptions opts)
@@ -54,7 +52,8 @@ namespace EasyValidate.Attributes
             {
                 return AttributeResult.Fail("The {0} field cannot be null.", propertyName);
             }
-            bool isValid = GetOrAdd(pattern, options).IsMatch(value!);
+            Match m = this.GetRegex().Match(value);
+            bool isValid = m.Success && m.Index == 0 && m.Length == value.Length;
             return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must match the pattern '{1}'.", propertyName, pattern);
         }
     }

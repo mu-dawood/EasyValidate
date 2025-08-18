@@ -21,11 +21,17 @@ public partial class Model : CarDetails, IGenerate, IAgeProvider
     }
 }
 
+
+
+
+
+
+
 public class Test
 {
     public static async Task Main(string[] args)
     {
-        
+
         var result = new Model();
         result.Validate();
 
