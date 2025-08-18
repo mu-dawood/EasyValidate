@@ -21,3 +21,4 @@ EASY015 | Usage | Error | ConditionalMethodAttributeUsage
 EASY016 | Usage | Error | EnsureImplmentIGenerateAnalyzer
 EASY017 | Usage | Error | ValidationAttributeAnalyzer
 EASY019 | Design | Error | ValidationAttributeAnalyzer
+EASY020 | Usage | Error | MembersFinalizer

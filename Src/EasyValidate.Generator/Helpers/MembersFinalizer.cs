@@ -27,10 +27,20 @@ internal class MembersFinalizer(SourceProductionContext context, INamedTypeSymbo
           new ChainIncompatibilityProcessor(),
           new DuplicateAttributeInChainProcessor(),
     ];
+
     private readonly DiagnosticDescriptor MissingTypeRule = new(
                  ErrorIds.ValidateAttributeUsageMissingType,
                  "Missing Validation Type Error",
                  "Class '{0}' is missing required type(s): [{1}]",
+                 "Usage",
+                 DiagnosticSeverity.Error,
+                 true
+    );
+
+    private readonly DiagnosticDescriptor ConflictingBaseRule = new(
+                 ErrorIds.ConflictingBaseClassInheritance,
+                 "Conflicting Base Class Inheritance",
+                 "Class '{0}' inherits {1} and is required to inherit required base class '{2}'",
                  "Usage",
                  DiagnosticSeverity.Error,
                  true
@@ -147,7 +157,23 @@ internal class MembersFinalizer(SourceProductionContext context, INamedTypeSymbo
                                 if (isInterface && !_containingClass.ImplementsInterface(prop.Type.GetFullName()))
                                     missingTypes.Add($"interface:{prop.Type.ToNonNullable().ToDisplayString()}");
                                 else if (!isInterface && !_containingClass.InheritsFrom(prop.Type.GetFullName()))
-                                    missingTypes.Add($"class:{prop.Type.ToNonNullable().ToDisplayString()}");
+                                {
+                                    var baseType = GetDirectBaseClass(_containingClass);
+                                    if (baseType != null)
+                                    {
+                                        // if it has base type, then it is required to inherit the required type
+                                        var diagnostic = Diagnostic.Create(
+                                            ConflictingBaseRule,
+                                            info.Location,
+                                            _containingClass.Name,
+                                            baseType.ToNonNullable().ToDisplayString(),
+                                            prop.Type.ToNonNullable().ToDisplayString());
+                                        _context.ReportDiagnostic(diagnostic);
+                                    }
+                                    else
+                                        // if not, add the missing type
+                                        missingTypes.Add($"class:{prop.Type.ToNonNullable().ToDisplayString()}");
+                                }
                             }
 
                         }
@@ -211,7 +237,23 @@ internal class MembersFinalizer(SourceProductionContext context, INamedTypeSymbo
         return Members;
     }
 
+    private static INamedTypeSymbol? GetDirectBaseClass(INamedTypeSymbol typeSymbol)
+    {
+        var baseType = typeSymbol.BaseType;
 
+        if (baseType == null)
+            return null;
+
+        // Filter out implicit bases
+        if (baseType.SpecialType == SpecialType.System_Object ||
+            baseType.SpecialType == SpecialType.System_ValueType ||
+            baseType.SpecialType == SpecialType.System_Enum)
+        {
+            return null;
+        }
+
+        return baseType;
+    }
     internal bool IsBackingField(ISymbol symbol)
     {
         if (symbol is not IFieldSymbol field)

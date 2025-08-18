@@ -19,5 +19,6 @@ internal class ErrorIds
     public const string ValidationContextPropertyDiagnostic = "EASY017";
     public const string ValidateAttributeUsagePublicMethod = "EASY018"; // Public method with validation chain attributes
     public const string ValidateAttributeMustImplmentGeneric = "EASY019"; // Validation attribute must implement IValidationAttribute<T>
+    public const string ConflictingBaseClassInheritance = "EASY020"; // Containing class inherits another class and is required to inherit required base class '{0}'.
 
 }

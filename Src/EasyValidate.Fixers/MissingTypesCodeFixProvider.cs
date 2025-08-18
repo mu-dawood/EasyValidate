@@ -110,25 +110,14 @@ namespace EasyValidate.Fixers
                 classDeclaration = root.DescendantNodes()
                                      .OfType<ClassDeclarationSyntax>()
                                      .FirstOrDefault(c => c.Identifier.Text == classDeclaration.Identifier.Text) ?? classDeclaration;
-                ClassDeclarationSyntax newClassDeclaration;
-                if (classDeclaration.BaseList == null || classDeclaration.BaseList.Types.Count == 0)
-                {
-                    var baseList = SyntaxFactory.BaseList(SyntaxFactory.Token(SyntaxKind.ColonToken), SyntaxFactory.SeparatedList(classes.Concat(interfaces)))
-                    .WithAdditionalAnnotations(Formatter.Annotation);
+                var oldlist = classDeclaration.BaseList?.Types ?? [];
+                var baseList = SyntaxFactory.BaseList(SyntaxFactory.Token(SyntaxKind.ColonToken), SyntaxFactory.SeparatedList(classes.Concat(oldlist).Concat(interfaces)))
+                .WithAdditionalAnnotations(Formatter.Annotation);
 
-                    // ensure identifier ends with a space (avoids newline before colon)
-                    var newId = classDeclaration.Identifier.WithTrailingTrivia(SyntaxFactory.Space);
-                    var updated = classDeclaration.WithIdentifier(newId).WithBaseList(baseList);
-                    newClassDeclaration = updated;
-                }
-                else
-                {
-                    var separated = classDeclaration.BaseList.Types.AddRange(classes.Concat(interfaces));
-                    var newBaseList = classDeclaration.BaseList.WithTypes(separated);
-                    newClassDeclaration = classDeclaration
-                        .WithBaseList(newBaseList)
-                        .WithAdditionalAnnotations(Microsoft.CodeAnalysis.Formatting.Formatter.Annotation);
-                }
+                // ensure identifier ends with a space (avoids newline before colon)
+                var newId = classDeclaration.Identifier.WithTrailingTrivia(SyntaxFactory.Space);
+                var newClassDeclaration = classDeclaration.WithIdentifier(newId).WithBaseList(baseList);
+
                 var newRoot = root.ReplaceNode(classDeclaration, newClassDeclaration);
                 return document.WithSyntaxRoot(newRoot);
 
@@ -151,7 +140,7 @@ namespace EasyValidate.Fixers
                     .WithLeadingTrivia(SyntaxFactory.Space)
                     .WithTrailingTrivia(SyntaxFactory.Space);
                 var newBaseList = SyntaxFactory.BaseList(colon,
-                    SyntaxFactory.SeparatedList<BaseTypeSyntax>(classes.Concat(interfaces)));
+                    SyntaxFactory.SeparatedList(classes.Concat(interfaces)));
                 var newClassDeclaration = classDeclaration.WithBaseList(newBaseList)
                     .WithAdditionalAnnotations(Microsoft.CodeAnalysis.Formatting.Formatter.Annotation);
                 var newRoot = root.ReplaceNode(classDeclaration, newClassDeclaration);

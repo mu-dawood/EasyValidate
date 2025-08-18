@@ -1,7 +1,5 @@
-using System;
 using System.Text.RegularExpressions;
 using EasyValidate.Abstractions;
-
 namespace EasyValidate.Attributes
 {
     /// <summary>
@@ -19,7 +17,13 @@ namespace EasyValidate.Attributes
     /// }
     /// </code>
     /// </example>
-    public class MatchesAttribute(string pattern, RegexOptions options = RegexOptions.Compiled | RegexOptions.IgnoreCase) : StringValidationAttributeBase
+    public class MatchesAttribute(
+        #if NET7_0_OR_GREATER
+		[System.Diagnostics.CodeAnalysis.StringSyntax(System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.Regex)]
+		#endif
+        string pattern,
+        RegexOptions options = RegexOptions.Compiled | RegexOptions.IgnoreCase
+    ) : StringValidationAttributeBase
     {
 
         /// <summary>

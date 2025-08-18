@@ -3,40 +3,33 @@ using EasyValidate.Abstractions;
 using EasyValidate.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using ConsoleTest;
 
 namespace ConsoleTest;
 
 
 
 
-public partial class Model : IGenerate
+public partial class Model : CarDetails, IGenerate, IAgeProvider
 {
-    // [IsOld]
-    public  int Ade { get; set; }
-    
+    [IsOld]
+    public int Ade { get; set; }
 
+    public int GetPeronAge()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class Test
 {
-    // public static async Task Main(string[] args)
-    // {
-    //     // static method to validate create an instance
-    //     // static  like the original method
-    //     var result = Model.Create("John Doe", 25);
-    //     if (result.IsValid())
-    //     {
-    //         // safe to access properties
-    //         // no warning cs8602
-    //         var name = result.Result.Name;
-    //     }
-    //     else
-    //     {
-    //         // Warning CS8602: Dereference of a possibly null reference.
-    //         var name = result.Result.Name;
-    //     }
+    public static async Task Main(string[] args)
+    {
+        
+        var result = new Model();
+        result.Validate();
 
-    // }
+    }
 }
 
 public interface IAgeProvider
