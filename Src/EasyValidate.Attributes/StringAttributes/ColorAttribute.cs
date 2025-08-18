@@ -40,7 +40,7 @@ namespace EasyValidate.Attributes
         [GeneratedRegex("^#(?:[0-9a-fA-F]{3}){1,2}$", RegexOptions.Compiled)]
         private static partial Regex MyRegex();
 #else
-        private static Regex MyRegex() => new Regex("^#(?:[0-9a-fA-F]{3}){1,2}$", RegexOptions.Compiled);
+        private static Regex MyRegex() => new("^#(?:[0-9a-fA-F]{3}){1,2}$", RegexOptions.Compiled);
 #endif
     }
 }

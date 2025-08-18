@@ -9,7 +9,7 @@ using ConsoleTest;
 //                 .WithWarmupCount(1)
 //                 .WithIterationCount(1));
 
-var benchmarkArg = args.Length > 0 ? args.Last() : "FluentFriendlyValidationBenchmarks";
+var benchmarkArg = args.Length > 0 ? args.Last():string.Empty;
 
 switch (benchmarkArg)
 {
@@ -39,7 +39,8 @@ switch (benchmarkArg)
 		break;
 	default:
 		Console.WriteLine($"Unknown benchmark: {benchmarkArg}. Running FluentFriendlyValidationBenchmarks by default.");
-		BenchmarkRunner.Run<FluentFriendlyValidationBenchmarks>();
+		var x = new ValidationBenchmarks();
+x.EasyValidate_Heavy_Valid();
 		break;
 }
 

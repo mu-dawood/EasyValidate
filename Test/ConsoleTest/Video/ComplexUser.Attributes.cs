@@ -41,3 +41,20 @@ public partial class ComplexUserWithAttributes : IGenerate
     [NotDefault()]
     public Guid Id { get; set; } = Guid.NewGuid();
 }
+
+
+
+public partial class ClassWithAttributes : IGenerate
+{
+    [NotEmpty]
+    public string Name { get; set; } = string.Empty;
+
+    [NotNull]
+    public User? UserDetails { get; set; }
+
+    [HasElements]
+    public List<User> Friends { get; set; } = [];
+
+    [Range(0, 120)]
+    public int Age { get; set; }
+}

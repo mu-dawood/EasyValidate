@@ -29,20 +29,25 @@ public partial class CreateUser : IRequest<Guid>, IGenerate
     public List<string> Tags { get; init; } = [];
 }
 
-public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
+public sealed class ValidationBehavior<TRequest, TResponse>(IServiceProvider provider) :
+ IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {
-    private readonly IServiceProvider _provider;
-    public ValidationBehavior(IServiceProvider provider)
-    {
-        _provider = provider;
-    }
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    private readonly IServiceProvider _provider = provider;
+
+    public async Task<TResponse> Handle(
+        TRequest request,
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken ct
+    )
     {
         IValidationResult? result = null;
+        
+        // Check if the request implements IValidate or IAsyncValidate
         if (request is IValidate validate)
             result = validate.Validate((c) => c.SetServiceProvider(_provider));
         else if (request is IAsyncValidate validateAsync)
             result = await validateAsync.ValidateAsync((c) => c.SetServiceProvider(_provider));
+
 
         if (result != null && !result.IsValid())
         {
@@ -51,6 +56,6 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
                 Data = { ["Errors"] = result.Results }
             };
         }
-        return await next(cancellationToken);
+        return await next(ct);
     }
 }

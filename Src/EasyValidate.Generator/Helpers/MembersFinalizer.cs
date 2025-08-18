@@ -20,19 +20,27 @@ internal class MembersFinalizer(SourceProductionContext context, INamedTypeSymbo
             new PowerOfAttributeUsage(),
             new DivisibleByAttributeUsage(),
             new CollectionElementAttributeUsage(),
-            new ConditionalMethodAttributeUsage(),
+            new ConditionalMethodAttributeUsage()
     ];
 
     private readonly List<ChainAnalyzer> chainAnalyzers = [
           new ChainIncompatibilityProcessor(),
           new DuplicateAttributeInChainProcessor(),
     ];
-
+    private readonly DiagnosticDescriptor MissingTypeRule = new(
+                 ErrorIds.ValidateAttributeUsageMissingType,
+                 "Missing Validation Type Error",
+                 "Class '{0}' is missing required type(s): [{1}]",
+                 "Usage",
+                 DiagnosticSeverity.Error,
+                 true
+    );
 
     internal List<Member> Finalize(IEnumerable<ISymbol> members, Compilation compilation)
     {
 
         List<Member> Members = [];
+        List<string> missingTypes = [];
         foreach (var member in members)
         {
             MemberType memberType;
@@ -124,6 +132,25 @@ internal class MembersFinalizer(SourceProductionContext context, INamedTypeSymbo
                                 validGroup = false;
                         }
                         attributes.Add(info);
+                        var attributeClass = attr.AttributeClass;
+                        if (attributeClass != null)
+                        {
+                            var props = attributeClass.GetMembers()
+                                                      .OfType<IPropertySymbol>()
+                                                      .Where(p => p.GetAttributes().Any(a => a.AttributeClass.IsValidationContext()))
+                                                      .ToList();
+                            foreach (var prop in props)
+                            {
+                                // check if the property type is interface
+                                var isInterface = prop.Type.TypeKind == TypeKind.Interface;
+
+                                if (isInterface && !_containingClass.ImplementsInterface(prop.Type.GetFullName()))
+                                    missingTypes.Add($"interface:{prop.Type.ToNonNullable().ToDisplayString()}");
+                                else if (!isInterface && !_containingClass.InheritsFrom(prop.Type.GetFullName()))
+                                    missingTypes.Add($"class:{prop.Type.ToNonNullable().ToDisplayString()}");
+                            }
+
+                        }
                     }
 
                 }
@@ -171,6 +198,16 @@ internal class MembersFinalizer(SourceProductionContext context, INamedTypeSymbo
             }
         }
 
+
+        if (missingTypes.Count > 0)
+        {
+            var diagnostic = Diagnostic.Create(
+                MissingTypeRule,
+              _containingClass.Locations.FirstOrDefault() ?? Location.None,
+                _containingClass.Name,
+                string.Join(", ", missingTypes));
+            _context.ReportDiagnostic(diagnostic);
+        }
         return Members;
     }
 

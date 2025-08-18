@@ -79,7 +79,8 @@ namespace ConsoleTest.Benchmarks
         public EasyValidate.Abstractions.IValidationResult EasyValidate_Heavy_Valid()
         {
             var model = new Models.EasyValidate.HeavyUser();
-            return model.Validate();
+            var res = model.Validate();
+            return res;
         }
 
         // Heavy Invalid
