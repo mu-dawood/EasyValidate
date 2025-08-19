@@ -52,7 +52,7 @@ namespace EasyValidate.Attributes
             {
                 return AttributeResult.Fail("The {0} field cannot be null.", propertyName);
             }
-            Match m = this.GetRegex().Match(value);
+            Match m = GetRegex().Match(value);
             bool isValid = m.Success && m.Index == 0 && m.Length == value.Length;
             return isValid ? AttributeResult.Success() : AttributeResult.Fail("The {0} field must match the pattern '{1}'.", propertyName, pattern);
         }

@@ -31,7 +31,7 @@ namespace EasyValidate.Fixers
         /// The diagnostic IDs that this code fix provider can fix (public method usage).
         /// </summary>
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
-            [ErrorIds.ValidateAttributeUsagePublicMethod];
+            [ErrorIds.PublicMethodCanCauseConfusion];
 
         /// <summary>
         /// Gets the fix-all provider for batch fixing.
@@ -48,7 +48,7 @@ namespace EasyValidate.Fixers
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             if (root == null) return;
 
-            var diagnostic = context.Diagnostics.FirstOrDefault(diag => diag.Id == ErrorIds.ValidateAttributeUsagePublicMethod);
+            var diagnostic = context.Diagnostics.FirstOrDefault(diag => diag.Id == ErrorIds.PublicMethodCanCauseConfusion);
             if (diagnostic == null) return;
 
             var diagnosticSpan = diagnostic.Location.SourceSpan;

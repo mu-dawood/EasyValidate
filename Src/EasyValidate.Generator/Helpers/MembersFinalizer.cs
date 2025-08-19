@@ -20,7 +20,7 @@ internal class MembersFinalizer(SourceProductionContext context, INamedTypeSymbo
             new PowerOfAttributeUsage(),
             new DivisibleByAttributeUsage(),
             new CollectionElementAttributeUsage(),
-            new ConditionalMethodAttributeUsage()
+            new ConditionalMethodAAnalyzer()
     ];
 
     private readonly List<ChainAnalyzer> chainAnalyzers = [
@@ -45,6 +45,7 @@ internal class MembersFinalizer(SourceProductionContext context, INamedTypeSymbo
                  DiagnosticSeverity.Error,
                  true
     );
+
 
     internal List<Member> Finalize(IEnumerable<ISymbol> members, Compilation compilation)
     {

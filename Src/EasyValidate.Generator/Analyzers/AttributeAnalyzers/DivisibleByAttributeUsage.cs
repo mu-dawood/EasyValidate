@@ -32,7 +32,7 @@ namespace EasyValidate.Generator.Analyzers.AttributeAnalyzers
     internal class DivisibleByAttributeUsage : AttributeAnalyzer
     {
         private static readonly DiagnosticDescriptor Rule = new(
-            id: ErrorIds.DivisorCannotBeZero,
+            id: ErrorIds.DivisibleByAttributeDivisorCannotBeZero,
             title: "Invalid DivisibleByAttribute Usage",
             messageFormat: "The divisor passed to 'DivisibleByAttribute' cannot be zero",
             category: "Usage",

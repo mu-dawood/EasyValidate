@@ -40,7 +40,7 @@ namespace EasyValidate.Fixers
         /// The diagnostic IDs that this code fix provider can fix (EASY001, EASY002).
         /// </summary>
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
-            [ErrorIds.MustInheritFromAttribute, ErrorIds.MustHaveProperAttributeUsage];
+            [ErrorIds.AttributeMustInheritFromSystemAttribute, ErrorIds.AttributeMustHaveProperUsage];
 
         /// <summary>
         /// Gets the fix-all provider for batch fixing.
@@ -67,10 +67,10 @@ namespace EasyValidate.Fixers
 
                 switch (diagnostic.Id)
                 {
-                    case ErrorIds.MustInheritFromAttribute:
+                    case ErrorIds.AttributeMustInheritFromSystemAttribute:
                         RegisterAttributeInheritanceFix(context, root, classDeclaration, diagnostic);
                         break;
-                    case ErrorIds.MustHaveProperAttributeUsage:
+                    case ErrorIds.AttributeMustHaveProperUsage:
                         RegisterAttributeUsageFix(context, root, classDeclaration, diagnostic);
                         break;
                 }

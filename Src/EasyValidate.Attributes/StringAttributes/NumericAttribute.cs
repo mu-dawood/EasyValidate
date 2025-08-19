@@ -1,4 +1,4 @@
-using System;
+using System.Globalization;
 using EasyValidate.Abstractions;
 
 namespace EasyValidate.Attributes
@@ -56,7 +56,7 @@ namespace EasyValidate.Attributes
         /// </summary>
         private static bool IsNumeric(string s, out double number)
         {
-            return double.TryParse(s, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out number);
+            return double.TryParse(s, NumberStyles.Float | NumberStyles.AllowThousands, null, out number);
         }
     }
 }

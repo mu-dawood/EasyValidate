@@ -35,6 +35,16 @@ namespace EasyValidate.Generator
     [Generator]
     public class EasyValidateGenerator : IIncrementalGenerator
     {
+        private readonly DiagnosticDescriptor PuplicMethodConfusionRule = new(
+            ErrorIds.PublicMethodCanCauseConfusion,
+            "Public Method Can Cause Confusion",
+            "Public method '{0}' with validation attributes can cause confusion in validation processing. Consider making it private or internal.",
+            "Usage",
+            DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: "Public methods with validation attributes can lead to unexpected behavior in validation processing."
+        );
+
         /// <summary>
         /// Initializes the EasyValidate source generator and registers syntax providers and output actions.
         /// </summary>
@@ -81,14 +91,14 @@ namespace EasyValidate.Generator
             DebuggerUtil.Log("Finished Initialize method.");
         }
 
-    /// <summary>
-    /// Generates the validation class and methods for a given type, adding the source to the compilation.
-    /// </summary>
-    /// <param name="classSymbol">The class symbol to generate validation for.</param>
-    /// <param name="compilation">The current compilation context.</param>
-    /// <param name="context">The source production context.</param>
-    /// <param name="projectDir">The project directory, if available.</param>
-    private static void GenerateValidationClass(INamedTypeSymbol classSymbol, Compilation compilation, SourceProductionContext context, string? projectDir)
+        /// <summary>
+        /// Generates the validation class and methods for a given type, adding the source to the compilation.
+        /// </summary>
+        /// <param name="classSymbol">The class symbol to generate validation for.</param>
+        /// <param name="compilation">The current compilation context.</param>
+        /// <param name="context">The source production context.</param>
+        /// <param name="projectDir">The project directory, if available.</param>
+        private void GenerateValidationClass(INamedTypeSymbol classSymbol, Compilation compilation, SourceProductionContext context, string? projectDir)
         {
             DebuggerUtil.Log($"Generating validation class for: {classSymbol.Name}");
             var argumentHandler = new AttributeArgumentHandler();
@@ -116,7 +126,18 @@ namespace EasyValidate.Generator
                             // Process method parameters instead of all class members
                             var parameterInfos = finalizer.Finalize(methodParameters, compilation);
                             if (parameterInfos.Count > 0)
+                            {
                                 methodTargets.Add(new MethodTarget(method, parameterInfos));
+                                if (method.DeclaredAccessibility == Accessibility.Public && method.DeclaredAccessibility == Accessibility.ProtectedOrInternal)
+                                {
+                                    // Register diagnostic for public methods with validation attributes
+                                    context.ReportDiagnostic(Diagnostic.Create(
+                                        PuplicMethodConfusionRule,
+                                        method.Locations.FirstOrDefault(),
+                                        method.Name
+                                    ));
+                                }
+                            }
                         }
                     }
 

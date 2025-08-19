@@ -115,7 +115,7 @@ internal static class SharedUtils
 
 
 
-    internal static bool ImplementsInterface(this ITypeSymbol? type, string interfaceFullName)
+    internal static bool ImplementsInterface(this ITypeSymbol? type, string interfaceFullName, bool includeSelf = false)
     {
         if (type == null)
             return false;
@@ -123,6 +123,8 @@ internal static class SharedUtils
         ? interfaceFullName
         : "global::" + interfaceFullName;
 
+        if (includeSelf && type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == _interface)
+            return true;
         // Check all interfaces transitively (including interfaces implemented by base classes)
         foreach (var interfaceType in type.AllInterfaces)
         {

@@ -64,7 +64,7 @@ namespace EasyValidate.Generator.Analyzers
     public class ValidationAttributeAnalyzer : DiagnosticAnalyzer
     {
         private static readonly DiagnosticDescriptor MustInheritFromAttribute = new(
-            id: ErrorIds.MustInheritFromAttribute,
+            id: ErrorIds.AttributeMustInheritFromSystemAttribute,
             title: "Validation attribute must inherit from System.Attribute",
             messageFormat: "Class '{0}' implements IValidationAttribute but does not inherit from System.Attribute",
             category: "Design",
@@ -80,7 +80,7 @@ namespace EasyValidate.Generator.Analyzers
             isEnabledByDefault: true
         );
         private static readonly DiagnosticDescriptor MustHaveProperAttribute = new(
-            id: ErrorIds.MustHaveProperAttributeUsage,
+            id: ErrorIds.AttributeMustHaveProperUsage,
             title: "Validation attribute must have proper AttributeUsage",
             messageFormat: "Class '{0}' must have [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = true)] or similar with only Property, Field, and/or Parameter targets",
             category: "Design",
@@ -89,7 +89,7 @@ namespace EasyValidate.Generator.Analyzers
         );
 
         private static readonly DiagnosticDescriptor MustImplmentGeneric = new(
-                   id: ErrorIds.ValidateAttributeMustImplmentGeneric,
+                   id: ErrorIds.ValidateAttributeMustImplementGeneric,
                    title: "Validation attribute must implement IValidationAttribute<T>",
                    messageFormat: "Class '{0}' must implement IValidationAttribute<T> or IAsyncValidationAttribute<T> where T is the type of the property it validates you can use also implement IValidationAttribute<TInput,TOutput> for transformations",
                    category: "Design",

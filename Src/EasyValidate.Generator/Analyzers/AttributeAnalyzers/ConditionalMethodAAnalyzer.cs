@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using EasyValidate.Generator.Types;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace EasyValidate.Generator.Analyzers.AttributeAnalyzers
 {
@@ -40,44 +41,64 @@ namespace EasyValidate.Generator.Analyzers.AttributeAnalyzers
     /// <docs-fixes>
     /// Create the missing conditional method|Ensure method accepts IValidationResult parameter|Ensure method returns bool|Remove ConditionalMethod property if not needed
     /// </docs-fixes>
-    internal class ConditionalMethodAttributeUsage : AttributeAnalyzer
+    internal class ConditionalMethodAAnalyzer : AttributeAnalyzer
     {
-        private static readonly DiagnosticDescriptor Rule = new(
-            id: ErrorIds.ConditionalMethodError,
-            title: "Conditional method validation error",
-            messageFormat: "Conditional method '{0}' {1}",
+        private static readonly DiagnosticDescriptor MissingMethodRule = new(
+            id: ErrorIds.ConditionalMethodIsMissing,
+            title: "Conditional method is missing",
+            messageFormat: "Conditional method '{0}' is missing on the containing class",
             category: "Usage",
             defaultSeverity: DiagnosticSeverity.Error,
             isEnabledByDefault: true,
-            description: "A validation attribute specifies a conditional method that either doesn't exist, has wrong parameters, or doesn't return bool.");
+            description: "The ConditionalMethod property must point to an existing method on the containing class."
+        );
 
-        private static readonly DiagnosticDescriptor InvalidStrategyRule = new(
-            id: ErrorIds.ConditionalMethodInvalidStrategyError,
-            title: "Conditional method strategy error",
-            messageFormat: "Conditional method '{0}' requires ExecutionStrategy.ConditionalAndStopChain or ExecutionStrategy.ConditionalAndContinue, but found '{1}'",
-            category: "Usage",
-            defaultSeverity: DiagnosticSeverity.Error,
-            isEnabledByDefault: true,
-            description: "A conditional method was specified but the strategy is not a valid conditional execution strategy.");
-
-        private static readonly DiagnosticDescriptor MissingConditionalMethodRule = new(
-            id: ErrorIds.ConditionalMethodMissingError,
-            title: "Conditional method missing error",
-            messageFormat: "ExecutionStrategy '{0}' requires a non-empty ConditionalMethod name",
-            category: "Usage",
-            defaultSeverity: DiagnosticSeverity.Error,
-            isEnabledByDefault: true,
-            description: "A conditional execution strategy was specified but no conditional method name was provided.");
         private static readonly DiagnosticDescriptor InvalidNameRule = new(
-            id: ErrorIds.ConditionalMethodInvalidNameError,
+            id: ErrorIds.InvalidConditionalMethodName,
             title: "Conditional method name is invalid",
             messageFormat: "Conditional method name '{0}' is not a valid C# method name",
             category: "Usage",
             defaultSeverity: DiagnosticSeverity.Error,
             isEnabledByDefault: true,
-            description: "The ConditionalMethod property must be a valid C# method name without whitespace or invalid characters.");
+            description: "The ConditionalMethod property must be a valid C# method name without whitespace or invalid characters."
+        );
 
-        internal override ICollection<DiagnosticDescriptor> DiagnosticDescriptors => [Rule, InvalidStrategyRule, MissingConditionalMethodRule, InvalidNameRule];
+        private static readonly DiagnosticDescriptor LengthRule = new(
+            id: ErrorIds.ConditionalMethodInvalidParameterLength,
+            title: "Invalid conditional method parameters",
+            messageFormat: "Conditional method '{0}' must accept exactly one parameter of type IChainResult",
+            category: "Usage",
+            defaultSeverity: DiagnosticSeverity.Error,
+            isEnabledByDefault: true,
+            description: "The conditional method must accept exactly one parameter of type IChainResult."
+        );
+
+        private static readonly DiagnosticDescriptor ParmterTypeMismatchRule = new(
+            id: ErrorIds.ConditionalMethodFirstParameterTypeMismatch,
+            title: "Conditional method parameter type mismatch",
+            messageFormat: "Conditional method '{0}' first parameter must be of type IChainResult",
+            category: "Usage",
+            defaultSeverity: DiagnosticSeverity.Error,
+            isEnabledByDefault: true,
+            description: "The first parameter of the conditional method must be of type IChainResult."
+        );
+
+        private static readonly DiagnosticDescriptor ReturnTypeRule = new(
+            id: ErrorIds.ConditionalMethodReturnTypeMismatch,
+            title: "Conditional method return type mismatch",
+            messageFormat: "Conditional method '{0}' must return bool or ValueTask<bool>",
+            category: "Usage",
+            defaultSeverity: DiagnosticSeverity.Error,
+            isEnabledByDefault: true,
+            description: "The conditional method must return a boolean value or a ValueTask<bool>."
+        );
+        internal override ICollection<DiagnosticDescriptor> DiagnosticDescriptors => [
+            MissingMethodRule,
+            InvalidNameRule,
+            LengthRule,
+            ParmterTypeMismatchRule,
+            ReturnTypeRule
+        ];
 
         internal override bool Analyze(AnalyserContext context, AttributeInfo attribute)
         {
@@ -87,35 +108,13 @@ namespace EasyValidate.Generator.Analyzers.AttributeAnalyzers
 
             // Check if ConditionalMethod is specified in named arguments
             var conditionalMethodName = attribute.Attribute.NamedArguments.GetArgumentValue<string>("ConditionalMethod");
-            var isValid = string.IsNullOrEmpty(conditionalMethodName) || Regex.IsMatch(conditionalMethodName, @"^[_a-zA-Z][_a-zA-Z0-9]*$");
+            if (conditionalMethodName == null)
+                return true; // No conditional method specified, nothing to validate
+            var isValid = !string.IsNullOrWhiteSpace(conditionalMethodName) && Regex.IsMatch(conditionalMethodName, @"^[_a-zA-Z][_a-zA-Z0-9]*$");
             if (!isValid)
             {
                 ReportDiagnostic(context, attribute.Location, InvalidNameRule, conditionalMethodName!);
                 return false;
-            }
-            var strategy = attribute.Attribute.NamedArguments.GetArgumentValue<int>("Strategy");
-            // 0: Default, 1: ConditionalAndStopChain, 2: ConditionalAndContinue
-            var isConditionalStrategy = strategy == 1 || strategy == 2;
-
-            if (!string.IsNullOrEmpty(conditionalMethodName))
-            {
-                if (!isConditionalStrategy)
-                {
-                    // ConditionalMethod is set but strategy is not conditional
-                    ReportDiagnostic(context, attribute.Location, InvalidStrategyRule, conditionalMethodName!, strategy.ToString());
-                    return false;
-                }
-            }
-            else if (isConditionalStrategy)
-            {
-                // Strategy is conditional but ConditionalMethod is not set
-                ReportDiagnostic(context, attribute.Location, MissingConditionalMethodRule, strategy.ToString());
-                return false;
-            }
-            else
-            {
-                // No conditional method specified, nothing to validate
-                return true;
             }
 
             // Find the containing class
@@ -124,16 +123,14 @@ namespace EasyValidate.Generator.Analyzers.AttributeAnalyzers
                 return false; // Can't find containing class, skip validation
 
             // Look for the conditional method
-            var conditionalMethod = conditionalMethodName != null
-                ? containingClass.GetMembers(conditionalMethodName)
+            var conditionalMethod = containingClass.GetMembers(conditionalMethodName)
                     .OfType<IMethodSymbol>()
-                    .FirstOrDefault()
-                : null;
+                    .FirstOrDefault();
 
             if (conditionalMethod == null)
             {
                 // Method doesn't exist
-                ReportDiagnostic(context, attribute.Location, Rule, conditionalMethodName ?? "unknown", $"does not exist on class '{containingClass.Name}'");
+                ReportDiagnostic(context, attribute.Location, MissingMethodRule, conditionalMethodName);
                 return false;
             }
 
@@ -141,7 +138,7 @@ namespace EasyValidate.Generator.Analyzers.AttributeAnalyzers
             if (conditionalMethod.Parameters.Length != 1)
             {
                 // Method must have exactly one parameter
-                ReportDiagnostic(context, attribute.Location, Rule, conditionalMethodName ?? "unknown", "must accept exactly one parameter of type IChainResult");
+                ReportDiagnostic(context, conditionalMethod.Locations.FirstOrDefault() ?? attribute.Location, LengthRule, conditionalMethodName ?? "unknown");
                 return false;
             }
 
@@ -150,9 +147,9 @@ namespace EasyValidate.Generator.Analyzers.AttributeAnalyzers
             var parameterType = parameter.Type;
 
             // Check if the parameter type is IChainResult
-            if (!parameterType.InheritsFrom("EasyValidate.Abstractions.IChainResult"))
+            if (!parameterType.ImplementsInterface("EasyValidate.Abstractions.IChainResult", true))
             {
-                ReportDiagnostic(context, attribute.Location, Rule, conditionalMethodName ?? "unknown", "must accept a parameter of type IChainResult");
+                ReportDiagnostic(context, parameter.Locations.FirstOrDefault() ?? attribute.Location, ParmterTypeMismatchRule, conditionalMethodName ?? "unknown");
                 return false;
             }
 
@@ -161,14 +158,19 @@ namespace EasyValidate.Generator.Analyzers.AttributeAnalyzers
             var isBoolReturn = returnType.SpecialType == SpecialType.System_Boolean;
             var isAwaitableBoolReturn = false;
             var (isAsync, arguments) = conditionalMethod.IsAsyncMethod();
-            if (returnType.GetFullName().Contains("System.Threading.Tasks.ValueTask") && isAsync && arguments.Length == 1 && arguments[0].SpecialType == SpecialType.System_Boolean)
+            if (returnType.GetFullName().StartsWith("global::System.Threading.Tasks.ValueTask") && isAsync && arguments.Length == 1 && arguments[0].SpecialType == SpecialType.System_Boolean)
             {
                 isAwaitableBoolReturn = true;
             }
             if (!isBoolReturn && !isAwaitableBoolReturn)
             {
+                var methodDecl = conditionalMethod.DeclaringSyntaxReferences
+                .FirstOrDefault()?
+                .GetSyntax() as MethodDeclarationSyntax;
+
+                var location = methodDecl?.ReturnType.GetLocation();
                 // Method doesn't return bool or a true awaitable type with bool result
-                ReportDiagnostic(context, attribute.Location, Rule, conditionalMethodName ?? "unknown", "must return bool or ValueTask<bool>");
+                ReportDiagnostic(context, location ?? conditionalMethod.Locations.FirstOrDefault() ?? attribute.Location, ReturnTypeRule, conditionalMethodName ?? "unknown");
                 return false;
             }
             return true; // All checks passed, conditional method is valid

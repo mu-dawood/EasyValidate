@@ -33,7 +33,7 @@ namespace EasyValidate.Generator.Analyzers.AttributeAnalyzers
     internal class PowerOfAttributeUsage : AttributeAnalyzer
     {
         private static readonly DiagnosticDescriptor Rule = new(
-            id: ErrorIds.PowerOfValueMustBeGreaterThanOne,
+            id: ErrorIds.PowerOfAttributeValueMustBeGreaterThanOne,
             title: "Invalid PowerOfAttribute Usage",
             messageFormat: "The value passed to 'PowerOfAttribute' must be greater than 1",
             category: "Usage",

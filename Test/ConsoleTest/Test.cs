@@ -10,14 +10,33 @@ namespace ConsoleTest;
 
 
 
-public partial class Model : CarDetails, IGenerate, IAgeProvider
-{
-    [IsOld]
-    public int Ade { get; set; }
 
-    public int GetPeronAge()
+
+public enum Gender { Male, Female }
+
+public partial class Model : IGenerate
+{
+    public Gender Gender { get; set; }
+
+    [NotEmpty, OneOf("Ahmed", "Mohamed", ConditionalMethod = "IsMale")]
+    public string Name { get; set; } = string.Empty;
+    /// <summary>
+    /// Determines whether validation should be performed.
+    /// </summary>
+    /// <param name="result">The current validation result.</param>
+    /// <returns>True if validation should be performed; otherwise, false.</returns>
+    private bool IsMales(EasyValidate.Abstractions.IChainResult result)
     {
-        throw new NotImplementedException();
+        return true;
+    }
+    /// <summary>
+    /// Determines whether validation should be performed.
+    /// </summary>
+    /// <param name="result">The current validation result.</param>
+    /// <returns>True if validation should be performed; otherwise, false.</returns>
+    private bool IsMale(EasyValidate.Abstractions.IChainResult result)
+    {
+        return true;
     }
 }
 
