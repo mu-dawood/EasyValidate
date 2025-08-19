@@ -77,7 +77,48 @@ jobs:
         with:
           name: benchmark-${{ github.event.inputs.benchmark_file }}
           path: benchmark-output
+          
+  deploy-pages:
+    needs: benchmark
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download artifact from benchmark job
+        uses: actions/download-artifact@v4
+        with:
+          name: benchmark-${{ github.event.inputs.benchmark_file }}
+          path: ./site
 
+      # Optional: create a simple landing page that links to all HTML reports
+      - name: Generate index.html
+        run: |
+          echo "<!doctype html><meta charset='utf-8'>
+          <title>EasyValidate Benchmarks</title>
+          <h1>EasyValidate Benchmarks</h1>
+          <p>Run: ${{ github.run_number }} • Commit: ${{ github.sha }}</p>
+          <ul>" > ./site/index.html
+          find ./site -type f -name "*.html" | sort | while read f; do
+            rel=${f#./site/}
+            echo "<li><a href='${rel}'>${rel}</a></li>" >> ./site/index.html
+          done
+          echo "</ul><hr>
+          <p>CSV files are included for raw comparisons.</p>
+          <p><a href='https://github.com/mu-dawood/EasyValidate/actions'>See all runs on GitHub Actions</a></p>" >> ./site/index.html
+          touch ./site/.nojekyll  # ensures assets under folders like 'results' serve correctly
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
   compare:
     runs-on: ubuntu-latest
     needs: benchmark
