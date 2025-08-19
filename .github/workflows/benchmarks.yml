@@ -8,6 +8,7 @@ on:
         required: true
         type: choice
         options:
+          - ValidationBenchmarks.cs
           - FluentFriendlyValidationBenchmarks.cs
           - CollectionBenchmarks.cs
           - DateTimeBenchmarks.cs
@@ -15,7 +16,6 @@ on:
           - NumericBenchmarks.cs
           - OtherBenchmarks.cs
           - StringBenchmarks.cs
-          - ValidationBenchmarks.cs
 
 jobs:
   benchmark:

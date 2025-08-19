@@ -86,7 +86,7 @@ namespace EasyValidate.Handlers
                     }
                     if (info.ConditionalMethod != null)
                     {
-                        sb.AppendLine($"{indent}}}");
+                        sb.AppendLine($"{indent.Remove(indent.Length - 4)}}}");
                     }
                     awaitable = resolvedType!.IsAsync || info.ConditionalMethod?.IsAsync == true;
                     currentType = resolvedType!.ResolveOutPutType(currentType);

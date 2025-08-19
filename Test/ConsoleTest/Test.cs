@@ -19,25 +19,11 @@ public partial class Model : IGenerate
     public Gender Gender { get; set; }
 
     [NotEmpty, OneOf("Ahmed", "Mohamed", ConditionalMethod = "IsMale")]
+    [NotEmpty(Chain = "FemaleChain"), OneOf("Maha", "Sarah", ConditionalMethod = "IsFemale", Chain = "FemaleChain")]
     public string Name { get; set; } = string.Empty;
-    /// <summary>
-    /// Determines whether validation should be performed.
-    /// </summary>
-    /// <param name="result">The current validation result.</param>
-    /// <returns>True if validation should be performed; otherwise, false.</returns>
-    private bool IsMales(EasyValidate.Abstractions.IChainResult result)
-    {
-        return true;
-    }
-    /// <summary>
-    /// Determines whether validation should be performed.
-    /// </summary>
-    /// <param name="result">The current validation result.</param>
-    /// <returns>True if validation should be performed; otherwise, false.</returns>
-    private bool IsMale(EasyValidate.Abstractions.IChainResult result)
-    {
-        return true;
-    }
+
+    private bool IsMale(IChainResult result) => Gender == Gender.Male;
+    private bool IsFemale(IChainResult result) => Gender == Gender.Female;
 }
 
 
