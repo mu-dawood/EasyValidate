@@ -4,11 +4,6 @@
     <PackageId>EasyValidate</PackageId>
     <TargetFrameworks>netstandard2.1;</TargetFrameworks>
   </PropertyGroup>
-  <!-- <ItemGroup>
-    <PackageReference Include="EasyValidate.Generator" Version="$(Version)" PrivateAssets="none" />
-    <PackageReference Include="EasyValidate.Abstractions" Version="$(Version)" PrivateAssets="none" />
-    <PackageReference Include="EasyValidate.Attributes" Version="$(Version)" PrivateAssets="none" />
-  </ItemGroup> -->
   <ItemGroup>
     <ProjectReference Include="../EasyValidate.Abstractions/EasyValidate.Abstractions.csproj"
       PrivateAssets="none" />
