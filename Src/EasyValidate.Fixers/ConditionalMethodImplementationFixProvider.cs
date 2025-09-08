@@ -105,7 +105,7 @@ namespace EasyValidate.Fixers
                         // Method location: find method and class
                         var methodNode = node?.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
                         if (methodNode == null) continue;
-                        var typeDeclaration2 = methodNode.AncestorsAndSelf().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+                        var typeDeclaration2 = methodNode.AncestorsAndSelf().GetClassStructOrRecord();
                         if (typeDeclaration2 == null) continue;
                         var methodName2 = methodNode.Identifier.ValueText;
                         var signatureAction = CodeAction.Create(
@@ -119,7 +119,7 @@ namespace EasyValidate.Fixers
                         var parameterNode = node?.AncestorsAndSelf().OfType<ParameterSyntax>().FirstOrDefault();
                         var methodNode3 = parameterNode?.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
                         if (methodNode3 == null) continue;
-                        var typeDeclaration3 = methodNode3.AncestorsAndSelf().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+                        var typeDeclaration3 = methodNode3.AncestorsAndSelf().GetClassStructOrRecord();
                         if (typeDeclaration3 == null) continue;
                         var methodName3 = methodNode3.Identifier.ValueText;
                         var signatureAction2 = CodeAction.Create(
@@ -132,7 +132,7 @@ namespace EasyValidate.Fixers
                         // Return type location: find method and class
                         var returnTypeNode = node?.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
                         if (returnTypeNode == null) continue;
-                        var typeDeclaration4 = returnTypeNode.AncestorsAndSelf().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+                        var typeDeclaration4 = returnTypeNode.AncestorsAndSelf().GetClassStructOrRecord();
                         if (typeDeclaration4 == null) continue;
                         var methodName4 = returnTypeNode.Identifier.ValueText;
                         var boolReturnAction = CodeAction.Create(

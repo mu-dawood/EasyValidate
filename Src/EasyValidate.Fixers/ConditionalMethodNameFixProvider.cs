@@ -53,7 +53,7 @@ namespace EasyValidate.Fixers
                 var attributeNode = node?.AncestorsAndSelf().OfType<AttributeSyntax>().FirstOrDefault();
                 if (attributeNode == null) continue;
 
-                var typeDeclaration = attributeNode.AncestorsAndSelf().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+                var typeDeclaration = attributeNode.AncestorsAndSelf().GetClassStructOrRecord();
                 if (typeDeclaration == null) continue;
 
                 // Find all valid method names in the class that match our signature

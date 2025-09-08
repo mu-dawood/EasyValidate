@@ -61,7 +61,7 @@ namespace EasyValidate.Fixers
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var token = root.FindToken(diagnosticSpan.Start);
             var node = token.Parent;
-            var typeDeclaration = node?.AncestorsAndSelf().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+            var typeDeclaration = node?.AncestorsAndSelf().GetClassStructOrRecord();
             if (typeDeclaration == null) return;
 
             if (diagnostic.Id == ErrorIds.ValidateAttributeUsageMissingType)
