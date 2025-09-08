@@ -79,6 +79,27 @@ namespace EasyValidate.Abstractions
         {
             return new ValidationResult<T>(_results, result);
         }
+        /// <inheritdoc/>
+        public IEnumerable<ValidationError> GetValidationErrors()
+        {
+            foreach (var prop in Results)
+            {
+                foreach (var chain in prop.Results)
+                {
+                    foreach (var error in chain.Errors)
+                    {
+                        yield return error.WithPropertyName(prop.PropertyName);
+                    }
+                }
+                foreach (var error in prop.NestedResults)
+                {
+                    foreach (var nestedError in error.GetValidationErrors())
+                    {
+                        yield return nestedError.WithPropertyName($"{prop.PropertyName}.{nestedError.PropertyName}");
+                    }
+                }
+            }
+        }
     }
 
     /// <inheritdoc cref="IValidationResult{T}"/>

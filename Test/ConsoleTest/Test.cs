@@ -14,7 +14,7 @@ namespace ConsoleTest;
 
 public enum Gender { Male, Female }
 
-public partial  struct Model : IGenerate
+public partial  record Model : IGenerate
 {
     public Model()
     {

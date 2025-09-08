@@ -109,5 +109,10 @@ namespace EasyValidate.Abstractions
         /// <docs-type>Property</docs-type>
         /// <docs-return-type>string</docs-return-type>
         public string ChainName { get; }
+
+        internal ValidationError WithPropertyName(string propertyName)
+        {
+            return new ValidationError(ErrorCode, AttributeName, FormattedMessage, propertyName, ChainName);
+        }
     }
 }

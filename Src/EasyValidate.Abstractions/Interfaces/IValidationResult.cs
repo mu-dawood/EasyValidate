@@ -183,6 +183,14 @@ public interface IValidationResult
     /// <docs-return-type>Task</docs-return-type>
     Task AddPropertyResultAsync(ValueTask<IPropertyResult> result);
 
+    /// <summary>
+    /// Retrieves a collection of <see cref="ValidationError"/> instances representing the errors found during validation.
+    /// </summary>
+    /// <returns>
+    /// An <see cref="IEnumerable{ValidationError}"/> containing all validation errors.
+    /// </returns>
+    IEnumerable<ValidationError> GetValidationErrors();
+
 }
 
 /// <summary>
