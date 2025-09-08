@@ -26,14 +26,14 @@ internal abstract class ValidationHandlerBase
 
 
 
-internal class HandlerParams(ValidationTarget target, SourceProductionContext context, INamedTypeSymbol classSymbol)
+internal class HandlerParams(ValidationTarget target, SourceProductionContext context, INamedTypeSymbol typeSymbol)
 {
     internal ValidationTarget Target { get; } = target;
     internal SourceProductionContext Context { get; } = context;
-    internal INamedTypeSymbol ClassSymbol { get; } = classSymbol;
+    internal INamedTypeSymbol TypeSymbol { get; } = typeSymbol;
     internal HandlerParams WithTarget(ValidationTarget target)
     {
-        return new HandlerParams(target, Context, ClassSymbol);
+        return new HandlerParams(target, Context, typeSymbol);
     }
 
 }

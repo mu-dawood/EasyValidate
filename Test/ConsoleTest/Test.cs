@@ -14,8 +14,12 @@ namespace ConsoleTest;
 
 public enum Gender { Male, Female }
 
-public partial class Model : IGenerate
+public partial  struct Model : IGenerate
 {
+    public Model()
+    {
+    }
+
     public Gender Gender { get; set; }
 
     [NotEmpty, OneOf("Ahmed", "Mohamed", ConditionalMethod = "IsMale")]

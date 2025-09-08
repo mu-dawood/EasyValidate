@@ -65,12 +65,12 @@ namespace EasyValidate.Generator
             });
             var candidates = context.SyntaxProvider
                 .CreateSyntaxProvider(
-                    predicate: static (node, _) => node is ClassDeclarationSyntax,
-                    transform: static (ctx, _) => ctx.SemanticModel.GetDeclaredSymbol((ClassDeclarationSyntax)ctx.Node)
+                    predicate: static (node, _) => node.IsClassStructOrRecord(),
+                    transform: static (ctx, _) => ctx.SemanticModel.GetDeclaredSymbol((TypeDeclarationSyntax)ctx.Node)
                 )
                 .Where(static symbol => symbol != null)
                 .Combine(compilationProvider)
-                 .Combine(projectDirProvider);
+                .Combine(projectDirProvider);
 
 
 
@@ -94,28 +94,28 @@ namespace EasyValidate.Generator
         /// <summary>
         /// Generates the validation class and methods for a given type, adding the source to the compilation.
         /// </summary>
-        /// <param name="classSymbol">The class symbol to generate validation for.</param>
+        /// <param name="typeSymbol">The class symbol to generate validation for.</param>
         /// <param name="compilation">The current compilation context.</param>
         /// <param name="context">The source production context.</param>
         /// <param name="projectDir">The project directory, if available.</param>
-        private void GenerateValidationClass(INamedTypeSymbol classSymbol, Compilation compilation, SourceProductionContext context, string? projectDir)
+        private void GenerateValidationClass(INamedTypeSymbol typeSymbol, Compilation compilation, SourceProductionContext context, string? projectDir)
         {
-            DebuggerUtil.Log($"Generating validation class for: {classSymbol.Name}");
+            DebuggerUtil.Log($"Generating validation class for: {typeSymbol.Name}");
             var argumentHandler = new AttributeArgumentHandler();
             Dictionary<string, string> instanceNames = [];
-            var finalizer = new MembersFinalizer(context, classSymbol, argumentHandler, instanceNames);
+            var finalizer = new MembersFinalizer(context, typeSymbol, argumentHandler, instanceNames);
             try
             {
                 // Skip classes that have no properties with validation attributes
                 // Check if the class has any properties with attributes derived from IValidationAttribute
-                var members = classSymbol.GetMembers().OrderBy(m => m is IFieldSymbol ? 0 : 1).ToList(); // Order properties first, then fields
-                var target = new ValidationTarget(classSymbol);
+                var members = typeSymbol.GetMembers().OrderBy(m => m is IFieldSymbol ? 0 : 1).ToList(); // Order properties first, then fields
+                var target = new ValidationTarget(typeSymbol);
                 var infos = finalizer.Finalize(members, compilation);
                 if (infos.Count > 0)
                     target = target.WithMembers(infos);
 
                 List<MethodTarget> methodTargets = [];
-                foreach (var member in classSymbol.GetMembers())
+                foreach (var member in typeSymbol.GetMembers())
                 {
                     // get parameters for methods to make validation for it
                     if (member is IMethodSymbol method && method.MethodKind == MethodKind.Ordinary)
@@ -158,20 +158,20 @@ namespace EasyValidate.Generator
                 .Add(new MethodsRootValidatedHandler())
                 .Add(new ParameterValidationMethodHandler(compilation));
 
-                var sb = chain.Handle(new HandlerParams(target, context, classSymbol));
+                var sb = chain.Handle(new HandlerParams(target, context, typeSymbol));
 
-                var hintName = classSymbol.GetMirroredHintName(projectDir);
+                var hintName = typeSymbol.GetMirroredHintName(projectDir);
                 context.AddSource(hintName, SourceText.From(sb.ToString(), Encoding.UTF8));
             }
             catch (Exception ex)
             {
                 context.ReportDiagnostic(Diagnostic.Create(
                     new DiagnosticDescriptor("EVGEN001", "Validation Class Generation Error", "Error generating validation class for {0}: {1}, Track: {2}", "EasyValidate", DiagnosticSeverity.Error, true),
-                   classSymbol.Locations.First(), classSymbol.Name, ex.Message, ex.StackTrace));
-                DebuggerUtil.Log($"Error generating validation class for {classSymbol.Name}: {ex.Message}");
+                   typeSymbol.Locations.First(), typeSymbol.Name, ex.Message, ex.StackTrace));
+                DebuggerUtil.Log($"Error generating validation class for {typeSymbol.Name}: {ex.Message}");
                 return;
             }
-            DebuggerUtil.Log($"Successfully generated validation class for: {classSymbol.Name}");
+            DebuggerUtil.Log($"Successfully generated validation class for: {typeSymbol.Name}");
         }
     }
 }

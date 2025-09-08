@@ -7,9 +7,9 @@ namespace EasyValidate.Handlers
     {
         internal override (StringBuilder, HandlerParams) Next(HandlerParams @params)
         {
-            var namespaceName = @params.ClassSymbol.ContainingNamespace.IsGlobalNamespace
+            var namespaceName = @params.TypeSymbol.ContainingNamespace.IsGlobalNamespace
                 ? string.Empty
-                : @params.ClassSymbol.ContainingNamespace.ToDisplayString();
+                : @params.TypeSymbol.ContainingNamespace.ToDisplayString();
 
             var (nextsp, p) = base.Next(@params);
             var sb = new StringBuilder();

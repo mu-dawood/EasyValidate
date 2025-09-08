@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -113,8 +115,21 @@ internal static class SharedUtils
         return false;
     }
 
+    internal static bool IsClassStructOrRecord(this SyntaxNode node)
+    {
+        return node.Kind() switch
+        {
+            SyntaxKind.ClassDeclaration => true,
+            SyntaxKind.StructDeclaration => true,
+            SyntaxKind.RecordDeclaration => true,
+            SyntaxKind.RecordStructDeclaration => true,
+            _ => false
+        };
+    }
 
 
+   
+   
     internal static bool ImplementsInterface(this ITypeSymbol? type, string interfaceFullName, bool includeSelf = false)
     {
         if (type == null)

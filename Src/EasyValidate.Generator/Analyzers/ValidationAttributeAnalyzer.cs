@@ -128,7 +128,7 @@ namespace EasyValidate.Generator.Analyzers
 
             if (!classSymbol.IsValidationAttribute())
             {
-                var classSyntax = classSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() as Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax;
+                var classSyntax = classSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() as Microsoft.CodeAnalysis.CSharp.Syntax.TypeDeclarationSyntax;
                 var baseList = classSyntax?.BaseList;
                 var interfaceType = baseList?.Types.FirstOrDefault(t => t.Type.ToString().StartsWith("IValidationAttribute"));
                 var location = interfaceType?.GetLocation() ?? classSymbol.Locations[0];
