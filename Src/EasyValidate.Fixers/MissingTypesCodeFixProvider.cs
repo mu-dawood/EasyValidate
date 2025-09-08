@@ -18,13 +18,19 @@ namespace EasyValidate.Fixers
     /// Code fix provider for EASY011 diagnostics related to missing required types (interfaces/classes) in validation attribute usage.
     /// </summary>
     /// <remarks>
-    /// This provider automatically adds missing interface and class implementations to the target class based on diagnostic messages.
-    /// It parses the diagnostic message, adds necessary usings, and updates the class declaration to implement the required types.
+    /// This provider automatically adds missing interface and class implementations to the target type (class, record, or struct) based on diagnostic messages.
+    /// It parses the diagnostic message, adds necessary usings, and updates the type declaration to implement the required types.
     /// </remarks>
     /// <example>
     /// <code>
     /// public class MyValidator // Diagnostic: missing IGenerate
     /// // After fix: public class MyValidator : IGenerate
+    /// 
+    /// public record MyRecord // Diagnostic: missing IGenerate
+    /// // After fix: public record MyRecord : IGenerate
+    /// 
+    /// public struct MyStruct // Diagnostic: missing IGenerate
+    /// // After fix: public struct MyStruct : IGenerate
     /// </code>
     /// </example>
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(MissingTypesCodeFixProvider)), Shared]
@@ -55,8 +61,8 @@ namespace EasyValidate.Fixers
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var token = root.FindToken(diagnosticSpan.Start);
             var node = token.Parent;
-            var classNode = node?.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().FirstOrDefault();
-            if (classNode == null) return;
+            var typeDeclaration = node?.AncestorsAndSelf().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+            if (typeDeclaration == null) return;
 
             if (diagnostic.Id == ErrorIds.ValidateAttributeUsageMissingType)
             {
@@ -64,7 +70,7 @@ namespace EasyValidate.Fixers
                 var types = ExtractTypesFromMessage(message);
                 var action = CodeAction.Create(
                     title: "Implement required types (interfaces/classes)",
-                    createChangedDocument: c => AddTypesAsync(context.Document, classNode, types, c),
+                    createChangedDocument: c => AddTypesAsync(context.Document, typeDeclaration, types, c),
                     equivalenceKey: "AddMissingTypes");
                 context.RegisterCodeFix(action, diagnostic);
             }
@@ -72,7 +78,7 @@ namespace EasyValidate.Fixers
 
         private static async Task<Document> AddTypesAsync(
             Document document,
-            ClassDeclarationSyntax classDeclaration,
+            TypeDeclarationSyntax typeDeclaration,
             TypeInfo[] types,
             CancellationToken cancellationToken)
         {
@@ -107,22 +113,22 @@ namespace EasyValidate.Fixers
                         interfaces.Add(baseType);
                 }
                 root = compilationUnit;
-                classDeclaration = root.DescendantNodes()
-                                     .OfType<ClassDeclarationSyntax>()
-                                     .FirstOrDefault(c => c.Identifier.Text == classDeclaration.Identifier.Text) ?? classDeclaration;
-                var oldlist = classDeclaration.BaseList?.Types ?? [];
+                typeDeclaration = root.DescendantNodes()
+                                     .OfType<TypeDeclarationSyntax>()
+                                     .FirstOrDefault(c => c.Identifier.Text == typeDeclaration.Identifier.Text) ?? typeDeclaration;
+                var oldlist = typeDeclaration.BaseList?.Types ?? [];
                 var baseList = SyntaxFactory.BaseList(SyntaxFactory.Token(SyntaxKind.ColonToken), SyntaxFactory.SeparatedList(classes.Concat(oldlist).Concat(interfaces)))
                 .WithAdditionalAnnotations(Formatter.Annotation);
 
                 // ensure identifier ends with a space (avoids newline before colon)
-                var newId = classDeclaration.Identifier.WithTrailingTrivia(SyntaxFactory.Space);
-                var newClassDeclaration = classDeclaration.WithIdentifier(newId).WithBaseList(baseList);
+                var newId = typeDeclaration.Identifier.WithTrailingTrivia(SyntaxFactory.Space);
+                var newTypeDeclaration = typeDeclaration.WithIdentifier(newId).WithBaseList(baseList);
 
-                var newRoot = root.ReplaceNode(classDeclaration, newClassDeclaration);
+                var newRoot = root.ReplaceNode(typeDeclaration, newTypeDeclaration);
                 return document.WithSyntaxRoot(newRoot);
 
             }
-            else if (root is ClassDeclarationSyntax)
+            else if (root is TypeDeclarationSyntax)
             {
                 foreach (var item in types)
                 {
@@ -134,16 +140,16 @@ namespace EasyValidate.Fixers
                     else if (item.TypeKind == "interface")
                         interfaces.Add(baseType);
                 }
-                // If the root is already a class, we can directly modify it
-                // This is useful for cases where the class is not in a compilation unit
+                // If the root is already a type declaration, we can directly modify it
+                // This is useful for cases where the type is not in a compilation unit
                 var colon = SyntaxFactory.Token(SyntaxKind.ColonToken)
                     .WithLeadingTrivia(SyntaxFactory.Space)
                     .WithTrailingTrivia(SyntaxFactory.Space);
                 var newBaseList = SyntaxFactory.BaseList(colon,
                     SyntaxFactory.SeparatedList(classes.Concat(interfaces)));
-                var newClassDeclaration = classDeclaration.WithBaseList(newBaseList)
+                var newTypeDeclaration = typeDeclaration.WithBaseList(newBaseList)
                     .WithAdditionalAnnotations(Microsoft.CodeAnalysis.Formatting.Formatter.Annotation);
-                var newRoot = root.ReplaceNode(classDeclaration, newClassDeclaration);
+                var newRoot = root.ReplaceNode(typeDeclaration, newTypeDeclaration);
                 return document.WithSyntaxRoot(newRoot);
 
             }

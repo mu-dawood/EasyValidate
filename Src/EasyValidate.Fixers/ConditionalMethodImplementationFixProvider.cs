@@ -22,6 +22,7 @@ namespace EasyValidate.Fixers
     /// <remarks>
     /// This provider automatically creates or corrects conditional methods referenced by validation attributes' ConditionalMethod property.
     /// It offers fixes for missing methods, incorrect signatures, and incorrect return types, supporting both synchronous and asynchronous (ValueTask) patterns.
+    /// Works with classes, records, and structs.
     /// </remarks>
     /// <example>
     /// <code>
@@ -35,6 +36,7 @@ namespace EasyValidate.Fixers
     /// <summary>
     /// Provides code fixes for diagnostics related to conditional method usage in validation attributes.
     /// Supports creating missing methods, fixing method signatures, and correcting return types.
+    /// Works with classes, records, and structs.
     /// </summary>
     /// <summary>
     /// Provides code fixes for missing, invalid signature, or invalid return type for conditional methods referenced by validation attributes.
@@ -84,17 +86,17 @@ namespace EasyValidate.Fixers
                         // Attribute location: find attribute, class, and method name
                         var attributeNode = node?.AncestorsAndSelf().OfType<AttributeSyntax>().FirstOrDefault();
                         if (attributeNode == null) continue;
-                        var classNode = attributeNode.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().FirstOrDefault();
-                        if (classNode == null) continue;
+                        var typeDeclaration = attributeNode.AncestorsAndSelf().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+                        if (typeDeclaration == null) continue;
                         var methodName = ExtractMethodNameFromAttribute(attributeNode);
                         if (string.IsNullOrEmpty(methodName)) continue;
                         var boolAction = CodeAction.Create(
                             title: $"Create conditional method '{methodName}' (bool)",
-                            createChangedDocument: c => CreateConditionalMethodAsync(context.Document, classNode, methodName, false, c),
+                            createChangedDocument: c => CreateConditionalMethodAsync(context.Document, typeDeclaration, methodName, false, c),
                             equivalenceKey: $"CreateMethodBool_{methodName}");
                         var valueTaskAction = CodeAction.Create(
                             title: $"Create conditional method '{methodName}' (ValueTask<bool>)",
-                            createChangedDocument: c => CreateConditionalMethodAsync(context.Document, classNode, methodName, true, c),
+                            createChangedDocument: c => CreateConditionalMethodAsync(context.Document, typeDeclaration, methodName, true, c),
                             equivalenceKey: $"CreateMethodValueTask_{methodName}");
                         context.RegisterCodeFix(boolAction, diagnostic);
                         context.RegisterCodeFix(valueTaskAction, diagnostic);
@@ -103,12 +105,12 @@ namespace EasyValidate.Fixers
                         // Method location: find method and class
                         var methodNode = node?.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
                         if (methodNode == null) continue;
-                        var classNode2 = methodNode.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().FirstOrDefault();
-                        if (classNode2 == null) continue;
+                        var typeDeclaration2 = methodNode.AncestorsAndSelf().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+                        if (typeDeclaration2 == null) continue;
                         var methodName2 = methodNode.Identifier.ValueText;
                         var signatureAction = CodeAction.Create(
                             title: $"Fix method '{methodName2}' signature (add IChainResult parameter)",
-                            createChangedDocument: c => FixMethodSignatureAsync(context.Document, classNode2, methodName2, c),
+                            createChangedDocument: c => FixMethodSignatureAsync(context.Document, typeDeclaration2, methodName2, c),
                             equivalenceKey: $"FixSignature_{methodName2}");
                         context.RegisterCodeFix(signatureAction, diagnostic);
                         break;
@@ -117,12 +119,12 @@ namespace EasyValidate.Fixers
                         var parameterNode = node?.AncestorsAndSelf().OfType<ParameterSyntax>().FirstOrDefault();
                         var methodNode3 = parameterNode?.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
                         if (methodNode3 == null) continue;
-                        var classNode3 = methodNode3.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().FirstOrDefault();
-                        if (classNode3 == null) continue;
+                        var typeDeclaration3 = methodNode3.AncestorsAndSelf().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+                        if (typeDeclaration3 == null) continue;
                         var methodName3 = methodNode3.Identifier.ValueText;
                         var signatureAction2 = CodeAction.Create(
                             title: $"Fix method '{methodName3}' parameter type (set to IChainResult)",
-                            createChangedDocument: c => FixMethodSignatureAsync(context.Document, classNode3, methodName3, c),
+                            createChangedDocument: c => FixMethodSignatureAsync(context.Document, typeDeclaration3, methodName3, c),
                             equivalenceKey: $"FixParameterType_{methodName3}");
                         context.RegisterCodeFix(signatureAction2, diagnostic);
                         break;
@@ -130,16 +132,16 @@ namespace EasyValidate.Fixers
                         // Return type location: find method and class
                         var returnTypeNode = node?.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
                         if (returnTypeNode == null) continue;
-                        var classNode4 = returnTypeNode.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().FirstOrDefault();
-                        if (classNode4 == null) continue;
+                        var typeDeclaration4 = returnTypeNode.AncestorsAndSelf().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+                        if (typeDeclaration4 == null) continue;
                         var methodName4 = returnTypeNode.Identifier.ValueText;
                         var boolReturnAction = CodeAction.Create(
                             title: $"Fix method '{methodName4}' return type (change to bool)",
-                            createChangedDocument: c => FixMethodReturnTypeAsync(context.Document, classNode4, methodName4, c, useValueTask: false),
+                            createChangedDocument: c => FixMethodReturnTypeAsync(context.Document, typeDeclaration4, methodName4, c, useValueTask: false),
                             equivalenceKey: $"FixReturnTypeBool_{methodName4}");
                         var valueTaskReturnAction = CodeAction.Create(
                             title: $"Fix method '{methodName4}' return type (change to ValueTask<bool>)",
-                            createChangedDocument: c => FixMethodReturnTypeAsync(context.Document, classNode4, methodName4, c, useValueTask: true),
+                            createChangedDocument: c => FixMethodReturnTypeAsync(context.Document, typeDeclaration4, methodName4, c, useValueTask: true),
                             equivalenceKey: $"FixReturnTypeValueTask_{methodName4}");
                         context.RegisterCodeFix(boolReturnAction, diagnostic);
                         context.RegisterCodeFix(valueTaskReturnAction, diagnostic);
@@ -181,17 +183,17 @@ namespace EasyValidate.Fixers
         }
 
         /// <summary>
-        /// Creates a conditional method with the specified name and signature in the given class.
+        /// Creates a conditional method with the specified name and signature in the given type.
         /// </summary>
         /// <param name="document">The document to update.</param>
-        /// <param name="classDeclaration">The class declaration to add the method to.</param>
+        /// <param name="typeDeclaration">The type declaration to add the method to.</param>
         /// <param name="methodName">The name of the method to create.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="useValueTask">Whether to use ValueTask&lt;bool&gt; as the return type.</param>
         /// <returns>The updated document with the new method added.</returns>
         internal static async Task<Document> CreateConditionalMethodAsync(
                 Document document,
-                ClassDeclarationSyntax classDeclaration,
+                TypeDeclarationSyntax typeDeclaration,
                 string methodName,
                 bool useValueTask,
                 CancellationToken cancellationToken
@@ -268,14 +270,14 @@ namespace EasyValidate.Fixers
 
 
 
-            var newClassDeclaration = classDeclaration.AddMembers(methodDeclaration);
-            var newRoot = root.ReplaceNode(classDeclaration, newClassDeclaration);
+            var newTypeDeclaration = typeDeclaration.AddMembers(methodDeclaration);
+            var newRoot = root.ReplaceNode(typeDeclaration, newTypeDeclaration);
             return document.WithSyntaxRoot(newRoot);
         }
 
         private static async Task<Document> FixMethodSignatureAsync(
             Document document,
-            ClassDeclarationSyntax classDeclaration,
+            TypeDeclarationSyntax typeDeclaration,
             string methodName,
             CancellationToken cancellationToken)
         {
@@ -283,7 +285,7 @@ namespace EasyValidate.Fixers
             if (root == null) return document;
 
             // Find the method with the specified name
-            var method = classDeclaration.Members.OfType<MethodDeclarationSyntax>()
+            var method = typeDeclaration.Members.OfType<MethodDeclarationSyntax>()
                 .FirstOrDefault(m => m.Identifier.ValueText == methodName);
 
             if (method == null) return document;
@@ -304,15 +306,15 @@ namespace EasyValidate.Fixers
                     SyntaxFactory.Parameter(SyntaxFactory.Identifier("result"))
                         .WithType(SyntaxFactory.IdentifierName("IChainResult")))));
 
-            var newClassDeclaration = classDeclaration.ReplaceNode(method, newMethod);
-            var newRoot = root.ReplaceNode(classDeclaration, newClassDeclaration);
+            var newTypeDeclaration = typeDeclaration.ReplaceNode(method, newMethod);
+            var newRoot = root.ReplaceNode(typeDeclaration, newTypeDeclaration);
 
             return document.WithSyntaxRoot(newRoot);
         }
 
         private static async Task<Document> FixMethodReturnTypeAsync(
             Document document,
-            ClassDeclarationSyntax classDeclaration,
+            TypeDeclarationSyntax typeDeclaration,
             string methodName,
             CancellationToken cancellationToken,
             bool useValueTask)
@@ -321,7 +323,7 @@ namespace EasyValidate.Fixers
             if (root == null) return document;
 
             // Find the method with the specified name
-            var method = classDeclaration.Members.OfType<MethodDeclarationSyntax>()
+            var method = typeDeclaration.Members.OfType<MethodDeclarationSyntax>()
                 .FirstOrDefault(m => m.Identifier.ValueText == methodName);
 
             if (method == null) return document;
@@ -346,8 +348,8 @@ namespace EasyValidate.Fixers
                     SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)));
             }
 
-            var newClassDeclaration = classDeclaration.ReplaceNode(method, newMethod);
-            var newRoot = root.ReplaceNode(classDeclaration, newClassDeclaration);
+            var newTypeDeclaration = typeDeclaration.ReplaceNode(method, newMethod);
+            var newRoot = root.ReplaceNode(typeDeclaration, newTypeDeclaration);
 
             return document.WithSyntaxRoot(newRoot);
         }

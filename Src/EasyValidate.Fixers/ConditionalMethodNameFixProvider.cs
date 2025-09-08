@@ -53,11 +53,11 @@ namespace EasyValidate.Fixers
                 var attributeNode = node?.AncestorsAndSelf().OfType<AttributeSyntax>().FirstOrDefault();
                 if (attributeNode == null) continue;
 
-                var classNode = attributeNode.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().FirstOrDefault();
-                if (classNode == null) continue;
+                var typeDeclaration = attributeNode.AncestorsAndSelf().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+                if (typeDeclaration == null) continue;
 
                 // Find all valid method names in the class that match our signature
-                var validMethods = classNode.Members
+                var validMethods = typeDeclaration.Members
                     .OfType<MethodDeclarationSyntax>()
                     .Where(m =>
                         m.ParameterList.Parameters.Count == 1 &&
@@ -107,7 +107,7 @@ namespace EasyValidate.Fixers
                                 // Use bool return type by default
                                 return await ConditionalMethodImplementationFixProvider.CreateConditionalMethodAsync(
                                     docWithName,
-                                    classNode,
+                                    typeDeclaration,
                                     validName,
                                     false,
                                     c);
