@@ -1,6 +1,17 @@
 #!/bin/bash
 set -e
 
+# Check if NUGET_API_KEY is set, if not prompt for it
+if [ -z "$NUGET_API_KEY" ]; then
+  echo "NUGET_API_KEY environment variable is not set."
+  read -sp "Enter your NuGet API key: " NUGET_API_KEY
+  echo ""
+  if [ -z "$NUGET_API_KEY" ]; then
+    echo "Error: API key cannot be empty."
+    exit 1
+  fi
+fi
+
 echo "Cleaning project..."
 dotnet clean Src/EasyValidate/EasyValidate.csproj
 dotnet clean Src/EasyValidate.Generator/EasyValidate.Generator.csproj
