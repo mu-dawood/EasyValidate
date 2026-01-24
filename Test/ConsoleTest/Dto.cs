@@ -49,10 +49,12 @@ public partial class Dto : IGenerate
     /// Test constructor with validation attributes.
     /// The generated Create method should validate 'name' but pass through 'value' and 'count'.
     /// </summary>
-    [GeneratedMethod( AccessModifier = AccessModifier.Private)]
+    [GeneratedMethod(AccessModifier = AccessModifier.Private)]
     private void DDD([NotNull] string? name, string value, int count)
     {
         var x = DDD(Name, value, count, new ValidationConfig());
+
+        var d = x.FirstError;
         Name = name;
     }
 
