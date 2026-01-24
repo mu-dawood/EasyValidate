@@ -12,6 +12,7 @@ internal class ValidationTarget(INamedTypeSymbol symbol)
     private List<string> _awaitableMembers = [];
     internal IReadOnlyCollection<string> AwaitableMembers => _awaitableMembers;
     internal IReadOnlyCollection<MethodTarget> Methods { get; private set; } = [];
+    internal IReadOnlyCollection<ConstructorTarget> Constructors { get; private set; } = [];
 
     internal ValidationTarget WithMembers(IEnumerable<Member> members)
     {
@@ -20,6 +21,7 @@ internal class ValidationTarget(INamedTypeSymbol symbol)
             Symbol = Symbol,
             Members = [.. members],
             Methods = Methods,
+            Constructors = Constructors,
         };
     }
     internal ValidationTarget WithMethods(IEnumerable<MethodTarget> methods)
@@ -29,6 +31,17 @@ internal class ValidationTarget(INamedTypeSymbol symbol)
             Symbol = Symbol,
             Members = Members,
             Methods = [.. methods],
+            Constructors = Constructors,
+        };
+    }
+    internal ValidationTarget WithConstructors(IEnumerable<ConstructorTarget> constructors)
+    {
+        return new ValidationTarget(Symbol)
+        {
+            Symbol = Symbol,
+            Members = Members,
+            Methods = Methods,
+            Constructors = [.. constructors],
         };
     }
     internal void SetAwaitableMembers(IEnumerable<string> awaitableMembers)
@@ -36,7 +49,7 @@ internal class ValidationTarget(INamedTypeSymbol symbol)
         _awaitableMembers = [.. awaitableMembers];
     }
 
-    internal bool NeedGeneration => Members.Count > 0 || Methods.Count > 0;
+    internal bool NeedGeneration => Members.Count > 0 || Methods.Count > 0 || Constructors.Count > 0;
 }
 
 internal class MethodTarget(IMethodSymbol symbol, List<Member> parameters)
@@ -53,6 +66,28 @@ internal class MethodTarget(IMethodSymbol symbol, List<Member> parameters)
     /// Parameters that require validation (have validation attributes or nested config).
     /// </summary>
     internal IEnumerable<Member> ValidatedParameters => Parmters.Where(p => p.NeedsValidation);
+
+    internal void SetAwaitableMembers(IEnumerable<string> awaitableMembers)
+    {
+       _awaitableMembers = [.. awaitableMembers];
+    }
+
+}
+
+internal class ConstructorTarget(IMethodSymbol symbol, List<Member> parameters)
+{
+    internal IMethodSymbol Symbol { get; } = symbol;
+
+    private List<string> _awaitableMembers = [];
+    internal IReadOnlyCollection<string> AwaitableMembers => _awaitableMembers;
+    /// <summary>
+    /// All parameters of the constructor. Use NeedsValidation flag to check if validation is required.
+    /// </summary>
+    internal IReadOnlyCollection<Member> Parameters { get; } = parameters;
+    /// <summary>
+    /// Parameters that require validation (have validation attributes or nested config).
+    /// </summary>
+    internal IEnumerable<Member> ValidatedParameters => Parameters.Where(p => p.NeedsValidation);
 
     internal void SetAwaitableMembers(IEnumerable<string> awaitableMembers)
     {

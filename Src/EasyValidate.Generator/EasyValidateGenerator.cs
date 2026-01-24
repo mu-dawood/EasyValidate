@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using EasyValidate.Handlers;
 using EasyValidate.Handlers.Methods;
+using EasyValidate.Handlers.Constructors;
 using EasyValidate.Generator.Helpers;
 using EasyValidate.Generator.Types;
 using Microsoft.CodeAnalysis;
@@ -115,36 +116,56 @@ namespace EasyValidate.Generator
                     target = target.WithMembers(infos);
 
                 List<MethodTarget> methodTargets = [];
+                List<ConstructorTarget> constructorTargets = [];
                 foreach (var member in typeSymbol.GetMembers())
                 {
                     // get parameters for methods to make validation for it
-                    if (member is IMethodSymbol method && method.MethodKind == MethodKind.Ordinary)
+                    if (member is IMethodSymbol method)
                     {
-                        var methodParameters = method.Parameters;
-                        if (methodParameters.Length > 0)
+                        if (method.MethodKind == MethodKind.Ordinary)
                         {
-                            // Process method parameters - include all params for pass-through
-                            var parameterInfos = finalizer.Finalize(methodParameters, compilation, includeAllMembers: true);
-                            // Only create target if at least one parameter needs validation
-                            if (parameterInfos.Any(p => p.NeedsValidation))
+                            var methodParameters = method.Parameters;
+                            if (methodParameters.Length > 0)
                             {
-                                methodTargets.Add(new MethodTarget(method, parameterInfos));
-                                if (method.DeclaredAccessibility == Accessibility.Public && method.DeclaredAccessibility == Accessibility.ProtectedOrInternal)
+                                // Process method parameters - include all params for pass-through
+                                var parameterInfos = finalizer.Finalize(methodParameters, compilation, includeAllMembers: true);
+                                // Only create target if at least one parameter needs validation
+                                if (parameterInfos.Any(p => p.NeedsValidation))
                                 {
-                                    // Register diagnostic for public methods with validation attributes
-                                    context.ReportDiagnostic(Diagnostic.Create(
-                                        PuplicMethodConfusionRule,
-                                        method.Locations.FirstOrDefault(),
-                                        method.Name
-                                    ));
+                                    methodTargets.Add(new MethodTarget(method, parameterInfos));
+                                    if (method.DeclaredAccessibility == Accessibility.Public && method.DeclaredAccessibility == Accessibility.ProtectedOrInternal)
+                                    {
+                                        // Register diagnostic for public methods with validation attributes
+                                        context.ReportDiagnostic(Diagnostic.Create(
+                                            PuplicMethodConfusionRule,
+                                            method.Locations.FirstOrDefault(),
+                                            method.Name
+                                        ));
+                                    }
+                                }
+                            }
+                        }
+                        else if (method.MethodKind == MethodKind.Constructor)
+                        {
+                            var constructorParameters = method.Parameters;
+                            if (constructorParameters.Length > 0)
+                            {
+                                // Process constructor parameters - include all params for pass-through
+                                var parameterInfos = finalizer.Finalize(constructorParameters, compilation, includeAllMembers: true);
+                                // Only create target if at least one parameter needs validation
+                                if (parameterInfos.Any(p => p.NeedsValidation))
+                                {
+                                    constructorTargets.Add(new ConstructorTarget(method, parameterInfos));
                                 }
                             }
                         }
                     }
-
                 }
                 if (methodTargets.Count > 0)
                     target = target.WithMethods(methodTargets);
+
+                if (constructorTargets.Count > 0)
+                    target = target.WithConstructors(constructorTargets);
 
                 if (!target.NeedGeneration)
                     return;
@@ -157,7 +178,9 @@ namespace EasyValidate.Generator
                 .Add(new RootValidateMethodHandler())
                 .Add(new MemberValidationMethodHandler(compilation))
                 .Add(new MethodsRootValidatedHandler())
-                .Add(new ParameterValidationMethodHandler(compilation));
+                .Add(new ParameterValidationMethodHandler(compilation))
+                .Add(new ConstructorsRootValidatedHandler())
+                .Add(new ConstructorParameterValidationMethodHandler(compilation));
 
                 var sb = chain.Handle(new HandlerParams(target, context, typeSymbol));
 

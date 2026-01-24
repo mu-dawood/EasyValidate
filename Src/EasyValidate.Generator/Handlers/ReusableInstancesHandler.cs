@@ -23,6 +23,11 @@ namespace EasyValidate.Handlers
             {
                 attributes.AddRange(method.Parmters.SelectMany((x) => x.Attributes.Values.SelectMany((attr) => attr.Select((y) => (y, method.Symbol.IsStatic)))));
             }
+            foreach (var constructor in p.Target.Constructors)
+            {
+                // Constructor validation methods are static, so attributes should be static too
+                attributes.AddRange(constructor.Parameters.SelectMany((x) => x.Attributes.Values.SelectMany((attr) => attr.Select((y) => (y, true)))));
+            }
 
             var instances = attributes
                   .GroupBy(x => x.info.InstanceVariable)

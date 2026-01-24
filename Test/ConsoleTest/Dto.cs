@@ -45,12 +45,14 @@ public partial class Dto : IGenerate
         // without any specific logic.
     }
 
-    public string TestMethod2([NotNull] Dto? name, string value)
+    /// <summary>
+    /// Test constructor with validation attributes.
+    /// The generated Create method should validate 'name' but pass through 'value' and 'count'.
+    /// </summary>
+    private Dto([NotNull] string? name, string value, int count)
     {
-        this.TestMethod2(name, value, new ValidationConfig());
-        return "TestMethod executed";
-        // This method is intentionally left empty to demonstrate the use of attributes
-        // without any specific logic.
+        var x = Dto.Create(Name, value, count, new ValidationConfig());
+        Name = name;
     }
 
     /// <summary>
