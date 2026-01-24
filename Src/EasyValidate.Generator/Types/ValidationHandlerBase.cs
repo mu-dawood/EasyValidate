@@ -33,7 +33,7 @@ internal class HandlerParams(ValidationTarget target, SourceProductionContext co
     internal INamedTypeSymbol TypeSymbol { get; } = typeSymbol;
     internal HandlerParams WithTarget(ValidationTarget target)
     {
-        return new HandlerParams(target, Context, typeSymbol);
+        return new HandlerParams(Target, Context, TypeSymbol);
     }
 
 }
