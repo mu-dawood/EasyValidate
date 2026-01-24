@@ -32,6 +32,31 @@ namespace EasyValidate.Abstractions
             }
         }
         /// <inheritdoc/>
+        public ValidationError? FirstError
+        {
+            get
+            {
+                if (_results == null) return null;
+                foreach (var prop in _results)
+                {
+                    foreach (var chain in prop.Results)
+                    {
+                        if (chain.HasErrors())
+                        {
+                            return chain.Errors.FirstOrDefault();
+                        }
+                    }
+                    foreach (var nestedResult in prop.NestedResults)
+                    {
+                        if (nestedResult.HasErrors())
+                            return nestedResult.FirstError;
+                    }
+                }
+                return null;
+            }
+        }
+
+        /// <inheritdoc/>
         public bool HasErrors() => _hasErrors;
         /// <inheritdoc/>
         public bool HasErrors(string propertyName)

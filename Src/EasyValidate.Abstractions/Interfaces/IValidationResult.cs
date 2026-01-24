@@ -30,6 +30,9 @@ public interface IValidationResult
     /// <docs-member>HasErrors()</docs-member>
     /// <docs-type>Method</docs-type>
     /// <docs-return-type>bool</docs-return-type>
+#if NET5_0_OR_GREATER
+    [MemberNotNullWhen(true, nameof(FirstError))]
+#endif
     bool HasErrors();
 
     /// <summary>
@@ -67,6 +70,9 @@ public interface IValidationResult
     /// <docs-member>IsValid()</docs-member>
     /// <docs-type>Method</docs-type>
     /// <docs-return-type>bool</docs-return-type>
+#if NET5_0_OR_GREATER
+    [MemberNotNullWhen(false, nameof(FirstError))]
+#endif
     bool IsValid();
 
     /// <summary>
@@ -190,6 +196,11 @@ public interface IValidationResult
     /// An <see cref="IEnumerable{ValidationError}"/> containing all validation errors.
     /// </returns>
     IEnumerable<ValidationError> GetValidationErrors();
+
+    /// <summary>
+    /// Gets the first validation error encountered in this validation result.
+    /// </summary>
+    ValidationError? FirstError { get; }
 
 }
 
