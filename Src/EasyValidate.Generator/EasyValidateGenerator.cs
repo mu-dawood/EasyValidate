@@ -122,18 +122,42 @@ namespace EasyValidate.Generator
                     // get parameters for methods to make validation for it
                     if (member is IMethodSymbol method)
                     {
-                        if (method.MethodKind == MethodKind.Ordinary)
+                        if (method.MethodKind == MethodKind.Ordinary || method.MethodKind == MethodKind.Constructor)
                         {
-                            var methodParameters = method.Parameters;
-                            if (methodParameters.Length > 0)
+                            var parameters = method.Parameters;
+                            if (parameters.Length > 0)
                             {
                                 // Process method parameters - include all params for pass-through
-                                var parameterInfos = finalizer.Finalize(methodParameters, compilation, includeAllMembers: true);
+                                var parameterInfos = finalizer.Finalize(parameters, compilation, includeAllMembers: true);
                                 // Only create target if at least one parameter needs validation
                                 if (parameterInfos.Any(p => p.NeedsValidation))
                                 {
-                                    methodTargets.Add(new MethodTarget(method, parameterInfos));
-                                    if (method.DeclaredAccessibility == Accessibility.Public && method.DeclaredAccessibility == Accessibility.ProtectedOrInternal)
+                                    // Check for GeneratedMethodAttribute
+                                    var generatedMethodAttr = method.GetAttributes()
+                                        .FirstOrDefault(a => a.AttributeClass.InheritsFrom("EasyValidate.Abstractions.GeneratedMethodAttribute"));
+
+                                    string? customMethodName = null;
+                                    string accessModifier = "public";
+
+                                    if (generatedMethodAttr != null)
+                                    {
+                                        customMethodName = generatedMethodAttr.NamedArguments
+                                            .FirstOrDefault(a => a.Key == "MethodName").Value.Value as string;
+
+                                        var accessModifierValue = generatedMethodAttr.NamedArguments
+                                            .FirstOrDefault(a => a.Key == "AccessModifier").Value.Value;
+                                        if (accessModifierValue != null)
+                                        {
+                                            accessModifier = ConvertAccessModifier((int)accessModifierValue);
+                                        }
+                                    }
+                                    if (method.MethodKind == MethodKind.Constructor)
+                                    {
+                                        constructorTargets.Add(new ConstructorTarget(method, parameterInfos, customMethodName ?? "Create", accessModifier));
+                                        continue;
+                                    }
+                                    methodTargets.Add(new MethodTarget(method, parameterInfos, customMethodName, accessModifier));
+                                    if (method.DeclaredAccessibility == Accessibility.Public || method.DeclaredAccessibility == Accessibility.ProtectedOrInternal)
                                     {
                                         // Register diagnostic for public methods with validation attributes
                                         context.ReportDiagnostic(Diagnostic.Create(
@@ -142,20 +166,6 @@ namespace EasyValidate.Generator
                                             method.Name
                                         ));
                                     }
-                                }
-                            }
-                        }
-                        else if (method.MethodKind == MethodKind.Constructor)
-                        {
-                            var constructorParameters = method.Parameters;
-                            if (constructorParameters.Length > 0)
-                            {
-                                // Process constructor parameters - include all params for pass-through
-                                var parameterInfos = finalizer.Finalize(constructorParameters, compilation, includeAllMembers: true);
-                                // Only create target if at least one parameter needs validation
-                                if (parameterInfos.Any(p => p.NeedsValidation))
-                                {
-                                    constructorTargets.Add(new ConstructorTarget(method, parameterInfos));
                                 }
                             }
                         }
@@ -196,6 +206,23 @@ namespace EasyValidate.Generator
                 return;
             }
             DebuggerUtil.Log($"Successfully generated validation class for: {typeSymbol.Name}");
+        }
+
+        /// <summary>
+        /// Converts the AccessModifier enum value to its C# keyword string.
+        /// </summary>
+        private static string ConvertAccessModifier(int value)
+        {
+            return value switch
+            {
+                0 => "public",           // Public
+                1 => "internal",         // Internal
+                2 => "protected",        // Protected
+                3 => "private",          // Private
+                4 => "protected internal", // ProtectedInternal
+                5 => "private protected",  // PrivateProtected
+                _ => "public"
+            };
         }
     }
 }

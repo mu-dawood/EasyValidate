@@ -135,15 +135,16 @@ public partial class User : IGenerate
     public string Email { get; private set; } = string.Empty;
     public int? Age { get; private set; }
 
-    private static User Create([EmailAddress] string name, [GreaterThan(18)] int age)
+    // Using GeneratedMethod to customize the factory method name and access modifier
+    [GeneratedMethod(MethodName = "CreateUser", AccessModifier = AccessModifier.Internal)]
+    private User([EmailAddress] string name, [GreaterThan(18)] int age)
     {
-        return new User
-        {
-            Email = name,
-            Age = age
-        };
+        Email = name;
+        Age = age;
     }
 
+    // Using GeneratedMethod to customize the validation method name
+    [GeneratedMethod(MethodName = "ValidateAndUpdate", AccessModifier = AccessModifier.Public)]
     private void Update([EmailAddress, EmailExists] string name, [GreaterThan(18)] int age)
     {
         Email = name;
@@ -163,14 +164,15 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        /// create is not async,as no awaitable members nor the original method is async
-        var result = User.Create("John Doe", 25);
+        /// CreateUser is the custom method name from ValidateConstructor attribute
+        /// and it has internal access modifier
+        var result = User.CreateUser("John Doe", 25);
         if (result.IsValid())
         {
             Console.WriteLine($"User created successfully:, Email = {result.Result.Email}, Age = {result.Result.Age}");
 
-            /// update is async, as it has awaitable members
-            var updateResult = await result.Result.Update("Jane Doe", 30);
+            /// ValidateAndUpdate is the custom method name from ValidateMethod attribute
+            var updateResult = await result.Result.ValidateAndUpdate("Jane Doe", 30);
 
             /// UpdateAsync is async, as the original method is async
             updateResult = await result.Result.UpdateAsync("Jane Doe", 30);

@@ -29,12 +29,14 @@ namespace EasyValidate.Handlers.Constructors
                 var passedParameters = constructor.Parameters.Select(p => $"{p.Name}: {p.Name}").ToList();
                 
                 var resultType = $"IValidationResult<{className}>";
+                var methodName = constructor.MethodName;
+                var accessModifier = constructor.AccessModifier;
                 
                 // Generate async or sync method based on awaitable members
                 if (constructor.AwaitableMembers.Any())
-                    sb.AppendLine($"        public static async ValueTask<{resultType}> Create({parametersString})");
+                    sb.AppendLine($"        {accessModifier} static async ValueTask<{resultType}> {methodName}({parametersString})");
                 else
-                    sb.AppendLine($"        public static {resultType} Create({parametersString})");
+                    sb.AppendLine($"        {accessModifier} static {resultType} {methodName}({parametersString})");
                 
                 sb.AppendLine("        {");
                 sb.AppendLine("            var result = ValidationResult.Create();");
@@ -43,11 +45,11 @@ namespace EasyValidate.Handlers.Constructors
                 foreach (var member in constructor.ValidatedParameters)
                 {
                     var asyncItem = constructor.AwaitableMembers.Contains(member.Name);
-                    var methodName = $"Validate@{member.Name}@for@Constructor".ToPascalCase();
+                    var validationMethodName = $"Validate@{member.Name}@for@{methodName}".ToPascalCase();
                     if (asyncItem)
-                        sb.AppendLine($"            await result.AddPropertyResultAsync({methodName}({member.Name}, config));");
+                        sb.AppendLine($"            await result.AddPropertyResultAsync({validationMethodName}({member.Name}, config));");
                     else
-                        sb.AppendLine($"            result.AddPropertyResult({methodName}({member.Name}, config));");
+                        sb.AppendLine($"            result.AddPropertyResult({validationMethodName}({member.Name}, config));");
                 }
                 
                 sb.AppendLine($"            return result.WithResult(new {className}({string.Join(", ", passedParameters)}));");

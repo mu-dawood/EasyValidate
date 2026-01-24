@@ -42,7 +42,8 @@ namespace EasyValidate.Handlers.Constructors
         /// </summary>
         private bool GenerateParameterValidationMethod(StringBuilder sb, ConstructorTarget constructor, Member member)
         {
-            var methodName = $"Validate@{member.Name}@for@Constructor".ToPascalCase();
+            var targetMethodName = constructor.MethodName;
+            var methodName = $"Validate@{member.Name}@for@{targetMethodName}".ToPascalCase();
             StringBuilder propertyBuilder = new();
             StringBuilder chainMethodsBuilder = new();
             var awaitable = false;
@@ -55,8 +56,8 @@ namespace EasyValidate.Handlers.Constructors
                 var infos = group.Value;
                 var chainMethod = group.Key switch
                 {
-                    "" => $"Default@Validate@{member.Name}@for@Constructor".ToPascalCase(),
-                    _ => $"Validate@{member.Name}@for@Constructor@{group.Key}".ToPascalCase()
+                    "" => $"Default@Validate@{member.Name}@for@{targetMethodName}".ToPascalCase(),
+                    _ => $"Validate@{member.Name}@for@{targetMethodName}@{group.Key}".ToPascalCase()
                 };
 
                 if (GenerateParameterChainMethod(chainMethodsBuilder, member, chainMethod, group.Key, infos))

@@ -52,7 +52,7 @@ internal class ValidationTarget(INamedTypeSymbol symbol)
     internal bool NeedGeneration => Members.Count > 0 || Methods.Count > 0 || Constructors.Count > 0;
 }
 
-internal class MethodTarget(IMethodSymbol symbol, List<Member> parameters)
+internal class MethodTarget(IMethodSymbol symbol, List<Member> parameters, string? methodName = null, string accessModifier = "public")
 {
     internal IMethodSymbol Symbol { get; } = symbol;
 
@@ -66,6 +66,16 @@ internal class MethodTarget(IMethodSymbol symbol, List<Member> parameters)
     /// Parameters that require validation (have validation attributes or nested config).
     /// </summary>
     internal IEnumerable<Member> ValidatedParameters => Parmters.Where(p => p.NeedsValidation);
+    
+    /// <summary>
+    /// Custom method name for the generated validation method. If null, uses the original method name.
+    /// </summary>
+    internal string? CustomMethodName { get; } = methodName;
+    
+    /// <summary>
+    /// Access modifier for the generated validation method. Defaults to "public".
+    /// </summary>
+    internal string AccessModifier { get; } = accessModifier;
 
     internal void SetAwaitableMembers(IEnumerable<string> awaitableMembers)
     {
@@ -74,7 +84,7 @@ internal class MethodTarget(IMethodSymbol symbol, List<Member> parameters)
 
 }
 
-internal class ConstructorTarget(IMethodSymbol symbol, List<Member> parameters)
+internal class ConstructorTarget(IMethodSymbol symbol, List<Member> parameters, string methodName = "Create", string accessModifier = "public")
 {
     internal IMethodSymbol Symbol { get; } = symbol;
 
@@ -88,6 +98,16 @@ internal class ConstructorTarget(IMethodSymbol symbol, List<Member> parameters)
     /// Parameters that require validation (have validation attributes or nested config).
     /// </summary>
     internal IEnumerable<Member> ValidatedParameters => Parameters.Where(p => p.NeedsValidation);
+    
+    /// <summary>
+    /// Name of the generated factory method. Defaults to "Create".
+    /// </summary>
+    internal string MethodName { get; } = methodName;
+    
+    /// <summary>
+    /// Access modifier for the generated factory method. Defaults to "public".
+    /// </summary>
+    internal string AccessModifier { get; } = accessModifier;
 
     internal void SetAwaitableMembers(IEnumerable<string> awaitableMembers)
     {
