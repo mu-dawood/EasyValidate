@@ -123,9 +123,10 @@ namespace EasyValidate.Generator
                         var methodParameters = method.Parameters;
                         if (methodParameters.Length > 0)
                         {
-                            // Process method parameters instead of all class members
-                            var parameterInfos = finalizer.Finalize(methodParameters, compilation);
-                            if (parameterInfos.Count > 0)
+                            // Process method parameters - include all params for pass-through
+                            var parameterInfos = finalizer.Finalize(methodParameters, compilation, includeAllMembers: true);
+                            // Only create target if at least one parameter needs validation
+                            if (parameterInfos.Any(p => p.NeedsValidation))
                             {
                                 methodTargets.Add(new MethodTarget(method, parameterInfos));
                                 if (method.DeclaredAccessibility == Accessibility.Public && method.DeclaredAccessibility == Accessibility.ProtectedOrInternal)

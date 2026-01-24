@@ -15,6 +15,16 @@ namespace EasyValidate.Test.ParameterValidation
             Console.WriteLine($"Name: {name}, Age: {age}");
         }
 
+        /// <summary>
+        /// Test method with extra parameters that don't require validation.
+        /// The generated overload should accept all parameters but only validate 'name'.
+        /// </summary>
+        public static string TestMethodWithExtraParams([NotNull] string name, int count, bool enabled)
+        {
+            // 'name' requires validation, 'count' and 'enabled' are just passed through
+            return $"Name: {name}, Count: {count}, Enabled: {enabled}";
+        }
+
         public TestParameterValidation([NotNull] string name, [Range(18, 65)] int age)
         {
             // This constructor should have parameter validation generated

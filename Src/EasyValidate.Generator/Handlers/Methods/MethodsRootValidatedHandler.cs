@@ -16,6 +16,7 @@ namespace EasyValidate.Handlers.Methods
 
             foreach (var method in @params.Target.Methods)
             {
+                // Use all parameters for method signature
                 var parmters = method.Parmters.Select(p => $"{p.Type.SimplifiedTypeName()} {p.Name}").ToList();
                 parmters.Add("ValidationConfig? config = null");
                 var parmtersString = string.Join(", ", parmters);
@@ -25,6 +26,7 @@ namespace EasyValidate.Handlers.Methods
                 bool isVoid = returnType == "void" || (isAsyncMethod && args.Length == 0);
                 var resultType = isVoid ? "IValidationResult" : $"IValidationResult<{returnType}>";
                 var instanceType = isVoid ? "IValidationResult" : $"IValidationResult<{returnType}>";
+                // Pass all parameters to the original method
                 var passedPramters = method.Parmters.Select(p => $"{p.Name}: {p.Name}").ToList();
                 var staticMethod = method.Symbol.IsStatic ? "static " : string.Empty;
                 if (isAsyncMethod || method.AwaitableMembers.Any())
@@ -34,7 +36,8 @@ namespace EasyValidate.Handlers.Methods
                 sb.AppendLine("        {");
                 sb.AppendLine("            var result = ValidationResult.Create();");
 
-                foreach (var member in method.Parmters)
+                // Only validate parameters that need validation
+                foreach (var member in method.ValidatedParameters)
                 {
                     var asyncItem = method.AwaitableMembers.Contains(member.Name);
                     var methodName = $"Validate@{member.Name}@for@{method.Symbol.Name}".ToPascalCase();

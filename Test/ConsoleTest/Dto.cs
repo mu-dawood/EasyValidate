@@ -45,6 +45,23 @@ public partial class Dto : IGenerate
         // without any specific logic.
     }
 
+    public string TestMethod2([NotNull] Dto? name, string value)
+    {
+        this.TestMethod2(name, value, new ValidationConfig());
+        return "TestMethod executed";
+        // This method is intentionally left empty to demonstrate the use of attributes
+        // without any specific logic.
+    }
+
+    /// <summary>
+    /// Test method with extra parameters that don't require validation.
+    /// The generated overload should include count and enabled parameters but only validate 'name'.
+    /// </summary>
+    public string TestMethodWithExtraParams([NotNull] string? name, int count, bool enabled)
+    {
+        return $"Name: {name}, Count: {count}, Enabled: {enabled}";
+    }
+
 
 
 

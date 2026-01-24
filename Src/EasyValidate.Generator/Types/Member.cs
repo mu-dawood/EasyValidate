@@ -11,7 +11,10 @@ internal class Member(string name, IReadOnlyDictionary<string, IReadOnlyCollecti
     internal MemberType MemberType { get; } = memberType;
     internal IReadOnlyDictionary<string, IReadOnlyCollection<AttributeInfo>> Attributes { get; } = attributes;
     
-    
+    /// <summary>
+    /// Indicates whether this member requires validation (has validation attributes or nested validation config).
+    /// </summary>
+    internal bool NeedsValidation => Attributes.Count > 0 || NestedConfig != null;
 }
 
 

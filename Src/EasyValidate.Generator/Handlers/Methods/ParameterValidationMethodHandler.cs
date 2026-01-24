@@ -18,11 +18,11 @@ namespace EasyValidate.Handlers.Methods
         {
             var (nextsp, awaitableMembers) = base.Next(@params);
             var sb = new StringBuilder();
-            // Process members
+            // Process members - only generate validation methods for parameters that need validation
             foreach (var method in @params.Target.Methods)
             {
                 List<string> awaitableMembersList = [];
-                foreach (var member in method.Parmters)
+                foreach (var member in method.ValidatedParameters)
                 {
                     if (GeneratePropertyValidationMethod(sb, method, member))
                     {

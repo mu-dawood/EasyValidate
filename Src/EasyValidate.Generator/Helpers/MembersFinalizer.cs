@@ -47,7 +47,7 @@ internal class MembersFinalizer(SourceProductionContext context, INamedTypeSymbo
     );
 
 
-    internal List<Member> Finalize(IEnumerable<ISymbol> members, Compilation compilation)
+    internal List<Member> Finalize(IEnumerable<ISymbol> members, Compilation compilation, bool includeAllMembers = false)
     {
 
         List<Member> Members = [];
@@ -222,6 +222,12 @@ internal class MembersFinalizer(SourceProductionContext context, INamedTypeSymbo
                     var info = new Member(name, chains, type, memberType, nestedConfig);
                     Members.Add(info);
                 }
+            }
+            else if (includeAllMembers)
+            {
+                // Include members without validation for method parameter pass-through
+                var info = new Member(name, chains, type, memberType, nestedConfig);
+                Members.Add(info);
             }
         }
 
