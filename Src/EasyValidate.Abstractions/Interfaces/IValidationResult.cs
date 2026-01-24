@@ -216,6 +216,12 @@ public interface IValidationResult
 public interface IValidationResult<out T> : IValidationResult
 {
     /// <summary>
+    /// Gets the first validation error encountered in this validation result.
+    /// </summary>
+    new ValidationError? FirstError { get; }
+
+
+    /// <summary>
     /// Gets the validated instance of type <typeparamref name="T"/>.
     /// </summary>
     /// <value>
@@ -225,6 +231,7 @@ public interface IValidationResult<out T> : IValidationResult
     /// <inheritdoc />
 #if NET5_0_OR_GREATER
     [MemberNotNullWhen(true, nameof(Result))]
+    [MemberNotNullWhen(false, nameof(FirstError))]
 #endif
     new bool IsValid();
 
@@ -232,6 +239,7 @@ public interface IValidationResult<out T> : IValidationResult
 
 #if NET5_0_OR_GREATER
     [MemberNotNullWhen(false, nameof(Result))]
+    [MemberNotNullWhen(true, nameof(FirstError))]
 #endif
     new bool HasErrors();
 
