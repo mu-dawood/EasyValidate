@@ -60,12 +60,18 @@ namespace EasyValidate.Handlers
                 name += "<" + string.Join(", ", t.TypeParameters.Select(tp => tp.Name)) + ">";
             }
 
-            // base list: ONLY add if no part already declares a base list (partial rule)
+            // base list: add interfaces that aren't already implemented across any partial
             var baseList = string.Empty;
-            var interfacesToAdd = GetInjectedInterfaces(p);
-            if (interfacesToAdd.Count > 0 && !AnyPartHasBaseList(t))
+            var interfacesToAdd = GetInjectedInterfaces(p).Distinct().ToList();
+            if (interfacesToAdd.Count > 0)
             {
-                baseList = " : " + string.Join(", ", interfacesToAdd.Distinct());
+                // Only add interfaces that aren't already implemented by the type (including via base types)
+                var existingInterfaceNames = new HashSet<string>(t.AllInterfaces.Select(i => i.Name));
+                var toAdd = interfacesToAdd.Where(i => !existingInterfaceNames.Contains(i)).ToList();
+                if (toAdd.Count > 0)
+                {
+                    baseList = " : " + string.Join(", ", toAdd);
+                }
             }
 
             // where clauses (safe to repeat on any partial)
@@ -91,11 +97,6 @@ namespace EasyValidate.Handlers
                 _ => "class" // fallback: you don't generate for enums/delegates here
             };
         }
-
-        private static bool AnyPartHasBaseList(INamedTypeSymbol t)
-            => t.DeclaringSyntaxReferences.Any(r =>
-                   r.GetSyntax() is TypeDeclarationSyntax tds &&
-                   tds.BaseList is { Types.Count: > 0 });
 
         private static List<string> GetInjectedInterfaces(HandlerParams p)
         {
